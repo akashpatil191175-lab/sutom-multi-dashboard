@@ -11,79 +11,135 @@
             0%, 100% { background-color: #fee2e2; border-color: #ef4444; }
             50% { background-color: #fca5a5; border-color: #dc2626; }
         }
-        .alert-active {
-            animation: pulse-red 1s infinite;
-        }
+        .alert-active { animation: pulse-red 1s infinite; }
     </style>
 </head>
-<body class="bg-slate-100 font-sans">
+<body class="bg-slate-100 font-sans min-h-screen">
 
-    <header class="bg-slate-800 text-white p-4 shadow-lg sticky top-0 z-40 flex justify-between items-center">
+    <header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-6">
         <div>
-            <h1 class="text-xl font-bold tracking-wide">SUTOM</h1>
+            <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
             <p class="text-xs text-slate-400">Setup Time Monitor System</p>
         </div>
-        <div id="roleBadge" class="bg-blue-600 text-xs px-3 py-1 rounded-full font-semibold uppercase">
-            Role: SETTER
+
+        <div class="flex items-center space-x-6 text-xs md:text-sm mt-2 md:mt-0">
+            <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
+                <i class="fas fa-calendar-alt text-blue-400 mr-2"></i>
+                <span id="topLiveShift" class="font-semibold">Shift: A</span>
+            </div>
+            <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
+                <i class="fas fa-clock text-green-400 mr-2"></i>
+                <span id="topLiveTime" class="font-mono font-semibold">00:00:00 AM</span>
+            </div>
+            <div id="userInfo" class="hidden items-center space-x-3">
+                <span id="userBadge" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span>
+                <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold transition">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </button>
+            </div>
         </div>
     </header>
 
-    <div class="flex flex-col md:flex-row min-h-[calc(100vh-64px)]">
+    <div id="authSection" class="flex justify-center items-center py-10 px-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
+            <h2 class="text-2xl font-bold text-center text-slate-800 mb-2">Department Login</h2>
+            <p class="text-xs text-center text-slate-500 mb-6">Enter your details to access department dashboard</p>
 
-        <nav class="w-full md:w-64 bg-slate-900 text-slate-300 p-4 space-y-2">
-            <div class="text-xs font-semibold text-slate-500 uppercase mb-2">Select Department</div>
-            <button onclick="switchTab('setter')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 bg-blue-600 text-white">
-                <i class="fas fa-tools"></i> <span>1. SETTER</span>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">User Name</label>
+                    <input type="text" id="loginName" required placeholder="Enter Full Name" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Ticket / Employee No.</label>
+                    <input type="text" id="loginTicket" required placeholder="e.g. T-1024" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Login ID</label>
+                    <input type="text" id="loginId" required placeholder="Enter ID" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                    <input type="password" id="loginPass" required placeholder="••••••••" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Select Department</label>
+                    <select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">-- Choose Department --</option>
+                        <option value="setter">1. SETTER</option>
+                        <option value="toolroom">2. TOOL ROOM</option>
+                        <option value="stdroom">3. CMM / STD ROOM</option>
+                        <option value="quality">4. QUALITY</option>
+                        <option value="supervisor">5. SUPERVISOR</option>
+                        <option value="hod">6. HOD VIEW</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg mt-2">
+                    Access Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboardSection" class="hidden flex flex-col md:flex-row min-h-[calc(100vh-65px)]">
+
+        <nav class="w-full md:w-64 bg-slate-900 text-slate-300 p-4 space-y-2 border-r border-slate-800">
+            <div class="text-xs font-semibold text-slate-500 uppercase mb-2 px-2">Departments</div>
+            <button id="nav-setter" onclick="switchTab('setter')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
+                <i class="fas fa-tools w-5"></i> <span>1. SETTER</span>
             </button>
-            <button onclick="switchTab('toolroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
-                <i class="fas fa-wrench"></i> <span>2. TOOL ROOM</span>
+            <button id="nav-toolroom" onclick="switchTab('toolroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
+                <i class="fas fa-wrench w-5"></i> <span>2. TOOL ROOM</span>
             </button>
-            <button onclick="switchTab('stdroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
-                <i class="fas fa-microscope"></i> <span>3. CMM / STD ROOM</span>
+            <button id="nav-stdroom" onclick="switchTab('stdroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
+                <i class="fas fa-microscope w-5"></i> <span>3. CMM / STD ROOM</span>
             </button>
-            <button onclick="switchTab('quality')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
-                <i class="fas fa-check-double"></i> <span>4. QUALITY</span>
+            <button id="nav-quality" onclick="switchTab('quality')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
+                <i class="fas fa-check-double w-5"></i> <span>4. QUALITY</span>
             </button>
-            <button onclick="switchTab('supervisor')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
-                <i class="fas fa-user-tie"></i> <span>5. SUPERVISOR</span>
+            <button id="nav-supervisor" onclick="switchTab('supervisor')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
+                <i class="fas fa-user-tie w-5"></i> <span>5. SUPERVISOR</span>
             </button>
-            <button onclick="switchTab('hod')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
-                <i class="fas fa-chart-line"></i> <span>6. HOD VIEW</span>
+            <button id="nav-hod" onclick="switchTab('hod')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
+                <i class="fas fa-chart-line w-5"></i> <span>6. HOD VIEW</span>
             </button>
         </nav>
 
         <main class="flex-1 p-6 overflow-y-auto">
 
-            <div id="tab-setter" class="tab-content space-y-6">
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500">
-                        <p class="text-xs text-slate-500 font-semibold">Total Setup Req.</p>
-                        <p id="metric-total" class="text-2xl font-bold mt-1">1</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
-                        <p class="text-xs text-slate-500 font-semibold">Tool Room Ready</p>
-                        <p id="metric-tool-ready" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-yellow-500">
-                        <p class="text-xs text-slate-500 font-semibold">Pending Setup</p>
-                        <p id="metric-pending" class="text-2xl font-bold mt-1">1</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-red-500">
-                        <p class="text-xs text-slate-500 font-semibold">Tooling Not Ready</p>
-                        <p id="metric-tool-notready" class="text-2xl font-bold mt-1">1</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-purple-500">
-                        <p class="text-xs text-slate-500 font-semibold">Fixture Serial No.</p>
-                        <p id="metric-fixture-no" class="text-sm font-bold mt-2 text-purple-700">FIX-102</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-teal-500">
-                        <p class="text-xs text-slate-500 font-semibold">Available Fixtures</p>
-                        <p class="text-2xl font-bold text-teal-600 mt-1">5</p>
+            <div id="tab-setter" class="tab-content space-y-6 hidden">
+                <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+                    <h2 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4"><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                            <p class="text-xs text-slate-600 font-semibold">Total Setup Req.</p>
+                            <p id="metric-total" class="text-2xl font-bold mt-1 text-blue-700">1</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                            <p class="text-xs text-slate-600 font-semibold">Tool Room Ready</p>
+                            <p id="metric-tool-ready" class="text-2xl font-bold mt-1 text-green-700">0</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+                            <p class="text-xs text-slate-600 font-semibold">Pending Setup</p>
+                            <p id="metric-pending" class="text-2xl font-bold mt-1 text-yellow-700">1</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                            <p class="text-xs text-slate-600 font-semibold">Tooling Not Ready</p>
+                            <p id="metric-tool-notready" class="text-2xl font-bold mt-1 text-red-700">1</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-200">
+                            <p class="text-xs text-slate-600 font-semibold">Fixture Serial No.</p>
+                            <p id="metric-fixture-no" class="text-sm font-bold mt-2 text-purple-700">FIX-102</p>
+                        </div>
+                        <div class="bg-teal-50 p-4 rounded-xl border border-teal-200">
+                            <p class="text-xs text-slate-600 font-semibold">Available Fixtures</p>
+                            <p class="text-2xl font-bold text-teal-700 mt-1">5</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h2 class="text-lg font-bold mb-4 text-slate-800 border-b pb-2"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup Change</h2>
+                <div class="bg-white p-6 rounded-xl shadow border">
+                    <h3 class="text-md font-bold mb-4 text-slate-800 border-b pb-2"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup Change</h3>
                     <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
                             <label class="block text-xs font-semibold mb-1">Part Name</label>
@@ -95,7 +151,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold mb-1">Date & Shift</label>
-                            <input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm">
+                            <input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm font-medium">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold mb-1">Setup Type</label>
@@ -120,7 +176,7 @@
                             </select>
                         </div>
                         <div class="flex items-end">
-                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition">
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition shadow">
                                 Submit & Notify
                             </button>
                         </div>
@@ -130,19 +186,19 @@
                 <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl flex justify-between items-center">
                     <div>
                         <h3 class="font-bold text-indigo-900">1st Sample Cutting Completed?</h3>
-                        <p class="text-xs text-indigo-700">Trigger pop-up notification directly to the CMM / STD Room.</p>
+                        <p class="text-xs text-indigo-700">Trigger pop-up notification directly to CMM / STD Room.</p>
                     </div>
-                    <button onclick="sendSampleCuttingAlert()" class="bg-indigo-600 text-white px-4 py-2 rounded font-semibold text-sm hover:bg-indigo-700">
+                    <button onclick="sendSampleCuttingAlert()" class="bg-indigo-600 text-white px-4 py-2 rounded font-semibold text-sm hover:bg-indigo-700 transition">
                         <i class="fas fa-paper-plane mr-1"></i> Send to STD Room
                     </button>
                 </div>
             </div>
 
             <div id="tab-toolroom" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2">Tool Room Action Grid (Excel View)</h2>
+                <div class="bg-white p-6 rounded-xl shadow border">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-wrench text-blue-600 mr-2"></i> Tool Room Dashboard</h2>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left border">
+                        <table class="w-full text-sm text-left border rounded-lg">
                             <thead class="bg-slate-100 border-b">
                                 <tr>
                                     <th class="p-3">Part Details</th>
@@ -153,22 +209,21 @@
                                     <th class="p-3">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="toolroomTable">
-                                </tbody>
+                            <tbody id="toolroomTable"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
             <div id="tab-stdroom" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2">STD Room Inspection Requests</h2>
+                <div class="bg-white p-6 rounded-xl shadow border">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-microscope text-blue-600 mr-2"></i> CMM / STD Room Dashboard</h2>
                     <div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center">
                         <div>
-                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded font-bold">Inspection Pending</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold">Inspection Pending</span>
                             <h3 class="font-bold text-slate-800 mt-2" id="stdSampleText">Sample Pending for Part: Gear Shaft (PN-9988)</h3>
                         </div>
-                        <button onclick="sendQualityAlert()" class="bg-green-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-green-700">
+                        <button onclick="sendQualityAlert()" class="bg-green-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-green-700 transition">
                             Inspection Done (Send to Quality)
                         </button>
                     </div>
@@ -176,14 +231,14 @@
             </div>
 
             <div id="tab-quality" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2">Quality Approval Panel</h2>
-                    <p class="text-sm mb-4">Process inspection approval status or request corrections:</p>
+                <div class="bg-white p-6 rounded-xl shadow border">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-check-double text-blue-600 mr-2"></i> Quality Approval Dashboard</h2>
+                    <p class="text-sm text-slate-600 mb-4">Process inspection approval status or request corrections:</p>
                     <div class="flex space-x-4">
-                        <button onclick="handleQualityAction('SOP APPROVED')" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700">
+                        <button onclick="handleQualityAction('SOP APPROVED')" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition shadow">
                             <i class="fas fa-check-circle mr-2"></i> SOP APPROVE
                         </button>
-                        <button onclick="handleQualityAction('CORRECTION REQUIRED')" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700">
+                        <button onclick="handleQualityAction('CORRECTION REQUIRED')" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition shadow">
                             <i class="fas fa-exclamation-triangle mr-2"></i> CORRECTION REQUIRED
                         </button>
                     </div>
@@ -191,7 +246,10 @@
             </div>
 
             <div id="tab-supervisor" class="tab-content hidden space-y-6">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-xl shadow border mb-6">
+                    <h2 class="text-lg font-bold border-b pb-2 text-slate-800"><i class="fas fa-user-tie text-blue-600 mr-2"></i> Supervisor Dashboard</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-green-50 p-6 rounded-xl border border-green-200">
                         <h3 class="text-lg font-bold text-green-900">SOP Approved</h3>
                         <p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p>
@@ -204,22 +262,21 @@
             </div>
 
             <div id="tab-hod" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2">HOD Master Live View (Read Only)</h2>
+                <div class="bg-white p-6 rounded-xl shadow border">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-blue-600 mr-2"></i> HOD Master Live View (Read Only)</h2>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left border">
-                            <thead class="bg-slate-200">
+                        <table class="w-full text-xs text-left border rounded-lg">
+                            <thead class="bg-slate-200 text-slate-800">
                                 <tr>
-                                    <th class="p-2">Part Info</th>
-                                    <th class="p-2">Shift/Pallet</th>
-                                    <th class="p-2">Tooling</th>
-                                    <th class="p-2">Fixture</th>
-                                    <th class="p-2">Setup Status</th>
-                                    <th class="p-2">Quality Status</th>
+                                    <th class="p-3">Part Info</th>
+                                    <th class="p-3">Shift/Pallet</th>
+                                    <th class="p-3">Tooling</th>
+                                    <th class="p-3">Fixture</th>
+                                    <th class="p-3">Setup Status</th>
+                                    <th class="p-3">Quality Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="hodTable">
-                                </tbody>
+                            <tbody id="hodTable"></tbody>
                         </table>
                     </div>
                 </div>
@@ -234,17 +291,17 @@
                 <i class="fas fa-bell fa-bounce"></i>
             </div>
             <h3 id="alertTitle" class="text-xl font-extrabold text-red-600">NEW SYSTEM ALERT!</h3>
-            <p id="alertMessage" class="text-sm text-slate-700 my-4 font-semibold">
-                Alert received from Tool Room department.
-            </p>
-            <button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-red-700 text-lg">
+            <p id="alertMessage" class="text-sm text-slate-700 my-4 font-semibold">Alert received from department.</p>
+            <button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-red-700 text-lg transition">
                 OK (ACKNOWLEDGE)
             </button>
         </div>
     </div>
 
     <script>
-        // Global System State
+        let currentUser = null;
+
+        // Dynamic System Data
         let activeSetup = {
             partName: "Gear Shaft",
             partNo: "PN-9988",
@@ -261,21 +318,71 @@
             qualityStatus: "Pending SOP"
         };
 
-        // Initialize Shift Information
-        document.getElementById('shiftDate').value = new Date().toLocaleDateString() + " - Shift A";
+        // Live Clock and Shift Timer
+        function updateLiveTime() {
+            const now = new Date();
+            document.getElementById('topLiveTime').innerText = now.toLocaleTimeString();
 
-        // Tab Switching Logic
+            const hours = now.getHours();
+            let shift = "Shift A";
+            if (hours >= 7 && hours < 15) shift = "Shift A";
+            else if (hours >= 15 && hours < 23) shift = "Shift B";
+            else shift = "Shift C";
+
+            document.getElementById('topLiveShift').innerText = "Shift: " + shift;
+            document.getElementById('shiftDate').value = now.toLocaleDateString() + " - " + shift;
+        }
+        setInterval(updateLiveTime, 1000);
+        updateLiveTime();
+
+        // Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            currentUser = {
+                name: document.getElementById('loginName').value,
+                ticket: document.getElementById('loginTicket').value,
+                id: document.getElementById('loginId').value,
+                dept: document.getElementById('loginDept').value
+            };
+
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('flex');
+            document.getElementById('userBadge').innerText = `${currentUser.name} (${currentUser.dept.toUpperCase()})`;
+
+            switchTab(currentUser.dept);
+        }
+
+        // Logout Handler
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('flex');
+        }
+
+        // Department Switcher (Tab logic)
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('hover:bg-slate-800');
+            });
+
             document.getElementById('tab-' + tabId).classList.remove('hidden');
-            document.getElementById('roleBadge').innerText = "Role: " + tabId.toUpperCase();
-            
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) {
+                activeNav.classList.add('bg-blue-600', 'text-white');
+            }
+
             if(tabId === 'toolroom') renderToolroom();
             if(tabId === 'hod') renderHOD();
             if(tabId === 'supervisor') renderSupervisor();
         }
 
-        // 1. Setter Submit Function
+        // Setter Submit Action
         function handleSetterSubmit(e) {
             e.preventDefault();
             activeSetup.partName = document.getElementById('partName').value;
@@ -285,10 +392,13 @@
             activeSetup.priority = document.getElementById('priority').value;
             activeSetup.pallet = document.getElementById('pallet').value;
 
+            document.getElementById('metric-fixture-no').innerText = activeSetup.fixtureNo;
+            document.getElementById('stdSampleText').innerText = `Sample Pending for Part: ${activeSetup.partName} (${activeSetup.partNo})`;
+
             triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
         }
 
-        // Trigger Alert with Vibration API
+        // System Alerts & Notification
         function triggerAlert(title, message) {
             document.getElementById('alertTitle').innerText = title;
             document.getElementById('alertMessage').innerText = message;
@@ -306,7 +416,7 @@
             }
         }
 
-        // 2. Tool Room Logic
+        // Toolroom Render Logic
         function renderToolroom() {
             const tbody = document.getElementById('toolroomTable');
             tbody.innerHTML = `
@@ -354,25 +464,21 @@
             document.getElementById('metric-tool-notready').innerText = activeSetup.toolingReady ? "0" : "1";
         }
 
-        // 3. Sample Cutting Notification
         function sendSampleCuttingAlert() {
             activeSetup.sampleCutting = true;
             triggerAlert("ALERT TO STD ROOM", "1st Sample Cutting Completed. Please proceed with inspection.");
         }
 
-        // 4. STD Room Logic
         function sendQualityAlert() {
             activeSetup.inspectionDone = true;
             triggerAlert("ALERT TO QUALITY", "CMM/STD Room Inspection completed. Pending Quality Approval.");
         }
 
-        // 5. Quality Department Actions
         function handleQualityAction(status) {
             activeSetup.qualityStatus = status;
             triggerAlert("ALERT TO SETTER", `Quality Department updated status: ${status}`);
         }
 
-        // 6. Supervisor Logic
         function renderSupervisor() {
             if(activeSetup.qualityStatus === 'SOP APPROVED') {
                 document.getElementById('supApprovedCount').innerText = "1";
@@ -383,17 +489,16 @@
             }
         }
 
-        // 7. HOD Logic
         function renderHOD() {
             const tbody = document.getElementById('hodTable');
             tbody.innerHTML = `
-                <tr>
-                    <td class="p-2 font-bold">${activeSetup.partName} - ${activeSetup.partNo}</td>
-                    <td class="p-2">${activeSetup.pallet}</td>
-                    <td class="p-2">${activeSetup.toolingReady ? '✅ Ready':'❌ Pending'}</td>
-                    <td class="p-2">${activeSetup.fixtureReady ? '✅ Ready':'❌ Pending'}</td>
-                    <td class="p-2">${activeSetup.setupReady ? '✅ Setup Ready':'⏳ In Progress'}</td>
-                    <td class="p-2"><span class="bg-blue-100 text-blue-800 p-1 rounded font-bold">${activeSetup.qualityStatus}</span></td>
+                <tr class="border-b">
+                    <td class="p-3 font-bold">${activeSetup.partName} - ${activeSetup.partNo}</td>
+                    <td class="p-3">${activeSetup.pallet}</td>
+                    <td class="p-3">${activeSetup.toolingReady ? '✅ Ready':'❌ Pending'}</td>
+                    <td class="p-3">${activeSetup.fixtureReady ? '✅ Ready':'❌ Pending'}</td>
+                    <td class="p-3">${activeSetup.setupReady ? '✅ Setup Ready':'⏳ In Progress'}</td>
+                    <td class="p-3"><span class="bg-blue-100 text-blue-800 p-1 rounded font-bold text-xs">${activeSetup.qualityStatus}</span></td>
                 </tr>
             `;
         }

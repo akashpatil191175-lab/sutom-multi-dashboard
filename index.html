@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Workflow System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes pulse-red {
+            0%, 100% { background-color: #fee2e2; border-color: #ef4444; }
+            50% { background-color: #fca5a5; border-color: #dc2626; }
+        }
+        .alert-active {
+            animation: pulse-red 1s infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800 text-white p-4 shadow-lg sticky top-0 z-40 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold">मॅन्युफॅक्चरिंग वर्कफ्लो सिस्टिम</h1>
+            <p class="text-xs text-slate-400">Real-time Department Tracking</p>
+        </div>
+        <div id="roleBadge" class="bg-blue-600 text-xs px-3 py-1 rounded-full font-semibold">
+            रोल: SETTER
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex flex-col md:flex-row min-h-[calc(100vh-64px)]">
+
+        <!-- Navigation Sidebar / Tabs -->
+        <nav class="w-full md:w-64 bg-slate-900 text-slate-300 p-4 space-y-2">
+            <div class="text-xs font-semibold text-slate-500 uppercase mb-2">डिपार्टमेंट निवडा</div>
+            <button onclick="switchTab('setter')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 bg-blue-600 text-white">
+                <i class="fas fa-tools"></i> <span>1. SETTER</span>
+            </button>
+            <button onclick="switchTab('toolroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
+                <i class="fas fa-wrench"></i> <span>2. TOOL ROOM</span>
+            </button>
+            <button onclick="switchTab('stdroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
+                <i class="fas fa-microscope"></i> <span>3. CMM / STD ROOM</span>
+            </button>
+            <button onclick="switchTab('quality')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
+                <i class="fas fa-check-double"></i> <span>4. QUALITY</span>
+            </button>
+            <button onclick="switchTab('supervisor')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
+                <i class="fas fa-user-tie"></i> <span>5. SUPERVISOR</span>
+            </button>
+            <button onclick="switchTab('hod')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800">
+                <i class="fas fa-chart-line"></i> <span>6. HOD VIEW</span>
+            </button>
+        </nav>
+
+        <!-- Dynamic Content Area -->
+        <main class="flex-1 p-6 overflow-y-auto">
+
+            <!-- 1. SETTER DASHBOARD -->
+            <div id="tab-setter" class="tab-content space-y-6">
+                <!-- Metrics -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500">
+                        <p class="text-xs text-slate-500">Total Setup Req.</p>
+                        <p id="metric-total" class="text-2xl font-bold">1</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
+                        <p class="text-xs text-slate-500">Tool Room Ready</p>
+                        <p id="metric-tool-ready" class="text-2xl font-bold">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-yellow-500">
+                        <p class="text-xs text-slate-500">Pending Setup</p>
+                        <p id="metric-pending" class="text-2xl font-bold">1</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-red-500">
+                        <p class="text-xs text-slate-500">Tooling Not Ready</p>
+                        <p id="metric-tool-notready" class="text-2xl font-bold">1</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-purple-500">
+                        <p class="text-xs text-slate-500">Fixture Serial No</p>
+                        <p id="metric-fixture-no" class="text-sm font-semibold mt-2">FIX-102</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-teal-500">
+                        <p class="text-xs text-slate-500">Available Fixtures</p>
+                        <p class="text-2xl font-bold text-teal-600">5</p>
+                    </div>
+                </div>
+
+                <!-- Form Section -->
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h2 class="text-lg font-bold mb-4 text-slate-800 border-b pb-2"><i class="fas fa-plus-circle text-blue-600"></i> नवीन सेटअप बदल नोंदवा</h2>
+                    <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Part Name</label>
+                            <input type="text" id="partName" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="उदा. Gear Shaft">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Part No</label>
+                            <input type="text" id="partNo" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="PN-9988">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Shift / Date</label>
+                            <input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Setup Type</label>
+                            <select id="setupType" class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
+                                <option value="Long Setup">Long Setup</option>
+                                <option value="Short Setup">Short Setup</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Fixture No</label>
+                            <input type="text" id="fixtureNo" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="FIX-102">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Priority (1 - 10)</label>
+                            <input type="number" id="priority" min="1" max="10" value="1" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Pallet Selection</label>
+                            <select id="pallet" class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
+                                <option value="Pallet A">Pallet A</option>
+                                <option value="Pallet B">Pallet B</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition">
+                                पाठवा & Alert पाठवा
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sample Cutting Button -->
+                <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-indigo-900">1 Sample Cutting Done?</h3>
+                        <p class="text-xs text-indigo-700">सॅम्पल कटिंग पूर्ण झाल्यावर CMM / STD Room ला अलर्ट पाठवा.</p>
+                    </div>
+                    <button onclick="sendSampleCuttingAlert()" class="bg-indigo-600 text-white px-4 py-2 rounded font-semibold text-sm hover:bg-indigo-700">
+                        <i class="fas fa-paper-plane mr-1"></i> Send to STD Room
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. TOOL ROOM DASHBOARD -->
+            <div id="tab-toolroom" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2">Tool Room Action Table (Excel View)</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left border">
+                            <thead class="bg-slate-100 border-b">
+                                <tr>
+                                    <th class="p-3">Part Details</th>
+                                    <th class="p-3">Fixture No</th>
+                                    <th class="p-3">Priority</th>
+                                    <th class="p-3">Tooling Status</th>
+                                    <th class="p-3">Fixture Status</th>
+                                    <th class="p-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="toolroomTable">
+                                <!-- JS द्वारे डेटा भरला जाईल -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CMM / STD ROOM DASHBOARD -->
+            <div id="tab-stdroom" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2">STD Room Inspection Request</h2>
+                    <div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center">
+                        <div>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded font-bold">Inspection Pending</span>
+                            <h3 class="font-bold text-slate-800 mt-2" id="stdSampleText">Sample Pending for Part: Gear Shaft (PN-9988)</h3>
+                        </div>
+                        <button onclick="sendQualityAlert()" class="bg-green-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-green-700">
+                            Inspection Done (Send to Quality)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. QUALITY DASHBOARD -->
+            <div id="tab-quality" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2">Quality Approval Panel</h2>
+                    <p class="text-sm mb-4">तपासणी पूर्ण झालेल्या सेटअपला SOP मंजुरी किंवा दुरुस्ती पाठवा:</p>
+                    <div class="flex space-x-4">
+                        <button onclick="handleQualityAction('SOP APPROVED')" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700">
+                            <i class="fas fa-check-circle mr-2"></i> SOP APPROVE
+                        </button>
+                        <button onclick="handleQualityAction('CORRECTION REQUIRED')" class="bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> CORRECTION REQUIRED
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. SUPERVISOR DASHBOARD -->
+            <div id="tab-supervisor" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+                        <h3 class="text-lg font-bold text-green-900">SOP Approved</h3>
+                        <p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p>
+                    </div>
+                    <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+                        <h3 class="text-lg font-bold text-yellow-900">Pending SOP</h3>
+                        <p id="supPendingCount" class="text-4xl font-extrabold text-yellow-600 mt-2">1</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. HOD DASHBOARD -->
+            <div id="tab-hod" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h2 class="text-lg font-bold mb-4 border-b pb-2">HOD Master Live View (Read Only)</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border">
+                            <thead class="bg-slate-200">
+                                <tr>
+                                    <th class="p-2">Part Info</th>
+                                    <th class="p-2">Shift/Pallet</th>
+                                    <th class="p-2">Tooling</th>
+                                    <th class="p-2">Fixture</th>
+                                    <th class="p-2">Setup Status</th>
+                                    <th class="p-2">Quality Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hodTable">
+                                <!-- JS Hydrated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- POP-UP ALERT MODAL (Vibration/Audio Simulation) -->
+    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active">
+            <div class="text-red-500 text-5xl mb-3">
+                <i class="fas fa-bell fa-bounce"></i>
+            </div>
+            <h3 id="alertTitle" class="text-xl font-extrabold text-red-600">नवीन नोटिफिकेशन!</h3>
+            <p id="alertMessage" class="text-sm text-slate-700 my-4 font-semibold">
+                Tool Room कडून Alerts प्राप्त झाले आहेत.
+            </p>
+            <button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-red-700 text-lg">
+                OK (ACKNOWLEDGE)
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Global State (Excel Data Logic Model)
+        let activeSetup = {
+            partName: "Gear Shaft",
+            partNo: "PN-9988",
+            shiftDate: "",
+            setupType: "Long Setup",
+            fixtureNo: "FIX-102",
+            priority: 1,
+            pallet: "Pallet A",
+            toolingReady: false,
+            fixtureReady: false,
+            setupReady: false,
+            sampleCutting: false,
+            inspectionDone: false,
+            qualityStatus: "Pending SOP"
+        };
+
+        // Initialize Shift Date
+        document.getElementById('shiftDate').value = new Date().toLocaleDateString() + " - Shift A";
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('roleBadge').innerText = "रोल: " + tabId.toUpperCase();
+            
+            // Tab specific refreshes
+            if(tabId === 'toolroom') renderToolroom();
+            if(tabId === 'hod') renderHOD();
+            if(tabId === 'supervisor') renderSupervisor();
+        }
+
+        // 1. Setter Submit Function
+        function handleSetterSubmit(e) {
+            e.preventDefault();
+            activeSetup.partName = document.getElementById('partName').value;
+            activeSetup.partNo = document.getElementById('partNo').value;
+            activeSetup.setupType = document.getElementById('setupType').value;
+            activeSetup.fixtureNo = document.getElementById('fixtureNo').value;
+            activeSetup.priority = document.getElementById('priority').value;
+            activeSetup.pallet = document.getElementById('pallet').value;
+
+            // Trigger Pop-up Alert
+            triggerAlert("TOOL ROOM & STD ROOM ALERT", `नवीन सेटअप मागणी: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
+            
+            // Trigger WhatsApp Simulation
+            const waMsg = `*New Setup Request*%0APart: ${activeSetup.partName}%0APriority: ${activeSetup.priority}%0AFixture: ${activeSetup.fixtureNo}`;
+            console.log("WhatsApp Notification Sent: ", waMsg);
+        }
+
+        // Trigger Pop Up with Audio / Vibration Simulation
+        function triggerAlert(title, message) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('alertModal').classList.remove('hidden');
+
+            // Mobile Vibration API Trigger
+            if ("vibrate" in navigator) {
+                navigator.vibrate([500, 200, 500, 200, 500]);
+            }
+        }
+
+        function acknowledgeAlert() {
+            document.getElementById('alertModal').classList.add('hidden');
+            if ("vibrate" in navigator) {
+                navigator.vibrate(0); // Stop vibration
+            }
+        }
+
+        // 2. Tool Room Functions
+        function renderToolroom() {
+            const tbody = document.getElementById('toolroomTable');
+            tbody.innerHTML = `
+                <tr class="border-b">
+                    <td class="p-3 font-semibold">${activeSetup.partName} (${activeSetup.partNo})</td>
+                    <td class="p-3">${activeSetup.fixtureNo}</td>
+                    <td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">${activeSetup.priority}</span></td>
+                    <td class="p-3 font-bold ${activeSetup.toolingReady ? 'text-green-600':'text-red-500'}">
+                        ${activeSetup.toolingReady ? 'READY' : 'PENDING'}
+                    </td>
+                    <td class="p-3 font-bold ${activeSetup.fixtureReady ? 'text-green-600':'text-red-500'}">
+                        ${activeSetup.fixtureReady ? 'READY' : 'PENDING'}
+                    </td>
+                    <td class="p-3 space-x-1">
+                        <button onclick="toggleTooling()" class="bg-blue-500 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button>
+                        <button onclick="toggleFixture()" class="bg-purple-500 text-white text-xs px-2 py-1 rounded">Fixture Toggle</button>
+                        <button onclick="sendSetupReady()" class="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">SETUP READY</button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function toggleTooling() {
+            activeSetup.toolingReady = !activeSetup.toolingReady;
+            updateMetrics();
+            renderToolroom();
+        }
+
+        function toggleFixture() {
+            activeSetup.fixtureReady = !activeSetup.fixtureReady;
+            renderToolroom();
+        }
+
+        function sendSetupReady() {
+            if(activeSetup.toolingReady && activeSetup.fixtureReady) {
+                activeSetup.setupReady = true;
+                triggerAlert("ALERT TO SETTER", "Tool Room ने दिलेले Tooling आणि Fixture सेटअपसाठी READY आहे!");
+            } else {
+                alert("कृपया आधी Tooling आणि Fixture दोन्ही Ready मार्क करा!");
+            }
+        }
+
+        function updateMetrics() {
+            document.getElementById('metric-tool-ready').innerText = activeSetup.toolingReady ? "1" : "0";
+            document.getElementById('metric-tool-notready').innerText = activeSetup.toolingReady ? "0" : "1";
+        }
+
+        // 3. Sample Cutting Notification to STD Room
+        function sendSampleCuttingAlert() {
+            activeSetup.sampleCutting = true;
+            triggerAlert("ALERT TO STD ROOM", "1 Sample Cutting तयार आहे. कृपया इन्स्पेक्शन त्वरित पूर्ण करा.");
+        }
+
+        // 4. STD Room Inspection Done
+        function sendQualityAlert() {
+            activeSetup.inspectionDone = true;
+            triggerAlert("ALERT TO QUALITY", "CMM/STD Room इन्स्पेक्शन पूर्ण झाले आहे. Quality Approval प्रलंबित आहे.");
+        }
+
+        // 5. Quality Department Actions
+        function handleQualityAction(status) {
+            activeSetup.qualityStatus = status;
+            triggerAlert("ALERT TO SETTER", `Quality Department ने स्टेटस बदलला आहे: ${status}`);
+        }
+
+        // 6. Supervisor Data
+        function renderSupervisor() {
+            if(activeSetup.qualityStatus === 'SOP APPROVED') {
+                document.getElementById('supApprovedCount').innerText = "1";
+                document.getElementById('supPendingCount').innerText = "0";
+            } else {
+                document.getElementById('supApprovedCount').innerText = "0";
+                document.getElementById('supPendingCount').innerText = "1";
+            }
+        }
+
+        // 7. HOD View Data
+        function renderHOD() {
+            const tbody = document.getElementById('hodTable');
+            tbody.innerHTML = `
+                <tr>
+                    <td class="p-2 font-bold">${activeSetup.partName} - ${activeSetup.partNo}</td>
+                    <td class="p-2">${activeSetup.pallet}</td>
+                    <td class="p-2">${activeSetup.toolingReady ? '✅ Ready':'❌ Pending'}</td>
+                    <td class="p-2">${activeSetup.fixtureReady ? '✅ Ready':'❌ Pending'}</td>
+                    <td class="p-2">${activeSetup.setupReady ? '✅ Setup Ready':'⏳ In Progress'}</td>
+                    <td class="p-2"><span class="bg-blue-100 text-blue-800 p-1 rounded font-bold">${activeSetup.qualityStatus}</span></td>
+                </tr>
+            `;
+        }
+    </script>
+</body>
+</html>

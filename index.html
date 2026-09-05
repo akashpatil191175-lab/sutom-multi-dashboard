@@ -3,1041 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>SUTOM - Setup Time Monitor</title>
-
-    <!-- PWA -->
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
     <link rel="apple-touch-icon" href="./icon-192.png">
-
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
     <style>
-        @keyframes pulse-red {
-            0%, 100% {
-                background-color: #fee2e2;
-                border-color: #ef4444;
-            }
-            50% {
-                background-color: #fca5a5;
-                border-color: #dc2626;
-            }
-        }
-
-        .alert-active {
-            animation: pulse-red 0.8s infinite;
-        }
-
-        @keyframes livePulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.55;
-                transform: scale(0.9);
-            }
-        }
-
-        .live-dot {
-            animation: livePulse 1.2s infinite;
-        }
+        @keyframes pulse-red { 0%,100% { background-color:#fee2e2; border-color:#ef4444; } 50% { background-color:#fca5a5; border-color:#dc2626; } }
+       .alert-active { animation: pulse-red 0.8s infinite; }
+        @keyframes livePulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.55; transform:scale(0.9); } }
+       .live-dot { animation: livePulse 1.2s infinite; }
     </style>
 </head>
-
 <body class="bg-slate-100 font-sans min-h-screen">
-
-    <!-- HEADER -->
-    <header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-4 md:px-6">
-
-        <!-- LEFT -->
-        <div class="flex items-center space-x-3">
-            <img src="./icon-192.png" alt="SuTOM Logo" class="w-10 h-10 rounded-lg border border-slate-700">
-            <div>
-                <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
-                <p class="text-xs text-slate-400">Setup Time Monitor System</p>
-            </div>
-        </div>
-
-        <!-- RIGHT TOP BAR -->
-        <div class="flex items-center space-x-2 md:space-x-4 text-xs mt-2 md:mt-0">
-
-            <!-- SHIFT -->
-            <div class="bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
-                <i class="fas fa-calendar-alt text-blue-400 mr-1.5"></i>
-                <span id="topLiveShift" class="font-semibold">Shift: Shift A</span>
-            </div>
-
-            <!-- FIREBASE LIVE INDICATOR -->
-            <div id="firebaseLiveIndicator" class="bg-green-900/40 border border-green-500 text-green-400 px-2.5 py-1 rounded font-bold flex items-center">
-                <span id="firebaseLiveDot" class="live-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1.5"></span>
-                <span id="firebaseLiveText">LIVE</span>
-            </div>
-
-            <!-- TIME -->
-            <div class="bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
-                <i class="fas fa-clock text-green-400 mr-1.5"></i>
-                <span id="topLiveTime" class="font-mono font-semibold">00:00:00</span>
-            </div>
-
-            <!-- USER INFO -->
-            <div id="userInfo" class="hidden items-center space-x-2">
-                <span id="userBadge" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span>
-                <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded font-bold transition">
-                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
-                </button>
-            </div>
-
-        </div>
-
-    </header>
-
-    <!-- LOGIN -->
-    <div id="authSection" class="flex justify-center items-center py-10 px-4">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
-            <div class="flex flex-col items-center mb-4">
-                <img src="./icon-192.png" alt="SuTOM Logo" class="w-16 h-16 rounded-xl shadow mb-2">
-                <h2 class="text-2xl font-bold text-center text-slate-800">Department Login</h2>
-                <p class="text-xs text-center text-slate-500">Enter your details to access department dashboard</p>
-            </div>
-
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Employee Name</label>
-                    <input type="text" id="loginName" required placeholder="Enter Employee Name" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Employee ID</label>
-                    <input type="text" id="loginId" required placeholder="Enter Employee ID" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
-                    <input type="password" id="loginPass" required placeholder="••••••••" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Select Department</label>
-                    <select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                        <option value="">-- Choose Department --</option>
-                        <option value="setter">1. SETTER</option>
-                        <option value="toolroom">2. TOOL ROOM</option>
-                        <option value="stdroom">3. CMM / STD ROOM</option>
-                        <option value="quality">4. QUALITY</option>
-                        <option value="supervisor">5. SUPERVISOR</option>
-                        <option value="hod">6. HOD VIEW</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg mt-2">
-                    Access Dashboard
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- DASHBOARD -->
-    <div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]">
-        <main class="flex-1 p-6 overflow-y-auto">
-
-            <!-- SETTER DASHBOARD -->
-            <div id="tab-setter" class="tab-content space-y-6 hidden">
-                <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
-                    <h2 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4">
-                        <i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center
-                    </h2>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-                        <div onclick="openSetupForm()" class="bg-blue-50 p-3 rounded-xl border border-blue-200 cursor-pointer hover:bg-blue-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">Register New Setup</p>
-                                <i class="fas fa-plus-circle text-blue-600 text-xs"></i>
-                            </div>
-                            <p id="metric-total" class="text-xl font-bold text-blue-700">1</p>
-                        </div>
-
-                        <div onclick="showExcelView('Tool Room Ready')" class="bg-green-50 p-3 rounded-xl border border-green-200 cursor-pointer hover:bg-green-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">Tool Room Ready</p>
-                                <i class="fas fa-check text-green-600 text-xs"></i>
-                            </div>
-                            <p id="metric-tool-ready" class="text-xl font-bold text-green-700">0</p>
-                        </div>
-
-                        <div onclick="showExcelView('Pending Setup')" class="bg-yellow-50 p-3 rounded-xl border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">Pending Setup</p>
-                                <i class="fas fa-hourglass-half text-yellow-600 text-xs"></i>
-                            </div>
-                            <p id="metric-pending" class="text-xl font-bold text-yellow-700">1</p>
-                        </div>
-
-                        <div onclick="showExcelView('Tooling Not Ready')" class="bg-red-50 p-3 rounded-xl border border-red-200 cursor-pointer hover:bg-red-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">Tooling Not Ready</p>
-                                <i class="fas fa-exclamation-circle text-red-600 text-xs"></i>
-                            </div>
-                            <p id="metric-tool-notready" class="text-xl font-bold text-red-700">1</p>
-                        </div>
-
-                        <div onclick="showExcelView('SOP Approved Status')" class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">SOP Approve</p>
-                                <i class="fas fa-file-signature text-emerald-600 text-xs"></i>
-                            </div>
-                            <p id="metric-sop-approve" class="text-sm font-bold mt-1 text-emerald-700">Pending</p>
-                        </div>
-
-                        <div onclick="openSetterCorrectionModal()" class="bg-orange-50 p-3 rounded-xl border border-orange-200 cursor-pointer hover:bg-orange-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">Correction Required</p>
-                                <i class="fas fa-triangle-exclamation text-orange-600 text-xs"></i>
-                            </div>
-                            <p id="metric-correction-req" class="text-xs font-bold mt-1 text-orange-700">None</p>
-                        </div>
-
-                        <div onclick="showExcelView('Fixture Serial Details')" class="bg-purple-50 p-3 rounded-xl border border-purple-200 cursor-pointer hover:bg-purple-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">Fixture Serial No.</p>
-                                <i class="fas fa-hashtag text-purple-600 text-xs"></i>
-                            </div>
-                            <p id="metric-fixture-no" class="text-xs font-bold mt-1 text-purple-700">FIX-102</p>
-                        </div>
-
-                        <div onclick="showExcelView('Available Fixtures')" class="bg-teal-50 p-3 rounded-xl border border-teal-200 cursor-pointer hover:bg-teal-100 transition shadow-sm">
-                            <div class="flex items-center justify-between mb-1">
-                                <p class="text-[11px] text-slate-600 font-bold">Available Fixtures</p>
-                                <i class="fas fa-cubes text-teal-600 text-xs"></i>
-                            </div>
-                            <p class="text-xl font-bold text-teal-700">5</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SETUP FORM CONTAINER -->
-                <div id="setupFormContainer" class="bg-white p-6 rounded-xl shadow border">
-                    <h3 class="text-md font-bold mb-4 text-slate-800 border-b pb-2">
-                        <i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup Change
-                    </h3>
-
-                    <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold mb-1">Part Name</label>
-                            <input type="text" id="partName" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g. Gear Shaft">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1">Part Number</label>
-                            <input type="text" id="partNo" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g. PN-9988">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1">Date & Shift</label>
-                            <input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm font-medium">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1">Setup Type</label>
-                            <select id="setupType" class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
-                                <option value="Long Setup">Long Setup</option>
-                                <option value="Short Setup">Short Setup</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1">Fixture No.</label>
-                            <input type="text" id="fixtureNo" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g. FIX-102">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1">Priority (1 - 10)</label>
-                            <input type="number" id="priority" min="1" max="10" value="1" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold mb-1">Pallet Selection</label>
-                            <select id="pallet" class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
-                                <option value="Pallet A">Pallet A</option>
-                                <option value="Pallet B">Pallet B</option>
-                            </select>
-                        </div>
-                        <div class="flex items-end">
-                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition shadow">
-                                Submit & Notify
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- SAMPLE CUTTING ALERT -->
-                <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl flex justify-between items-center">
-                    <div>
-                        <h3 class="font-bold text-indigo-900">1st Sample Cutting Completed?</h3>
-                        <p class="text-xs text-indigo-700">Trigger pop-up notification directly to CMM / STD Room.</p>
-                    </div>
-                    <button onclick="sendSampleCuttingAlert()" class="bg-indigo-600 text-white px-4 py-2 rounded font-semibold text-sm hover:bg-indigo-700 transition">
-                        <i class="fas fa-paper-plane mr-1"></i> Send to STD Room
-                    </button>
-                </div>
-            </div>
-
-            <!-- TOOL ROOM -->
-            <div id="tab-toolroom" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
-                        <i class="fas fa-wrench text-blue-600 mr-2"></i> Tool Room Dashboard
-                    </h2>
-
-                    <div class="bg-slate-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Fixture Serial No. Available?</label>
-                            <select id="toolroomFixtureAvail" onchange="toggleFixtureInput()" class="w-full p-2 border rounded text-sm bg-white font-semibold">
-                                <option value="YES">YES</option>
-                                <option value="NO">NO</option>
-                            </select>
-                        </div>
-                        <div id="toolroomFixtureNoGroup">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Available Fixture Serial No.</label>
-                            <input type="text" id="toolroomFixtureNo" value="FIX-102" class="w-full p-2 border rounded text-sm bg-white" placeholder="Enter Fixture No.">
-                        </div>
-                        <div class="flex items-end">
-                            <button onclick="updateToolroomFixture()" class="bg-blue-600 text-white text-xs px-4 py-2.5 rounded font-bold hover:bg-blue-700 transition">
-                                Update Fixture Info
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left border rounded-lg">
-                            <thead class="bg-slate-100 border-b">
-                                <tr>
-                                    <th class="p-3">Part Details</th>
-                                    <th class="p-3">Fixture No.</th>
-                                    <th class="p-3">Priority</th>
-                                    <th class="p-3">Tooling Status</th>
-                                    <th class="p-3">Fixture Status</th>
-                                    <th class="p-3">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="toolroomTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STD ROOM -->
-            <div id="tab-stdroom" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
-                        <i class="fas fa-microscope text-blue-600 mr-2"></i> CMM / STD Room Dashboard
-                    </h2>
-
-                    <div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center">
-                        <div>
-                            <span id="stdStatusBadge" class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold">
-                                Inspection Pending
-                            </span>
-                            <h3 class="font-bold text-slate-800 mt-2" id="stdSampleText">
-                                Sample Pending for Part: Gear Shaft (PN-9988)
-                            </h3>
-                        </div>
-                        <button onclick="sendQualityAlert()" class="bg-green-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-green-700 transition">
-                            Inspection Done (Send to Quality)
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- QUALITY -->
-            <div id="tab-quality" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
-                        <i class="fas fa-check-double text-blue-600 mr-2"></i> Quality Approval Dashboard
-                    </h2>
-
-                    <p class="text-sm text-slate-600 mb-4">Process inspection approval status or select sample correction requirement:</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border">
-                        <div class="space-y-3 border-r md:pr-6 border-slate-200">
-                            <h3 class="font-bold text-slate-700 text-sm">Action 1: SOP Approval</h3>
-                            <button onclick="handleQualityAction('SOP APPROVED', 'None')" class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition shadow flex items-center justify-center">
-                                <i class="fas fa-check-circle mr-2"></i> SOP APPROVE
-                            </button>
-                        </div>
-
-                        <div class="space-y-3">
-                            <h3 class="font-bold text-slate-700 text-sm">Action 2: Sample Correction Request</h3>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Select Sample Correction Stage:</label>
-                                <select id="sampleCorrectionSelect" class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-red-500 outline-none">
-                                    <option value="1st Sample Correction Require">1st Sample Correction Require</option>
-                                    <option value="2nd Sample Correction Require">2nd Sample Correction Require</option>
-                                    <option value="3rd Sample Correction Require">3rd Sample Correction Require</option>
-                                    <option value="4th Sample Correction Require">4th Sample Correction Require</option>
-                                </select>
-                            </div>
-                            <button onclick="submitQualityCorrection()" class="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition shadow flex items-center justify-center">
-                                <i class="fas fa-exclamation-triangle mr-2"></i> SEND CORRECTION ALERT TO SETTER
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SUPERVISOR -->
-            <div id="tab-supervisor" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow border mb-6">
-                    <h2 class="text-lg font-bold border-b pb-2 text-slate-800">
-                        <i class="fas fa-user-tie text-blue-600 mr-2"></i> Supervisor Dashboard
-                    </h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-green-50 p-6 rounded-xl border border-green-200">
-                        <h3 class="text-lg font-bold text-green-900">SOP Approved</h3>
-                        <p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p>
-                    </div>
-
-                    <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
-                        <h3 class="text-lg font-bold text-yellow-900">Pending SOP</h3>
-                        <p id="supPendingCount" class="text-4xl font-extrabold text-yellow-600 mt-2">1</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HOD -->
-            <div id="tab-hod" class="tab-content hidden space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
-                        <i class="fas fa-chart-line text-blue-600 mr-2"></i> HOD Master Live View (Read Only)
-                    </h2>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-left border rounded-lg">
-                            <thead class="bg-slate-200 text-slate-800">
-                                <tr>
-                                    <th class="p-3">Part Info</th>
-                                    <th class="p-3">Shift/Pallet</th>
-                                    <th class="p-3">Tooling</th>
-                                    <th class="p-3">Fixture</th>
-                                    <th class="p-3">Setup Status</th>
-                                    <th class="p-3">Quality Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="hodTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- EXCEL MODAL -->
-    <div id="excelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 border">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 id="excelModalTitle" class="text-lg font-bold text-slate-800">
-                    <i class="fas fa-file-excel text-green-600 mr-2"></i> Excel Data View
-                </h3>
-                <button onclick="closeExcelModal()" class="text-slate-500 hover:text-slate-800 font-bold text-lg">&times;</button>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left border border-slate-300">
-                    <thead class="bg-green-700 text-white">
-                        <tr>
-                            <th class="p-2 border">Part Name</th>
-                            <th class="p-2 border">Part No.</th>
-                            <th class="p-2 border">Fixture No.</th>
-                            <th class="p-2 border">Setup Type</th>
-                            <th class="p-2 border">Priority</th>
-                            <th class="p-2 border">Tooling Status</th>
-                            <th class="p-2 border">Correction Required</th>
-                            <th class="p-2 border">Quality Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="excelTableBody"></tbody>
-                </table>
-            </div>
-
-            <div class="text-right mt-4">
-                <button onclick="closeExcelModal()" class="bg-slate-700 text-white px-4 py-2 rounded text-xs font-bold hover:bg-slate-800">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- CORRECTION MODAL -->
-    <div id="setterCorrectionModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-orange-300 text-center">
-            <div class="text-orange-500 text-4xl mb-2">
-                <i class="fas fa-tools"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-1">Correction Required Status</h3>
-            <p id="setterCorrectionText" class="text-sm font-semibold text-red-600 bg-red-50 p-3 rounded my-3 border border-red-200">None</p>
-
-            <div id="correctionActionArea" class="hidden">
-                <button onclick="handleCorrectionDone()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition shadow-md w-full">
-                    <i class="fas fa-check-circle mr-1"></i> CORRECTION DONE
-                </button>
-            </div>
-
-            <button onclick="closeSetterCorrectionModal()" class="mt-3 text-xs text-slate-500 underline font-semibold">Close</button>
-        </div>
-    </div>
-
-    <!-- ALERT MODAL -->
-    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active">
-            <div class="text-red-500 text-5xl mb-3">
-                <i class="fas fa-bell fa-bounce"></i>
-            </div>
-            <h3 id="alertTitle" class="text-xl font-extrabold text-red-600">NEW SYSTEM ALERT!</h3>
-            <p id="alertMessage" class="text-sm text-slate-700 my-4 font-semibold">Alert received from department.</p>
-            <button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-red-700 text-lg transition">
-                OK (ACKNOWLEDGE)
-            </button>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT -->
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
-            authDomain: "sutom-multi-dashboard.firebaseapp.com",
-            databaseURL: "https://sutom-multi-dashboard-default-rtdb.firebaseio.com",
-            projectId: "sutom-multi-dashboard",
-            storageBucket: "sutom-multi-dashboard.firebasestorage.app",
-            messagingSenderId: "202116185102",
-            appId: "1:202116185102:web:28efd6421d0215d58ed05f"
-        };
-
-        let db = null;
-        let setupRef = null;
-
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-            setupRef = db.ref("sutom/activeSetup");
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            setFirebaseOffline();
-        }
-
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("./sw.js")
-                    .then(reg => console.log("SW registered:", reg))
-                    .catch(err => console.log("SW registration failed:", err));
-            });
-        }
-
-        let currentUser = null;
-        let vibrateInterval = null;
-        let firebaseListenerStarted = false;
-
-        const defaultSetup = {
-            partName: "Gear Shaft",
-            partNo: "PN-9988",
-            shiftDate: "",
-            setupType: "Long Setup",
-            fixtureNo: "FIX-102",
-            fixtureAvailable: "YES",
-            priority: 1,
-            pallet: "Pallet A",
-            toolingReady: false,
-            fixtureReady: false,
-            setupReady: false,
-            sampleCutting: false,
-            inspectionDone: false,
-            qualityStatus: "Pending SOP",
-            correctionRequirement: "None",
-            updatedAt: Date.now(),
-            updatedBy: "System"
-        };
-
-        let activeSetup = { ...defaultSetup };
-
-        function setFirebaseLive() {
-            const indicator = document.getElementById("firebaseLiveIndicator");
-            const text = document.getElementById("firebaseLiveText");
-            const dot = document.getElementById("firebaseLiveDot");
-            if (!indicator || !text) return;
-
-            indicator.className = "bg-green-900/40 border border-green-500 text-green-400 px-2.5 py-1 rounded font-bold flex items-center";
-            text.innerText = "LIVE";
-            if (dot) dot.className = "live-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1.5";
-        }
-
-        function setFirebaseOffline() {
-            const indicator = document.getElementById("firebaseLiveIndicator");
-            const text = document.getElementById("firebaseLiveText");
-            const dot = document.getElementById("firebaseLiveDot");
-            if (!indicator || !text) return;
-
-            indicator.className = "bg-red-900/40 border border-red-500 text-red-400 px-2.5 py-1 rounded font-bold flex items-center";
-            text.innerText = "OFFLINE";
-            if (dot) dot.className = "inline-block w-2 h-2 bg-red-400 rounded-full mr-1.5";
-        }
-
-        function startFirebaseConnectionMonitor() {
-            if (!db) {
-                setFirebaseOffline();
-                return;
-            }
-            const connectedRef = db.ref(".info/connected");
-            connectedRef.on("value", snapshot => {
-                if (snapshot.val() === true) {
-                    setFirebaseLive();
-                } else {
-                    setFirebaseOffline();
-                }
-            });
-        }
-
-        function startFirebaseListener() {
-            if (firebaseListenerStarted || !setupRef) return;
-            firebaseListenerStarted = true;
-
-            setupRef.on("value", snapshot => {
-                const data = snapshot.val();
-                if (data) {
-                    activeSetup = { ...defaultSetup, ...data };
-                } else {
-                    activeSetup = { ...defaultSetup };
-                }
-                renderAllLiveData();
-            }, error => {
-                console.error("Firebase listener error:", error);
-                setFirebaseOffline();
-            });
-        }
-
-        function saveToFirebase() {
-            if (!setupRef) {
-                alert("Firebase is not connected.");
-                setFirebaseOffline();
-                return;
-            }
-            activeSetup.updatedAt = Date.now();
-            activeSetup.updatedBy = currentUser ? `${currentUser.name} (${currentUser.dept})` : "System";
-
-            setupRef.set(activeSetup)
-                .then(() => {
-                    setFirebaseLive();
-                })
-                .catch(error => {
-                    console.error("Firebase Save Error:", error);
-                    setFirebaseOffline();
-                    alert("Firebase data save failed!\n\n" + error.message);
-                });
-        }
-
-        function renderAllLiveData() {
-            updateSetterUI();
-            updateStdUI();
-            updateMetrics();
-            updateQualityUI();
-            updateSupervisorUI();
-            updateToolroomFixtureUI();
-            renderToolroom();
-            renderHOD();
-        }
-
-        function updateSetterUI() {
-            const fixtureElem = document.getElementById("metric-fixture-no");
-            const correctionElem = document.getElementById("metric-correction-req");
-            const sopElem = document.getElementById("metric-sop-approve");
-
-            if (fixtureElem) fixtureElem.innerText = activeSetup.fixtureNo;
-            if (correctionElem) correctionElem.innerText = activeSetup.correctionRequirement;
-            if (sopElem) sopElem.innerText = activeSetup.qualityStatus === "SOP APPROVED" ? "APPROVED" : "Pending";
-        }
-
-        function updateStdUI() {
-            const text = document.getElementById("stdSampleText");
-            const badge = document.getElementById("stdStatusBadge");
-
-            if (text) text.innerText = `Sample Pending for Part: ${activeSetup.partName} (${activeSetup.partNo})`;
-            if (!badge) return;
-
-            if (activeSetup.inspectionDone) {
-                badge.className = "bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded font-bold";
-                badge.innerText = "Inspection Completed";
-            } else if (activeSetup.sampleCutting) {
-                badge.className = "bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-bold";
-                badge.innerText = "Sample Received - Inspecting";
-            } else {
-                badge.className = "bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold";
-                badge.innerText = "Inspection Pending";
-            }
-        }
-
-        function updateQualityUI() {
-            const sopElem = document.getElementById("metric-sop-approve");
-            const reqElem = document.getElementById("metric-correction-req");
-
-            if (sopElem) sopElem.innerText = activeSetup.qualityStatus === "SOP APPROVED" ? "APPROVED" : "Pending";
-            if (reqElem) reqElem.innerText = activeSetup.correctionRequirement;
-        }
-
-        function updateSupervisorUI() {
-            const appElem = document.getElementById("supApprovedCount");
-            const pendElem = document.getElementById("supPendingCount");
-
-            if (!appElem || !pendElem) return;
-
-            if (activeSetup.qualityStatus === "SOP APPROVED") {
-                appElem.innerText = "1";
-                pendElem.innerText = "0";
-            } else {
-                appElem.innerText = "0";
-                pendElem.innerText = "1";
-            }
-        }
-
-        function updateToolroomFixtureUI() {
-            const avail = document.getElementById("toolroomFixtureAvail");
-            const no = document.getElementById("toolroomFixtureNo");
-
-            if (avail) avail.value = activeSetup.fixtureAvailable || "YES";
-            if (no) no.value = activeSetup.fixtureNo || "FIX-102";
-
-            toggleFixtureInput();
-        }
-
-        function updateLiveTime() {
-            const now = new Date();
-            const timeElem = document.getElementById("topLiveTime");
-            if (timeElem) timeElem.innerText = now.toLocaleTimeString();
-
-            const minutes = now.getHours() * 60 + now.getMinutes();
-            let shift = "Shift C";
-            if (minutes >= 465 && minutes < 975) {
-                shift = "Shift A";
-            } else if (minutes >= 975 && minutes < 1440) {
-                shift = "Shift B";
-            } else {
-                shift = "Shift C";
-            }
-
-            const shiftElem = document.getElementById("topLiveShift");
-            if (shiftElem) shiftElem.innerText = "Shift: " + shift;
-
-            const dateElem = document.getElementById("shiftDate");
-            if (dateElem) dateElem.value = now.toLocaleDateString() + " - " + shift;
-        }
-
-        setInterval(updateLiveTime, 1000);
-        updateLiveTime();
-
-        window.addEventListener("DOMContentLoaded", () => {
-            startFirebaseConnectionMonitor();
-            startFirebaseListener();
-
-            const savedUser = localStorage.getItem("sutom_user");
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    loadDashboard(currentUser);
-                } catch (error) {
-                    console.error("Session restore error:", error);
-                    localStorage.removeItem("sutom_user");
-                }
-            }
-        });
-
-        function handleLogin(e) {
-            e.preventDefault();
-            currentUser = {
-                name: document.getElementById("loginName").value.trim(),
-                id: document.getElementById("loginId").value.trim(),
-                dept: document.getElementById("loginDept").value
-            };
-            localStorage.setItem("sutom_user", JSON.stringify(currentUser));
-            loadDashboard(currentUser);
-        }
-
-        function loadDashboard(user) {
-            document.getElementById("authSection").classList.add("hidden");
-            document.getElementById("dashboardSection").classList.remove("hidden");
-            document.getElementById("dashboardSection").classList.add("flex");
-            document.getElementById("userInfo").classList.remove("hidden");
-            document.getElementById("userInfo").classList.add("flex");
-            document.getElementById("userBadge").innerText = `${user.name} (${user.dept.toUpperCase()})`;
-            showDepartmentTab(user.dept);
-        }
-
-        function handleLogout() {
-            localStorage.removeItem("sutom_user");
-            currentUser = null;
-            document.getElementById("authSection").classList.remove("hidden");
-            document.getElementById("dashboardSection").classList.add("hidden");
-            document.getElementById("dashboardSection").classList.remove("flex");
-            document.getElementById("userInfo").classList.add("hidden");
-            document.getElementById("userInfo").classList.remove("flex");
-        }
-
-        function showDepartmentTab(deptId) {
-            document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
-            const activeTab = document.getElementById("tab-" + deptId);
-            if (activeTab) activeTab.classList.remove("hidden");
-
-            if (deptId === "toolroom") renderToolroom();
-            if (deptId === "hod") renderHOD();
-            if (deptId === "supervisor") renderSupervisor();
-        }
-
-        function openSetupForm() {
-            const formElem = document.getElementById("setupFormContainer");
-            if (formElem) {
-                formElem.scrollIntoView({ behavior: "smooth" });
-                formElem.classList.add("ring-2", "ring-blue-500");
-                setTimeout(() => formElem.classList.remove("ring-2", "ring-blue-500"), 2000);
-            }
-        }
-
-        function handleSetterSubmit(e) {
-            e.preventDefault();
-            activeSetup.partName = document.getElementById("partName").value;
-            activeSetup.partNo = document.getElementById("partNo").value;
-            activeSetup.setupType = document.getElementById("setupType").value;
-            activeSetup.fixtureNo = document.getElementById("fixtureNo").value;
-            activeSetup.priority = document.getElementById("priority").value;
-            activeSetup.pallet = document.getElementById("pallet").value;
-            activeSetup.shiftDate = document.getElementById("shiftDate").value;
-
-            activeSetup.toolingReady = false;
-            activeSetup.fixtureReady = false;
-            activeSetup.setupReady = false;
-            activeSetup.sampleCutting = false;
-            activeSetup.inspectionDone = false;
-            activeSetup.qualityStatus = "Pending SOP";
-            activeSetup.correctionRequirement = "None";
-
-            saveToFirebase();
-            triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
-            document.getElementById("setterForm").reset();
-            document.getElementById("priority").value = 1;
-        }
-
-        function showExcelView(title) {
-            document.getElementById("excelModalTitle").innerHTML = `<i class="fas fa-file-excel text-green-600 mr-2"></i> Excel View: ${title}`;
-            const tbody = document.getElementById("excelTableBody");
-            tbody.innerHTML = `
-                <tr class="bg-white hover:bg-slate-50">
-                    <td class="p-2 border font-bold text-slate-800">${activeSetup.partName}</td>
-                    <td class="p-2 border">${activeSetup.partNo}</td>
-                    <td class="p-2 border font-semibold">${activeSetup.fixtureNo} (${activeSetup.fixtureAvailable})</td>
-                    <td class="p-2 border">${activeSetup.setupType}</td>
-                    <td class="p-2 border font-bold text-blue-600">${activeSetup.priority}</td>
-                    <td class="p-2 border">${activeSetup.toolingReady ? '<span class="text-green-600 font-bold">READY</span>' : '<span class="text-red-500 font-bold">PENDING</span>'}</td>
-                    <td class="p-2 border text-orange-600 font-bold">${activeSetup.correctionRequirement}</td>
-                    <td class="p-2 border font-bold">${activeSetup.qualityStatus}</td>
-                </tr>
-            `;
-            document.getElementById("excelModal").classList.remove("hidden");
-        }
-
-        function closeExcelModal() {
-            document.getElementById("excelModal").classList.add("hidden");
-        }
-
-        function openSetterCorrectionModal() {
-            const req = activeSetup.correctionRequirement;
-            document.getElementById("setterCorrectionText").innerText = req;
-
-            if (req !== "None" && activeSetup.qualityStatus === "CORRECTION REQUIRED") {
-                document.getElementById("correctionActionArea").classList.remove("hidden");
-            } else {
-                document.getElementById("correctionActionArea").classList.add("hidden");
-            }
-
-            document.getElementById("setterCorrectionModal").classList.remove("hidden");
-        }
-
-        function closeSetterCorrectionModal() {
-            document.getElementById("setterCorrectionModal").classList.add("hidden");
-        }
-
-        function handleCorrectionDone() {
-            closeSetterCorrectionModal();
-            activeSetup.qualityStatus = "Correction Done (Pending Inspection)";
-            activeSetup.correctionRequirement = "None";
-            saveToFirebase();
-            triggerAlert("ALERT TO CMM / STD ROOM", `Setter completed correction for ${activeSetup.partName}. Regular inspection process initiated!`);
-        }
-
-        function toggleFixtureInput() {
-            const avail = document.getElementById("toolroomFixtureAvail");
-            const inputGroup = document.getElementById("toolroomFixtureNoGroup");
-            if (!avail || !inputGroup) return;
-
-            if (avail.value === "YES") {
-                inputGroup.classList.remove("hidden");
-            } else {
-                inputGroup.classList.add("hidden");
-            }
-        }
-
-        function updateToolroomFixture() {
-            const avail = document.getElementById("toolroomFixtureAvail").value;
-            activeSetup.fixtureAvailable = avail;
-
-            if (avail === "YES") {
-                activeSetup.fixtureNo = document.getElementById("toolroomFixtureNo").value || "FIX-102";
-            } else {
-                activeSetup.fixtureNo = "NOT AVAILABLE";
-            }
-
-            saveToFirebase();
-            alert(`Tool Room Fixture Updated:\n\nAvailable = ${avail}\nSerial = ${activeSetup.fixtureNo}`);
-        }
-
-        function triggerAlert(title, message, isContinuousVibrate = false) {
-            document.getElementById("alertTitle").innerText = title;
-            document.getElementById("alertMessage").innerText = message;
-            document.getElementById("alertModal").classList.remove("hidden");
-
-            if ("vibrate" in navigator) {
-                if (isContinuousVibrate) {
-                    navigator.vibrate([500, 200, 500, 200]);
-                    vibrateInterval = setInterval(() => {
-                        navigator.vibrate([500, 200, 500, 200]);
-                    }, 1500);
-                } else {
-                    navigator.vibrate([500, 200, 500, 200, 500]);
-                }
-            }
-        }
-
-        function acknowledgeAlert() {
-            document.getElementById("alertModal").classList.add("hidden");
-            if (vibrateInterval) {
-                clearInterval(vibrateInterval);
-                vibrateInterval = null;
-            }
-            if ("vibrate" in navigator) {
-                navigator.vibrate(0);
-            }
-        }
-
-        function renderToolroom() {
-            const tbody = document.getElementById("toolroomTable");
-            if (!tbody) return;
-
-            tbody.innerHTML = `
-                <tr class="border-b">
-                    <td class="p-3 font-semibold">${activeSetup.partName} (${activeSetup.partNo})</td>
-                    <td class="p-3 font-bold text-purple-700">${activeSetup.fixtureNo}</td>
-                    <td class="p-3">
-                        <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">${activeSetup.priority}</span>
-                    </td>
-                    <td class="p-3 font-bold ${activeSetup.toolingReady ? 'text-green-600' : 'text-red-500'}">
-                        ${activeSetup.toolingReady ? 'READY' : 'PENDING'}
-                    </td>
-                    <td class="p-3 font-bold ${activeSetup.fixtureReady ? 'text-green-600' : 'text-red-500'}">
-                        ${activeSetup.fixtureReady ? 'READY' : 'PENDING'}
-                    </td>
-                    <td class="p-3 space-x-1">
-                        <button onclick="toggleTooling()" class="bg-blue-500 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button>
-                        <button onclick="toggleFixture()" class="bg-purple-500 text-white text-xs px-2 py-1 rounded">Fixture Toggle</button>
-                        <button onclick="sendSetupReady()" class="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">SETUP READY</button>
-                    </td>
-                </tr>
-            `;
-        }
-
-        function toggleTooling() {
-            activeSetup.toolingReady = !activeSetup.toolingReady;
-            saveToFirebase();
-        }
-
-        function toggleFixture() {
-            activeSetup.fixtureReady = !activeSetup.fixtureReady;
-            saveToFirebase();
-        }
-
-        function sendSetupReady() {
-            if (activeSetup.toolingReady && activeSetup.fixtureReady) {
-                activeSetup.setupReady = true;
-                saveToFirebase();
-                triggerAlert("ALERT TO SETTER", "Tool Room setup materials are READY!");
-            } else {
-                alert("Please ensure both Tooling and Fixture are marked READY first!");
-            }
-        }
-
-        function updateMetrics() {
-            const readyElem = document.getElementById("metric-tool-ready");
-            const notReadyElem = document.getElementById("metric-tool-notready");
-            const pendingElem = document.getElementById("metric-pending");
-
-            if (readyElem) readyElem.innerText = activeSetup.toolingReady ? "1" : "0";
-            if (notReadyElem) notReadyElem.innerText = activeSetup.toolingReady ? "0" : "1";
-            if (pendingElem) pendingElem.innerText = activeSetup.setupReady ? "0" : "1";
-        }
-
-        function sendSampleCuttingAlert() {
-            activeSetup.sampleCutting = true;
-            saveToFirebase();
-            triggerAlert("ALERT TO STD ROOM", "1st Sample Cutting Completed. Please proceed with inspection.");
-        }
-
-        function sendQualityAlert() {
-            activeSetup.inspectionDone = true;
-            saveToFirebase();
-            triggerAlert("ALERT TO QUALITY", "CMM/STD Room Inspection completed. Pending Quality Approval.");
-        }
-
-        function handleQualityAction(status, reqText = "None") {
-            activeSetup.qualityStatus = status;
-            activeSetup.correctionRequirement = reqText;
-            saveToFirebase();
-            triggerAlert("ALERT TO SETTER", `Quality Department Status: ${status}`);
-        }
-
-        function submitQualityCorrection() {
-            const selectedRequirement = document.getElementById("sampleCorrectionSelect").value;
-            activeSetup.qualityStatus = "CORRECTION REQUIRED";
-            activeSetup.correctionRequirement = selectedRequirement;
-            saveToFirebase();
-            triggerAlert("CRITICAL SETTER ALERT", `QUALITY ALERT: ${selectedRequirement}. Immediate action required!`, true);
-        }
-
-        function renderSupervisor() {
-            updateSupervisorUI();
-        }
-
-        function renderHOD() {
-            const tbody = document.getElementById("hodTable");
-            if (!tbody) return;
-
-            tbody.innerHTML = `
-                <tr class="border-b">
-                    <td class="p-3 font-bold">${activeSetup.partName} - ${activeSetup.partNo}</td>
-                    <td class="p-3">${activeSetup.pallet}</td>
-                    <td class="p-3">${activeSetup.toolingReady ? '✅ Ready' : '❌ Pending'}</td>
-                    <td class="p-3">${activeSetup.fixtureReady ? '✅ Ready' : '❌ Pending'}</td>
-                    <td class="p-3">${activeSetup.setupReady ? '✅ Setup Ready' : '⏳ In Progress'}</td>
-                    <td class="p-3">
-                        <span class="bg-blue-100 text-blue-800 p-1 rounded font-bold text-xs">
-                            ${activeSetup.qualityStatus} (${activeSetup.correctionRequirement})
-                        </span>
-                    </td>
-                </tr>
-            `;
-        }
-    </script>
+<header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-4 md:px-6">
+<div class="flex items-center space-x-3">
+<img src="./icon-192.png" alt="SuTOM Logo" class="w-10 h-10 rounded-lg border border-slate-700">
+<div><h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1><p class="text-xs text-slate-400">Setup Time Monitor System</p></div>
+</div>
+<div class="flex items-center space-x-2 md:space-x-4 text-xs mt-2 md:mt-0">
+<div class="bg-slate-800 px-2.5 py-1 rounded border border-slate-700"><i class="fas fa-calendar-alt text-blue-400 mr-1.5"></i><span id="topLiveShift" class="font-semibold">Shift: Shift A</span></div>
+<div id="firebaseLiveIndicator" class="bg-green-900/40 border border-green-500 text-green-400 px-2.5 py-1 rounded font-bold flex items-center"><span id="firebaseLiveDot" class="live-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1.5"></span><span id="firebaseLiveText">LIVE</span></div>
+<div class="bg-slate-800 px-2.5 py-1 rounded border border-slate-700"><i class="fas fa-clock text-green-400 mr-1.5"></i><span id="topLiveTime" class="font-mono font-semibold">00:00:00</span></div>
+<div id="userInfo" class="hidden items-center space-x-2"><span id="userBadge" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span><button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded font-bold transition"><i class="fas fa-sign-out-alt mr-1"></i> Logout</button></div>
+</div>
+</header>
+<div id="authSection" class="flex justify-center items-center py-10 px-4">
+<div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
+<div class="flex flex-col items-center mb-4"><img src="./icon-192.png" alt="SuTOM Logo" class="w-16 h-16 rounded-xl shadow mb-2"><h2 class="text-2xl font-bold text-center text-slate-800">Department Login</h2><p class="text-xs text-center text-slate-500">Enter your details to access department dashboard</p></div>
+<form onsubmit="handleLogin(event)" class="space-y-4">
+<div><label class="block text-xs font-bold text-slate-700 mb-1">Employee Name</label><input type="text" id="loginName" required placeholder="Enter Employee Name" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></div>
+<div><label class="block text-xs font-bold text-slate-700 mb-1">Employee ID</label><input type="text" id="loginId" required placeholder="Enter Employee ID" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></div>
+<div><label class="block text-xs font-bold text-slate-700 mb-1">Password</label><input type="password" id="loginPass" required placeholder="••••••••" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"></div>
+<div><label class="block text-xs font-bold text-slate-700 mb-1">Select Department</label><select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"><option value="">-- Choose Department --</option><option value="setter">1. SETTER</option><option value="toolroom">2. TOOL ROOM</option><option value="stdroom">3. CMM / STD ROOM</option><option value="quality">4. QUALITY</option><option value="supervisor">5. SUPERVISOR</option><option value="hod">6. HOD VIEW</option></select></div>
+<button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg mt-2">Access Dashboard</button>
+</form>
+</div>
+</div>
+<div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]">
+<main class="flex-1 p-6 overflow-y-auto">
+<div id="tab-setter" class="tab-content space-y-6 hidden">
+<div class="bg-white p-4 rounded-xl shadow border border-slate-200"><h2 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4"><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</h2><div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3"><div onclick="openSetupForm()" class="bg-blue-50 p-3 rounded-xl border border-blue-200 cursor-pointer hover:bg-blue-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">Register New Setup</p><i class="fas fa-plus-circle text-blue-600 text-xs"></i></div><p id="metric-total" class="text-xl font-bold text-blue-700">1</p></div><div onclick="showExcelView('Tool Room Ready')" class="bg-green-50 p-3 rounded-xl border border-green-200 cursor-pointer hover:bg-green-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">Tool Room Ready</p><i class="fas fa-check text-green-600 text-xs"></i></div><p id="metric-tool-ready" class="text-xl font-bold text-green-700">0</p></div><div onclick="showExcelView('Pending Setup')" class="bg-yellow-50 p-3 rounded-xl border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">Pending Setup</p><i class="fas fa-hourglass-half text-yellow-600 text-xs"></i></div><p id="metric-pending" class="text-xl font-bold text-yellow-700">1</p></div><div onclick="showExcelView('Tooling Not Ready')" class="bg-red-50 p-3 rounded-xl border border-red-200 cursor-pointer hover:bg-red-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">Tooling Not Ready</p><i class="fas fa-exclamation-circle text-red-600 text-xs"></i></div><p id="metric-tool-notready" class="text-xl font-bold text-red-700">1</p></div><div onclick="showExcelView('SOP Approved Status')" class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">SOP Approve</p><i class="fas fa-file-signature text-emerald-600 text-xs"></i></div><p id="metric-sop-approve" class="text-sm font-bold mt-1 text-emerald-700">Pending</p></div><div onclick="openSetterCorrectionModal()" class="bg-orange-50 p-3 rounded-xl border border-orange-200 cursor-pointer hover:bg-orange-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">Correction Required</p><i class="fas fa-triangle-exclamation text-orange-600 text-xs"></i></div><p id="metric-correction-req" class="text-xs font-bold mt-1 text-orange-700">None</p></div><div onclick="showExcelView('Fixture Serial Details')" class="bg-purple-50 p-3 rounded-xl border border-purple-200 cursor-pointer hover:bg-purple-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">Fixture Serial No.</p><i class="fas fa-hashtag text-purple-600 text-xs"></i></div><p id="metric-fixture-no" class="text-xs font-bold mt-1 text-purple-700">FIX-102</p></div><div onclick="showExcelView('Available Fixtures')" class="bg-teal-50 p-3 rounded-xl border border-teal-200 cursor-pointer hover:bg-teal-100 transition shadow-sm"><div class="flex items-center justify-between mb-1"><p class="text-[11px] text-slate-600 font-bold">Available Fixtures</p><i class="fas fa-cubes text-teal-600 text-xs"></i></div><p class="text-xl font-bold text-teal-700">5</p></div></div></div>
+<div id="setupFormContainer" class="bg-white p-6 rounded-xl shadow border"><h3 class="text-md font-bold mb-4 text-slate-800 border-b pb-2"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup Change</h3><form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"><div><label class="block text-xs font-semibold mb-1">Part Name</label><input type="text" id="partName" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g. Gear Shaft"></div><div><label class="block text-xs font-semibold mb-1">Part Number</label><input type="text" id="partNo" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g. PN-9988"></div><div><label class="block text-xs font-semibold mb-1">Date & Shift</label><input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm font-medium"></div><div><label class="block text-xs font-semibold mb-1">Setup Type</label><select id="setupType" class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500"><option value="Long Setup">Long Setup</option><option value="Short Setup">Short Setup</option></select></div><div><label class="block text-xs font-semibold mb-1">Fixture No.</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g. FIX-102"></div><div><label class="block text-xs font-semibold mb-1">Priority (1 - 10)</label><input type="number" id="priority" min="1" max="10" value="1" required class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500"></div><div><label class="block text-xs font-semibold mb-1">Pallet Selection</label><select id="pallet" class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500"><option value="Pallet A">Pallet A</option><option value="Pallet B">Pallet B</option></select></div><div class="flex items-end"><button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition shadow">Submit & Notify</button></div></form></div>
+<div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl flex justify-between items-center"><div><h3 class="font-bold text-indigo-900">1st Sample Cutting Completed?</h3><p class="text-xs text-indigo-700">Trigger pop-up notification directly to CMM / STD Room.</p></div><button onclick="sendSampleCuttingAlert()" class="bg-indigo-600 text-white px-4 py-2 rounded font-semibold text-sm hover:bg-indigo-700 transition"><i class="fas fa-paper-plane mr-1"></i> Send to STD Room</button></div>
+</div>
+<div id="tab-toolroom" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-wrench text-blue-600 mr-2"></i> Tool Room Dashboard</h2><div class="bg-slate-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center"><div><label class="block text-xs font-bold text-slate-700 mb-1">Fixture Serial No. Available?</label><select id="toolroomFixtureAvail" onchange="toggleFixtureInput()" class="w-full p-2 border rounded text-sm bg-white font-semibold"><option value="YES">YES</option><option value="NO">NO</option></select></div><div id="toolroomFixtureNoGroup"><label class="block text-xs font-bold text-slate-700 mb-1">Available Fixture Serial No.</label><input type="text" id="toolroomFixtureNo" value="FIX-102" class="w-full p-2 border rounded text-sm bg-white" placeholder="Enter Fixture No."></div><div class="flex items-end"><button onclick="updateToolroomFixture()" class="bg-blue-600 text-white text-xs px-4 py-2.5 rounded font-bold hover:bg-blue-700 transition">Update Fixture Info</button></div></div><div class="overflow-x-auto"><table class="w-full text-sm text-left border rounded-lg"><thead class="bg-slate-100 border-b"><tr><th class="p-3">Part Details</th><th class="p-3">Fixture No.</th><th class="p-3">Priority</th><th class="p-3">Tooling Status</th><th class="p-3">Fixture Status</th><th class="p-3">Action</th></tr></thead><tbody id="toolroomTable"></tbody></table></div></div></div>
+<div id="tab-stdroom" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-microscope text-blue-600 mr-2"></i> CMM / STD Room Dashboard</h2><div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center"><div><span id="stdStatusBadge" class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold">Inspection Pending</span><h3 class="font-bold text-slate-800 mt-2" id="stdSampleText">Sample Pending for Part: Gear Shaft (PN-9988)</h3></div><button onclick="sendQualityAlert()" class="bg-green-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-green-700 transition">Inspection Done (Send to Quality)</button></div></div></div>
+<div id="tab-quality" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-check-double text-blue-600 mr-2"></i> Quality Approval Dashboard</h2><p class="text-sm text-slate-600 mb-4">Process inspection approval status or select sample correction requirement:</p><div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border"><div class="space-y-3 border-r md:pr-6 border-slate-200"><h3 class="font-bold text-slate-700 text-sm">Action 1: SOP Approval</h3><button onclick="handleQualityAction('SOP APPROVED', 'None')" class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition shadow flex items-center justify-center"><i class="fas fa-check-circle mr-2"></i> SOP APPROVE</button></div><div class="space-y-3"><h3 class="font-bold text-slate-700 text-sm">Action 2: Sample Correction Request</h3><div><label class="block text-xs font-semibold text-slate-600 mb-1">Select Sample Correction Stage:</label><select id="sampleCorrectionSelect" class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-red-500 outline-none"><option value="1st Sample Correction Require">1st Sample Correction Require</option><option value="2nd Sample Correction Require">2nd Sample Correction Require</option><option value="3rd Sample Correction Require">3rd Sample Correction Require</option><option value="4th Sample Correction Require">4th Sample Correction Require</option></select></div><button onclick="submitQualityCorrection()" class="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition shadow flex items-center justify-center"><i class="fas fa-exclamation-triangle mr-2"></i> SEND CORRECTION ALERT TO SETTER</button></div></div></div></div>
+<div id="tab-supervisor" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border mb-6"><h2 class="text-lg font-bold border-b pb-2 text-slate-800"><i class="fas fa-user-tie text-blue-600 mr-2"></i> Supervisor Dashboard</h2></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-green-50 p-6 rounded-xl border border-green-200"><h3 class="text-lg font-bold text-green-900">SOP Approved</h3><p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p></div><div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200"><h3 class="text-lg font-bold text-yellow-900">Pending SOP</h3><p id="supPendingCount" class="text-4xl font-extrabold text-yellow-600 mt-2">1</p></div></div></div>
+<div id="tab-hod" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-blue-600 mr-2"></i> HOD Master Live View (Read Only)</h2><div class="overflow-x-auto"><table class="w-full text-xs text-left border rounded-lg"><thead class="bg-slate-200 text-slate-800"><tr><th class="p-3">Part Info</th><th class="p-3">Shift/Pallet</th><th class="p-3">Tooling</th><th class="p-3">Fixture</th><th class="p-3">Setup Status</th><th class="p-3">Quality Status</th></tr></thead><tbody id="hodTable"></tbody></table></div></div></div>
+</main>
+</div>
+<div id="excelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4"><div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 border"><div class="flex justify-between items-center mb-4 border-b pb-2"><h3 id="excelModalTitle" class="text-lg font-bold text-slate-800"><i class="fas fa-file-excel text-green-600 mr-2"></i> Excel Data View</h3><button onclick="closeExcelModal()" class="text-slate-500 hover:text-slate-800 font-bold text-lg">&times;</button></div><div class="overflow-x-auto"><table class="w-full text-xs text-left border border-slate-300"><thead class="bg-green-700 text-white"><tr><th class="p-2 border">Part Name</th><th class="p-2 border">Part No.</th><th class="p-2 border">Fixture No.</th><th class="p-2 border">Setup Type</th><th class="p-2 border">Priority</th><th class="p-2 border">Tooling Status</th><th class="p-2 border">Correction Required</th><th class="p-2 border">Quality Status</th></tr></thead><tbody id="excelTableBody"></tbody></table></div><div class="text-right mt-4"><button onclick="closeExcelModal()" class="bg-slate-700 text-white px-4 py-2 rounded text-xs font-bold hover:bg-slate-800">Close</button></div></div></div>
+<div id="setterCorrectionModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4"><div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-orange-300 text-center"><div class="text-orange-500 text-4xl mb-2"><i class="fas fa-tools"></i></div><h3 class="text-lg font-bold text-slate-800 mb-1">Correction Required Status</h3><p id="setterCorrectionText" class="text-sm font-semibold text-red-600 bg-red-50 p-3 rounded my-3 border border-red-200">None</p><div id="correctionActionArea" class="hidden"><button onclick="handleCorrectionDone()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition shadow-md w-full"><i class="fas fa-check-circle mr-1"></i> CORRECTION DONE</button></div><button onclick="closeSetterCorrectionModal()" class="mt-3 text-xs text-slate-500 underline font-semibold">Close</button></div></div>
+<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4"><div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active"><div class="text-red-500 text-5xl mb-3"><i class="fas fa-bell fa-bounce"></i></div><h3 id="alertTitle" class="text-xl font-extrabold text-red-600">NEW SYSTEM ALERT!</h3><p id="alertMessage" class="text-sm text-slate-700 my-4 font-semibold">Alert received from department.</p><button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-red-700 text-lg transition">OK (ACKNOWLEDGE)</button></div></div>
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
+authDomain: "sutom-multi-dashboard.firebaseapp.com",
+databaseURL: "https://sutom-multi-dashboard-default-rtdb.firebaseio.com",
+projectId: "sutom-multi-dashboard",
+storageBucket: "sutom-multi-dashboard.firebasestorage.app",
+messagingSenderId: "202116185102",
+appId: "1:202116185102:web:28efd6421d0215d58ed05f"
+};
+let db=null; let setupRef=null;
+try{
+firebase.initializeApp(firebaseConfig);
+db = firebase.database();
+setupRef = db.ref("sutom/activeSetup");
+console.log("Firebase OK URL:", firebaseConfig.databaseURL);
+}catch(e){ console.error(e); setFirebaseOffline(); }
+if("serviceWorker" in navigator){ window.addEventListener("load", ()=>{ navigator.serviceWorker.register("./sw.js").then(r=>console.log("SW",r)).catch(e=>console.log(e)); }); }
+let currentUser=null; let vibrateInterval=null; let firebaseListenerStarted=false;
+const defaultSetup = { partName:"Gear Shaft", partNo:"PN-9988", shiftDate:"", setupType:"Long Setup", fixtureNo:"FIX-102", fixtureAvailable:"YES", priority:1, pallet:"Pallet A", toolingReady:false, fixtureReady:false, setupReady:false, sampleCutting:false, inspectionDone:false, qualityStatus:"Pending SOP", correctionRequirement:"None", updatedAt:Date.now(), updatedBy:"System" };
+let activeSetup={...defaultSetup};
+function setFirebaseLive(){ const i=document.getElementById("firebaseLiveIndicator"); const t=document.getElementById("firebaseLiveText"); const d=document.getElementById("firebaseLiveDot"); if(!i||!t) return; i.className="bg-green-900/40 border border-green-500 text-green-400 px-2.5 py-1 rounded font-bold flex items-center"; t.innerText="LIVE"; if(d) d.className="live-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1.5"; }
+function setFirebaseOffline(){ const i=document.getElementById("firebaseLiveIndicator"); const t=document.getElementById("firebaseLiveText"); const d=document.getElementById("firebaseLiveDot"); if(!i||!t) return; i.className="bg-red-900/40 border border-red-500 text-red-400 px-2.5 py-1 rounded font-bold flex items-center"; t.innerText="OFFLINE"; if(d) d.className="inline-block w-2 h-2 bg-red-400 rounded-full mr-1.5"; }
+function startFirebaseConnectionMonitor(){ if(!db){ setFirebaseOffline(); return; } const c=db.ref(".info/connected"); c.on("value", s=>{ if(s.val()===true) setFirebaseLive(); else setFirebaseOffline(); }); }
+function startFirebaseListener(){ if(firebaseListenerStarted||!setupRef) return; firebaseListenerStarted=true; setupRef.on("value", snap=>{ const data=snap.val(); if(data){ activeSetup={...defaultSetup,...data}; } else { activeSetup={...defaultSetup}; } renderAllLiveData(); }, err=>{ console.error(err); setFirebaseOffline(); }); }
+function saveToFirebase(){ if(!setupRef){ alert("Firebase not connected"); setFirebaseOffline(); return; } activeSetup.updatedAt=Date.now(); activeSetup.updatedBy=currentUser?`${currentUser.name} (${currentUser.dept})`:"System"; setupRef.set(activeSetup).then(()=>{ setFirebaseLive(); console.log("Saved LIVE"); }).catch(e=>{ console.error(e); setFirebaseOffline(); alert("Save failed: "+e.message); }); }
+window.pushToLive = saveToFirebase;
+function renderAllLiveData(){ updateSetterUI(); updateStdUI(); updateMetrics(); updateQualityUI(); updateSupervisorUI(); updateToolroomFixtureUI(); renderToolroom(); renderHOD(); }
+function updateSetterUI(){ const f=document.getElementById("metric-fixture-no"); const c=document.getElementById("metric-correction-req"); const s=document.getElementById("metric-sop-approve"); if(f) f.innerText=activeSetup.fixtureNo; if(c) c.innerText=activeSetup.correctionRequirement; if(s) s.innerText=activeSetup.qualityStatus==="SOP APPROVED"?"APPROVED":"Pending"; }
+function updateStdUI(){ const t=document.getElementById("stdSampleText"); const b=document.getElementById("stdStatusBadge"); if(t) t.innerText=`Sample Pending for Part: ${activeSetup.partName} (${activeSetup.partNo})`; if(!b) return; if(activeSetup.inspectionDone){ b.className="bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded font-bold"; b.innerText="Inspection Completed"; } else if(activeSetup.sampleCutting){ b.className="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-bold"; b.innerText="Sample Received - Inspecting"; } else { b.className="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold"; b.innerText="Inspection Pending"; } }
+function updateQualityUI(){ const s=document.getElementById("metric-sop-approve"); const r=document.getElementById("metric-correction-req"); if(s) s.innerText=activeSetup.qualityStatus==="SOP APPROVED"?"APPROVED":"Pending"; if(r) r.innerText=activeSetup.correctionRequirement; }
+function updateSupervisorUI(){ const a=document.getElementById("supApprovedCount"); const p=document.getElementById("supPendingCount"); if(!a||!p) return; if(activeSetup.qualityStatus==="SOP APPROVED"){ a.innerText="1"; p.innerText="0"; } else { a.innerText="0"; p.innerText="1"; } }
+function updateToolroomFixtureUI(){ const av=document.getElementById("toolroomFixtureAvail"); const no=document.getElementById("toolroomFixtureNo"); if(av) av.value=activeSetup.fixtureAvailable||"YES"; if(no) no.value=activeSetup.fixtureNo||"FIX-102"; toggleFixtureInput(); }
+function updateLiveTime(){ const n=new Date(); const te=document.getElementById("topLiveTime"); if(te) te.innerText=n.toLocaleTimeString(); const m=n.getHours()*60+n.getMinutes(); let sh="Shift C"; if(m>=465&&m<975) sh="Shift A"; else if(m>=975&&m<1440) sh="Shift B"; else sh="Shift C"; const se=document.getElementById("topLiveShift"); if(se) se.innerText="Shift: "+sh; const de=document.getElementById("shiftDate"); if(de) de.value=n.toLocaleDateString()+" - "+sh; }
+setInterval(updateLiveTime,1000); updateLiveTime();
+window.addEventListener("DOMContentLoaded", ()=>{ startFirebaseConnectionMonitor(); startFirebaseListener(); const s=localStorage.getItem("sutom_user"); if(s){ try{ currentUser=JSON.parse(s); loadDashboard(currentUser); }catch(e){ console.error(e); localStorage.removeItem("sutom_user"); } } });
+function handleLogin(e){ e.preventDefault(); currentUser={ name:document.getElementById("loginName").value.trim(), id:document.getElementById("loginId").value.trim(), dept:document.getElementById("loginDept").value }; localStorage.setItem("sutom_user", JSON.stringify(currentUser)); loadDashboard(currentUser); }
+function loadDashboard(user){ document.getElementById("authSection").classList.add("hidden"); document.getElementById("dashboardSection").classList.remove("hidden"); document.getElementById("dashboardSection").classList.add("flex"); document.getElementById("userInfo").classList.remove("hidden"); document.getElementById("userInfo").classList.add("flex"); document.getElementById("userBadge").innerText=`${user.name} (${user.dept.toUpperCase()})`; showDepartmentTab(user.dept); }
+function handleLogout(){ localStorage.removeItem("sutom_user"); currentUser=null; document.getElementById("authSection").classList.remove("hidden"); document.getElementById("dashboardSection").classList.add("hidden"); document.getElementById("dashboardSection").classList.remove("flex"); document.getElementById("userInfo").classList.add("hidden"); document.getElementById("userInfo").classList.remove("flex"); }
+function showDepartmentTab(deptId){ document.querySelectorAll(".tab-content").forEach(el=>el.classList.add("hidden")); const at=document.getElementById("tab-"+deptId); if(at) at.classList.remove("hidden"); if(deptId==="toolroom") renderToolroom(); if(deptId==="hod") renderHOD(); if(deptId==="supervisor") renderSupervisor(); }
+function openSetupForm(){ const f=document.getElementById("setupFormContainer"); if(f){ f.scrollIntoView({behavior:"smooth"}); f.classList.add("ring-2","ring-blue-500"); setTimeout(()=>f.classList.remove("ring-2","ring-blue-500"),2000); } }
+function handleSetterSubmit(e){ e.preventDefault(); activeSetup.partName=document.getElementById("partName").value; activeSetup.partNo=document.getElementById("partNo").value; activeSetup.setupType=document.getElementById("setupType").value; activeSetup.fixtureNo=document.getElementById("fixtureNo").value; activeSetup.priority=document.getElementById("priority").value; activeSetup.pallet=document.getElementById("pallet").value; activeSetup.shiftDate=document.getElementById("shiftDate").value; activeSetup.toolingReady=false; activeSetup.fixtureReady=false; activeSetup.setupReady=false; activeSetup.sampleCutting=false; activeSetup.inspectionDone=false; activeSetup.qualityStatus="Pending SOP"; activeSetup.correctionRequirement="None"; saveToFirebase(); triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`); document.getElementById("setterForm").reset(); document.getElementById("priority").value=1; }
+function showExcelView(title){ document.getElementById("excelModalTitle").innerHTML=`<i class="fas fa-file-excel text-green-600 mr-2"></i> Excel View: ${title}`; const tb=document.getElementById("excelTableBody"); tb.innerHTML=`<tr class="bg-white hover:bg-slate-50"><td class="p-2 border font-bold text-slate-800">${activeSetup.partName}</td><td class="p-2 border">${activeSetup.partNo}</td><td class="p-2 border font-semibold">${activeSetup.fixtureNo} (${activeSetup.fixtureAvailable})</td><td class="p-2 border">${activeSetup.setupType}</td><td class="p-2 border font-bold text-blue-600">${activeSetup.priority}</td><td class="p-2 border">${activeSetup.toolingReady?'<span class="text-green-600 font-bold">READY</span>':'<span class="text-red-500 font-bold">PENDING</span>'}</td><td class="p-2 border text-orange-600 font-bold">${activeSetup.correctionRequirement}</td><td class="p-2 border font-bold">${activeSetup.qualityStatus}</td></tr>`; document.getElementById("excelModal").classList.remove("hidden"); }
+function closeExcelModal(){ document.getElementById("excelModal").classList.add("hidden"); }
+function openSetterCorrectionModal(){ const req=activeSetup.correctionRequirement; document.getElementById("setterCorrectionText").innerText=req; if(req!=="None"&&activeSetup.qualityStatus==="CORRECTION REQUIRED"){ document.getElementById("correctionActionArea").classList.remove("hidden"); } else { document.getElementById("correctionActionArea").classList.add("hidden"); } document.getElementById("setterCorrectionModal").classList.remove("hidden"); }
+function closeSetterCorrectionModal(){ document.getElementById("setterCorrectionModal").classList.add("hidden"); }
+function handleCorrectionDone(){ closeSetterCorrectionModal(); activeSetup.qualityStatus="Correction Done (Pending Inspection)"; activeSetup.correctionRequirement="None"; saveToFirebase(); triggerAlert("ALERT TO CMM / STD ROOM", `Setter completed correction for ${activeSetup.partName}. Regular inspection process initiated!`); }
+function toggleFixtureInput(){ const av=document.getElementById("toolroomFixtureAvail"); const ig=document.getElementById("toolroomFixtureNoGroup"); if(!av||!ig) return; if(av.value==="YES"){ ig.classList.remove("hidden"); } else { ig.classList.add("hidden"); } }
+function updateToolroomFixture(){ const av=document.getElementById("toolroomFixtureAvail").value; activeSetup.fixtureAvailable=av; if(av==="YES"){ activeSetup.fixtureNo=document.getElementById("toolroomFixtureNo").value||"FIX-102"; } else { activeSetup.fixtureNo="NOT AVAILABLE"; } saveToFirebase(); alert(`Tool Room Fixture Updated:\n\nAvailable = ${av}\nSerial = ${activeSetup.fixtureNo}`); }
+function triggerAlert(title,message,isContinuousVibrate=false){ document.getElementById("alertTitle").innerText=title; document.getElementById("alertMessage").innerText=message; document.getElementById("alertModal").classList.remove("hidden"); if("vibrate" in navigator){ if(isContinuousVibrate){ navigator.vibrate([500,200,500,200]); vibrateInterval=setInterval(()=>{ navigator.vibrate([500,200,500,200]); },1500); } else { navigator.vibrate([500,200,500,200,500]); } } }
+function acknowledgeAlert(){ document.getElementById("alertModal").classList.add("hidden"); if(vibrateInterval){ clearInterval(vibrateInterval); vibrateInterval=null; } if("vibrate" in navigator){ navigator.vibrate(0); } }
+function renderToolroom(){ const tb=document.getElementById("toolroomTable"); if(!tb) return; tb.innerHTML=`<tr class="border-b"><td class="p-3 font-semibold">${activeSetup.partName} (${activeSetup.partNo})</td><td class="p-3 font-bold text-purple-700">${activeSetup.fixtureNo}</td><td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">${activeSetup.priority}</span></td><td class="p-3 font-bold ${activeSetup.toolingReady?'text-green-600':'text-red-500'}">${activeSetup.toolingReady?'READY':'PENDING'}</td><td class="p-3 font-bold ${activeSetup.fixtureReady?'text-green-600':'text-red-500'}">${activeSetup.fixtureReady?'READY':'PENDING'}</td><td class="p-3 space-x-1"><button onclick="toggleTooling()" class="bg-blue-500 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button><button onclick="toggleFixture()" class="bg-purple-500 text-white text-xs px-2 py-1 rounded">Fixture Toggle</button><button onclick="sendSetupReady()" class="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">SETUP READY</button></td></tr>`; }
+function toggleTooling(){ activeSetup.toolingReady=!activeSetup.toolingReady; saveToFirebase(); }
+function toggleFixture(){ activeSetup.fixtureReady=!activeSetup.fixtureReady; saveToFirebase(); }
+function sendSetupReady(){ if(activeSetup.toolingReady&&activeSetup.fixtureReady){ activeSetup.setupReady=true; saveToFirebase(); triggerAlert("ALERT TO SETTER", "Tool Room setup materials are READY!"); } else { alert("Please ensure both Tooling and Fixture are marked READY first!"); } }
+function updateMetrics(){ const r=document.getElementById("metric-tool-ready"); const n=document.getElementById("metric-tool-notready"); const p=document.getElementById("metric-pending"); if(r) r.innerText=activeSetup.toolingReady?"1":"0"; if(n) n.innerText=activeSetup.toolingReady?"0":"1"; if(p) p.innerText=activeSetup.setupReady?"0":"1"; }
+function sendSampleCuttingAlert(){ activeSetup.sampleCutting=true; saveToFirebase(); triggerAlert("ALERT TO STD ROOM", "1st Sample Cutting Completed. Please proceed with inspection."); }
+function sendQualityAlert(){ activeSetup.inspectionDone=true; saveToFirebase(); triggerAlert("ALERT TO QUALITY", "CMM/STD Room Inspection completed. Pending Quality Approval."); }
+function handleQualityAction(status,reqText="None"){ activeSetup.qualityStatus=status; activeSetup.correctionRequirement=reqText; saveToFirebase(); triggerAlert("ALERT TO SETTER", `Quality Department Status: ${status}`); }
+function submitQualityCorrection(){ const sel=document.getElementById("sampleCorrectionSelect").value; activeSetup.qualityStatus="CORRECTION REQUIRED"; activeSetup.correctionRequirement=sel; saveToFirebase(); triggerAlert("CRITICAL SETTER ALERT", `QUALITY ALERT: ${sel}. Immediate action required!`, true); }
+function renderSupervisor(){ updateSupervisorUI(); }
+function renderHOD(){ const tb=document.getElementById("hodTable"); if(!tb) return; tb.innerHTML=`<tr class="border-b"><td class="p-3 font-bold">${activeSetup.partName} - ${activeSetup.partNo}</td><td class="p-3">${activeSetup.pallet}</td><td class="p-3">${activeSetup.toolingReady?'✅ Ready':'❌ Pending'}</td><td class="p-3">${activeSetup.fixtureReady?'✅ Ready':'❌ Pending'}</td><td class="p-3">${activeSetup.setupReady?'✅ Setup Ready':'⏳ In Progress'}</td><td class="p-3"><span class="bg-blue-100 text-blue-800 p-1 rounded font-bold text-xs">${activeSetup.qualityStatus} (${activeSetup.correctionRequirement})</span></td></tr>`; }
+</script>
 </body>
-</html>
+                                                 </html>

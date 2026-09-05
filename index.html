@@ -3551,6 +3551,31 @@ function renderHOD() {
 renderSetterExcel();
 
 </script>
+  <!-- Firebase Connection for Sutom Multi Dashboard -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
+    authDomain: "sutom-multi-dashboard.firebaseapp.com",
+    projectId: "sutom-multi-dashboard",
+    storageBucket: "sutom-multi-dashboard.firebasestorage.app",
+    messagingSenderId: "202116185102",
+    appId: "1:202116185102:web:28efd6421d0215d58ed05f"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Make db available globally
+  window.db = db;
+  window.firebaseApp = app;
+
+  console.log("Sutom Firebase Connected Successfully!");
+</script>  
 
 </body>
                 </html>

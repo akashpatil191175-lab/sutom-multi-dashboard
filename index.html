@@ -35,7 +35,13 @@
             </div>
         </div>
 
-        <div class="flex items-center space-x-6 text-xs md:text-sm mt-2 md:mt-0">
+        <div class="flex items-center space-x-4 text-xs md:text-sm mt-2 md:mt-0">
+            <!-- Firebase Live Connection Button Header -->
+            <div id="fbStatusBtn" class="bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 flex items-center space-x-2 text-xs font-bold text-gray-400 transition-all">
+                <span id="fbStatusDot" class="w-2.5 h-2.5 rounded-full bg-gray-500"></span>
+                <span id="fbStatusText">Firebase: Connecting...</span>
+            </div>
+
             <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
                 <i class="fas fa-calendar-alt text-blue-400 mr-2"></i>
                 <span id="topLiveShift" class="font-semibold">Shift: A</span>
@@ -98,9 +104,16 @@
 
             <div id="tab-setter" class="tab-content space-y-6 hidden">
                 <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
-                    <h2 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4"><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</h2>
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800"><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</h2>
+                        <!-- Dashboard Live Badge -->
+                        <span class="fb-live-badge bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center space-x-1 border border-emerald-300">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Firebase Live</span>
+                        </span>
+                    </div>
+                    
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-                        
                         <div onclick="openSetupForm()" class="bg-blue-50 p-3 rounded-xl border border-blue-200 cursor-pointer hover:bg-blue-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Register New Setup</p>
@@ -164,7 +177,6 @@
                             </div>
                             <p class="text-xl font-bold text-teal-700">5</p>
                         </div>
-
                     </div>
                 </div>
 
@@ -226,7 +238,13 @@
 
             <div id="tab-toolroom" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-wrench text-blue-600 mr-2"></i> Tool Room Dashboard</h2>
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800"><i class="fas fa-wrench text-blue-600 mr-2"></i> Tool Room Dashboard</h2>
+                        <span class="fb-live-badge bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center space-x-1 border border-emerald-300">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Firebase Live</span>
+                        </span>
+                    </div>
                     
                     <div class="bg-slate-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                         <div>
@@ -267,7 +285,14 @@
 
             <div id="tab-stdroom" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-microscope text-blue-600 mr-2"></i> CMM / STD Room Dashboard</h2>
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800"><i class="fas fa-microscope text-blue-600 mr-2"></i> CMM / STD Room Dashboard</h2>
+                        <span class="fb-live-badge bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center space-x-1 border border-emerald-300">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Firebase Live</span>
+                        </span>
+                    </div>
+                    
                     <div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center">
                         <div>
                             <span id="stdStatusBadge" class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold">Inspection Pending</span>
@@ -282,7 +307,14 @@
 
             <div id="tab-quality" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-check-double text-blue-600 mr-2"></i> Quality Approval Dashboard</h2>
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800"><i class="fas fa-check-double text-blue-600 mr-2"></i> Quality Approval Dashboard</h2>
+                        <span class="fb-live-badge bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center space-x-1 border border-emerald-300">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Firebase Live</span>
+                        </span>
+                    </div>
+
                     <p class="text-sm text-slate-600 mb-4">Process inspection approval status or select sample correction requirement:</p>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border">
@@ -309,13 +341,18 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <div id="tab-supervisor" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border mb-6">
-                    <h2 class="text-lg font-bold border-b pb-2 text-slate-800"><i class="fas fa-user-tie text-blue-600 mr-2"></i> Supervisor Dashboard</h2>
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h2 class="text-lg font-bold text-slate-800"><i class="fas fa-user-tie text-blue-600 mr-2"></i> Supervisor Dashboard</h2>
+                        <span class="fb-live-badge bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center space-x-1 border border-emerald-300">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Firebase Live</span>
+                        </span>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-green-50 p-6 rounded-xl border border-green-200">
@@ -331,7 +368,14 @@
 
             <div id="tab-hod" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
-                    <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-blue-600 mr-2"></i> HOD Master Live View (Read Only)</h2>
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-slate-800"><i class="fas fa-chart-line text-blue-600 mr-2"></i> HOD Master Live View (Read Only)</h2>
+                        <span class="fb-live-badge bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center space-x-1 border border-emerald-300">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Firebase Live</span>
+                        </span>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-left border rounded-lg">
                             <thead class="bg-slate-200 text-slate-800">
@@ -353,74 +397,12 @@
         </main>
     </div>
 
-    <div id="excelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 border">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 id="excelModalTitle" class="text-lg font-bold text-slate-800"><i class="fas fa-file-excel text-green-600 mr-2"></i> Excel Data View</h3>
-                <button onclick="closeExcelModal()" class="text-slate-500 hover:text-slate-800 font-bold text-lg">&times;</button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left border border-slate-300">
-                    <thead class="bg-green-700 text-white">
-                        <tr>
-                            <th class="p-2 border">Part Name</th>
-                            <th class="p-2 border">Part No.</th>
-                            <th class="p-2 border">Fixture No.</th>
-                            <th class="p-2 border">Setup Type</th>
-                            <th class="p-2 border">Priority</th>
-                            <th class="p-2 border">Tooling Status</th>
-                            <th class="p-2 border">Correction Required</th>
-                            <th class="p-2 border">Quality Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="excelTableBody">
-                    </tbody>
-                </table>
-            </div>
-            <div class="text-right mt-4">
-                <button onclick="closeExcelModal()" class="bg-slate-700 text-white px-4 py-2 rounded text-xs font-bold hover:bg-slate-800">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="setterCorrectionModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-orange-300 text-center">
-            <div class="text-orange-500 text-4xl mb-2">
-                <i class="fas fa-tools"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-1">Correction Required Status</h3>
-            <p id="setterCorrectionText" class="text-sm font-semibold text-red-600 bg-red-50 p-3 rounded my-3 border border-red-200">
-                None
-            </p>
-            <div id="correctionActionArea" class="hidden">
-                <button onclick="handleCorrectionDone()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition shadow-md w-full">
-                    <i class="fas fa-check-circle mr-1"></i> CORRECTION DONE
-                </button>
-            </div>
-            <button onclick="closeSetterCorrectionModal()" class="mt-3 text-xs text-slate-500 underline font-semibold">Close</button>
-        </div>
-    </div>
-
-    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active">
-            <div class="text-red-500 text-5xl mb-3">
-                <i class="fas fa-bell fa-bounce"></i>
-            </div>
-            <h3 id="alertTitle" class="text-xl font-extrabold text-red-600">NEW SYSTEM ALERT!</h3>
-            <p id="alertMessage" class="text-sm text-slate-700 my-4 font-semibold">Alert received from department.</p>
-            <button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-red-700 text-lg transition">
-                OK (ACKNOWLEDGE)
-            </button>
-        </div>
-    </div>
-
     <!-- Firebase SDK Imports -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
             authDomain: "sutom-multi-dashboard.firebaseapp.com",
@@ -431,32 +413,38 @@
             appId: "1:202116185102:web:28efd6421d0215d58ed05f"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // Make instances globally accessible for traditional JS functions
         window.db = db;
         window.auth = auth;
         window.fbRef = ref;
         window.fbSet = set;
         window.fbOnValue = onValue;
         window.fbUpdate = update;
-        
-        console.log("Firebase Connected Successfully!");
+
+        // Connection Status Tracker
+        const connectedRef = ref(db, ".info/connected");
+        onValue(connectedRef, (snap) => {
+            const btn = document.getElementById('fbStatusBtn');
+            const dot = document.getElementById('fbStatusDot');
+            const txt = document.getElementById('fbStatusText');
+            
+            if (snap.val() === true) {
+                btn.className = "bg-emerald-950 px-3 py-1.5 rounded-full border border-emerald-600 flex items-center space-x-2 text-xs font-bold text-emerald-400 transition-all";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping";
+                txt.innerText = "Firebase: Live";
+            } else {
+                btn.className = "bg-red-950 px-3 py-1.5 rounded-full border border-red-600 flex items-center space-x-2 text-xs font-bold text-red-400 transition-all";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                txt.innerText = "Firebase: Offline";
+            }
+        });
     </script>
 
     <!-- Main Logic Script -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registered successfully:', reg))
-                    .catch(err => console.log('SW registration failed:', err));
-            });
-        }
-
         let currentUser = null;
         let vibrateInterval = null;
 
@@ -478,26 +466,11 @@
             correctionRequirement: "None"
         };
 
-        function updateLiveTime() {
-            const now = new Date();
-            document.getElementById('topLiveTime').innerText = now.toLocaleTimeString();
-
-            const minutes = now.getHours() * 60 + now.getMinutes();
-            
-            let shift = "Shift C";
-            if (minutes >= 465 && minutes < 975) {
-                shift = "Shift A";
-            } else if (minutes >= 975 && minutes < 1440) {
-                shift = "Shift B";
-            } else {
-                shift = "Shift C";
+        function syncToFirebase() {
+            if (window.db && window.fbSet) {
+                window.fbSet(window.fbRef(window.db, 'activeSetup'), activeSetup);
             }
-
-            document.getElementById('topLiveShift').innerText = "Shift: " + shift;
-            document.getElementById('shiftDate').value = now.toLocaleDateString() + " - " + shift;
         }
-        setInterval(updateLiveTime, 1000);
-        updateLiveTime();
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('sutom_user');
@@ -505,7 +478,45 @@
                 currentUser = JSON.parse(savedUser);
                 loadDashboard(currentUser);
             }
+
+            if (window.fbOnValue && window.db) {
+                window.fbOnValue(window.fbRef(window.db, 'activeSetup'), (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        activeSetup = data;
+                        updateAllUI();
+                    }
+                });
+            }
         });
+
+        function updateAllUI() {
+            document.getElementById('metric-fixture-no').innerText = activeSetup.fixtureNo;
+            document.getElementById('stdSampleText').innerText = `Sample Pending for Part: ${activeSetup.partName} (${activeSetup.partNo})`;
+            document.getElementById('metric-sop-approve').innerText = activeSetup.qualityStatus === 'SOP APPROVED' ? 'APPROVED' : 'Pending';
+            document.getElementById('metric-correction-req').innerText = activeSetup.correctionRequirement;
+            
+            updateMetrics();
+
+            if (currentUser) {
+                if (currentUser.dept === 'toolroom') renderToolroom();
+                if (currentUser.dept === 'hod') renderHOD();
+                if (currentUser.dept === 'supervisor') renderSupervisor();
+            }
+        }
+
+        function updateLiveTime() {
+            const now = new Date();
+            document.getElementById('topLiveTime').innerText = now.toLocaleTimeString();
+
+            const minutes = now.getHours() * 60 + now.getMinutes();
+            let shift = (minutes >= 465 && minutes < 975) ? "Shift A" : ((minutes >= 975 && minutes < 1440) ? "Shift B" : "Shift C");
+
+            document.getElementById('topLiveShift').innerText = "Shift: " + shift;
+            document.getElementById('shiftDate').value = now.toLocaleDateString() + " - " + shift;
+        }
+        setInterval(updateLiveTime, 1000);
+        updateLiveTime();
 
         function handleLogin(e) {
             e.preventDefault();
@@ -514,7 +525,6 @@
                 id: document.getElementById('loginId').value,
                 dept: document.getElementById('loginDept').value
             };
-
             localStorage.setItem('sutom_user', JSON.stringify(currentUser));
             loadDashboard(currentUser);
         }
@@ -526,7 +536,6 @@
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userInfo').classList.add('flex');
             document.getElementById('userBadge').innerText = `${user.name} (${user.dept.toUpperCase()})`;
-
             showDepartmentTab(user.dept);
         }
 
@@ -542,24 +551,12 @@
 
         function showDepartmentTab(deptId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-
             const activeTab = document.getElementById('tab-' + deptId);
-            if (activeTab) {
-                activeTab.classList.remove('hidden');
-            }
+            if (activeTab) activeTab.classList.remove('hidden');
 
             if(deptId === 'toolroom') renderToolroom();
             if(deptId === 'hod') renderHOD();
             if(deptId === 'supervisor') renderSupervisor();
-        }
-
-        function openSetupForm() {
-            const formElem = document.getElementById('setupFormContainer');
-            if (formElem) {
-                formElem.scrollIntoView({ behavior: 'smooth' });
-                formElem.classList.add('ring-2', 'ring-blue-500');
-                setTimeout(() => formElem.classList.remove('ring-2', 'ring-blue-500'), 2000);
-            }
         }
 
         function handleSetterSubmit(e) {
@@ -571,113 +568,8 @@
             activeSetup.priority = document.getElementById('priority').value;
             activeSetup.pallet = document.getElementById('pallet').value;
 
-            document.getElementById('metric-fixture-no').innerText = activeSetup.fixtureNo;
-            document.getElementById('stdSampleText').innerText = `Sample Pending for Part: ${activeSetup.partName} (${activeSetup.partNo})`;
-
-            if (window.db) {
-                window.fbSet(window.fbRef(window.db, 'activeSetup'), activeSetup);
-            }
-
+            syncToFirebase();
             triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
-        }
-
-        function showExcelView(title) {
-            document.getElementById('excelModalTitle').innerHTML = `<i class="fas fa-file-excel text-green-600 mr-2"></i> Excel View: ${title}`;
-            const tbody = document.getElementById('excelTableBody');
-            tbody.innerHTML = `
-                <tr class="bg-white hover:bg-slate-50">
-                    <td class="p-2 border font-bold text-slate-800">${activeSetup.partName}</td>
-                    <td class="p-2 border">${activeSetup.partNo}</td>
-                    <td class="p-2 border font-semibold">${activeSetup.fixtureNo} (${activeSetup.fixtureAvailable})</td>
-                    <td class="p-2 border">${activeSetup.setupType}</td>
-                    <td class="p-2 border font-bold text-blue-600">${activeSetup.priority}</td>
-                    <td class="p-2 border">${activeSetup.toolingReady ? '<span class="text-green-600 font-bold">READY</span>' : '<span class="text-red-500 font-bold">PENDING</span>'}</td>
-                    <td class="p-2 border text-orange-600 font-bold">${activeSetup.correctionRequirement}</td>
-                    <td class="p-2 border font-bold">${activeSetup.qualityStatus}</td>
-                </tr>
-            `;
-            document.getElementById('excelModal').classList.remove('hidden');
-        }
-
-        function closeExcelModal() {
-            document.getElementById('excelModal').classList.add('hidden');
-        }
-
-        function openSetterCorrectionModal() {
-            const req = activeSetup.correctionRequirement;
-            document.getElementById('setterCorrectionText').innerText = req;
-            
-            if (req !== "None" && activeSetup.qualityStatus === "CORRECTION REQUIRED") {
-                document.getElementById('correctionActionArea').classList.remove('hidden');
-            } else {
-                document.getElementById('correctionActionArea').classList.add('hidden');
-            }
-            document.getElementById('setterCorrectionModal').classList.remove('hidden');
-        }
-
-        function closeSetterCorrectionModal() {
-            document.getElementById('setterCorrectionModal').classList.add('hidden');
-        }
-
-        function handleCorrectionDone() {
-            closeSetterCorrectionModal();
-            activeSetup.qualityStatus = "Correction Done (Pending Inspection)";
-            activeSetup.correctionRequirement = "None";
-            
-            document.getElementById('metric-correction-req').innerText = "None";
-            document.getElementById('metric-sop-approve').innerText = "Pending";
-
-            triggerAlert("ALERT TO CMM / STD ROOM", `Setter completed correction for ${activeSetup.partName}. Regular inspection process initiated!`);
-        }
-
-        function toggleFixtureInput() {
-            const avail = document.getElementById('toolroomFixtureAvail').value;
-            const inputGroup = document.getElementById('toolroomFixtureNoGroup');
-            if (avail === 'YES') {
-                inputGroup.classList.remove('hidden');
-            } else {
-                inputGroup.classList.add('hidden');
-            }
-        }
-
-        function updateToolroomFixture() {
-            const avail = document.getElementById('toolroomFixtureAvail').value;
-            activeSetup.fixtureAvailable = avail;
-            if (avail === 'YES') {
-                activeSetup.fixtureNo = document.getElementById('toolroomFixtureNo').value || "FIX-102";
-            } else {
-                activeSetup.fixtureNo = "NOT AVAILABLE";
-            }
-            document.getElementById('metric-fixture-no').innerText = activeSetup.fixtureNo;
-            alert(`Tool Room Fixture Updated: Available = ${avail}, Serial = ${activeSetup.fixtureNo}`);
-        }
-
-        function triggerAlert(title, message, isContinuousVibrate = false) {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMessage').innerText = message;
-            document.getElementById('alertModal').classList.remove('hidden');
-
-            if ("vibrate" in navigator) {
-                if (isContinuousVibrate) {
-                    navigator.vibrate([500, 200, 500, 200]);
-                    vibrateInterval = setInterval(() => {
-                        navigator.vibrate([500, 200, 500, 200]);
-                    }, 1500);
-                } else {
-                    navigator.vibrate([500, 200, 500, 200, 500]);
-                }
-            }
-        }
-
-        function acknowledgeAlert() {
-            document.getElementById('alertModal').classList.add('hidden');
-            if (vibrateInterval) {
-                clearInterval(vibrateInterval);
-                vibrateInterval = null;
-            }
-            if ("vibrate" in navigator) {
-                navigator.vibrate(0);
-            }
         }
 
         function renderToolroom() {
@@ -688,12 +580,8 @@
                     <td class="p-3 font-semibold">${activeSetup.partName} (${activeSetup.partNo})</td>
                     <td class="p-3 font-bold text-purple-700">${activeSetup.fixtureNo}</td>
                     <td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">${activeSetup.priority}</span></td>
-                    <td class="p-3 font-bold ${activeSetup.toolingReady ? 'text-green-600':'text-red-500'}">
-                        ${activeSetup.toolingReady ? 'READY' : 'PENDING'}
-                    </td>
-                    <td class="p-3 font-bold ${activeSetup.fixtureReady ? 'text-green-600':'text-red-500'}">
-                        ${activeSetup.fixtureReady ? 'READY' : 'PENDING'}
-                    </td>
+                    <td class="p-3 font-bold ${activeSetup.toolingReady ? 'text-green-600':'text-red-500'}">${activeSetup.toolingReady ? 'READY' : 'PENDING'}</td>
+                    <td class="p-3 font-bold ${activeSetup.fixtureReady ? 'text-green-600':'text-red-500'}">${activeSetup.fixtureReady ? 'READY' : 'PENDING'}</td>
                     <td class="p-3 space-x-1">
                         <button onclick="toggleTooling()" class="bg-blue-500 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button>
                         <button onclick="toggleFixture()" class="bg-purple-500 text-white text-xs px-2 py-1 rounded">Fixture Toggle</button>
@@ -703,20 +591,13 @@
             `;
         }
 
-        function toggleTooling() {
-            activeSetup.toolingReady = !activeSetup.toolingReady;
-            updateMetrics();
-            renderToolroom();
-        }
-
-        function toggleFixture() {
-            activeSetup.fixtureReady = !activeSetup.fixtureReady;
-            renderToolroom();
-        }
+        function toggleTooling() { activeSetup.toolingReady = !activeSetup.toolingReady; syncToFirebase(); }
+        function toggleFixture() { activeSetup.fixtureReady = !activeSetup.fixtureReady; syncToFirebase(); }
 
         function sendSetupReady() {
             if(activeSetup.toolingReady && activeSetup.fixtureReady) {
                 activeSetup.setupReady = true;
+                syncToFirebase();
                 triggerAlert("ALERT TO SETTER", "Tool Room setup materials are READY!");
             } else {
                 alert("Please ensure both Tooling and Fixture are marked READY first!");
@@ -732,25 +613,20 @@
 
         function sendSampleCuttingAlert() {
             activeSetup.sampleCutting = true;
-            document.getElementById('stdStatusBadge').className = "bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-bold";
-            document.getElementById('stdStatusBadge').innerText = "Sample Received - Inspecting";
+            syncToFirebase();
             triggerAlert("ALERT TO STD ROOM", "1st Sample Cutting Completed. Please proceed with inspection.");
         }
 
         function sendQualityAlert() {
             activeSetup.inspectionDone = true;
+            syncToFirebase();
             triggerAlert("ALERT TO QUALITY", "CMM/STD Room Inspection completed. Pending Quality Approval.");
         }
 
         function handleQualityAction(status, reqText = "None") {
             activeSetup.qualityStatus = status;
             activeSetup.correctionRequirement = reqText;
-
-            const sopElem = document.getElementById('metric-sop-approve');
-            const reqElem = document.getElementById('metric-correction-req');
-            if(sopElem) sopElem.innerText = status === 'SOP APPROVED' ? 'APPROVED' : 'Pending';
-            if(reqElem) reqElem.innerText = reqText;
-
+            syncToFirebase();
             triggerAlert("ALERT TO SETTER", `Quality Department Status: ${status}`);
         }
 
@@ -758,12 +634,7 @@
             const selectedRequirement = document.getElementById('sampleCorrectionSelect').value;
             activeSetup.qualityStatus = "CORRECTION REQUIRED";
             activeSetup.correctionRequirement = selectedRequirement;
-
-            const sopElem = document.getElementById('metric-sop-approve');
-            const reqElem = document.getElementById('metric-correction-req');
-            if(sopElem) sopElem.innerText = 'Pending';
-            if(reqElem) reqElem.innerText = selectedRequirement;
-
+            syncToFirebase();
             triggerAlert("CRITICAL SETTER ALERT", `QUALITY ALERT: ${selectedRequirement}. Immediate action required!`, true);
         }
 
@@ -771,14 +642,8 @@
             const appElem = document.getElementById('supApprovedCount');
             const pendElem = document.getElementById('supPendingCount');
             if(!appElem || !pendElem) return;
-
-            if(activeSetup.qualityStatus === 'SOP APPROVED') {
-                appElem.innerText = "1";
-                pendElem.innerText = "0";
-            } else {
-                appElem.innerText = "0";
-                pendElem.innerText = "1";
-            }
+            appElem.innerText = activeSetup.qualityStatus === 'SOP APPROVED' ? "1" : "0";
+            pendElem.innerText = activeSetup.qualityStatus === 'SOP APPROVED' ? "0" : "1";
         }
 
         function renderHOD() {
@@ -794,6 +659,16 @@
                     <td class="p-3"><span class="bg-blue-100 text-blue-800 p-1 rounded font-bold text-xs">${activeSetup.qualityStatus} (${activeSetup.correctionRequirement})</span></td>
                 </tr>
             `;
+        }
+
+        function triggerAlert(title, message, isContinuousVibrate = false) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('alertModal').classList.remove('hidden');
+        }
+
+        function acknowledgeAlert() {
+            document.getElementById('alertModal').classList.add('hidden');
         }
     </script>
 </body>

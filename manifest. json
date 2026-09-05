@@ -1,10 +1,9 @@
 {
-  "name": "SuTOM - Setup Time Online Monitor",
-  "short_name": "SuTOM",
-  "description": "Multi-Department Setup Tracking System",
-  "start_url": ".",
+  "name": "SUTOM - Setup Time Monitor",
+  "short_name": "SUTOM",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f172a",
+  "background_color": "#2563eb",
   "theme_color": "#2563eb",
   "icons": [
     {

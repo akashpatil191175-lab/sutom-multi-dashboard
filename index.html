@@ -62,7 +62,7 @@
 <body class="bg-slate-100 font-sans min-h-screen">
 
     <!-- HEADER -->
-    <header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-6">
+    <header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-4 md:px-6">
 
         <!-- LEFT -->
         <div class="flex items-center space-x-3">
@@ -74,30 +74,30 @@
         </div>
 
         <!-- RIGHT TOP BAR -->
-        <div class="flex items-center space-x-3 md:space-x-6 text-xs md:text-sm mt-2 md:mt-0">
+        <div class="flex items-center space-x-2 md:space-x-4 text-xs mt-2 md:mt-0">
 
             <!-- SHIFT -->
-            <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
-                <i class="fas fa-calendar-alt text-blue-400 mr-2"></i>
+            <div class="bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
+                <i class="fas fa-calendar-alt text-blue-400 mr-1.5"></i>
                 <span id="topLiveShift" class="font-semibold">Shift: Shift A</span>
             </div>
 
             <!-- FIREBASE LIVE INDICATOR -->
-            <div id="firebaseLiveIndicator" class="bg-green-900/40 border border-green-500 text-green-400 px-3 py-1.5 rounded font-bold flex items-center">
-                <span class="live-dot inline-block w-2.5 h-2.5 bg-green-400 rounded-full mr-2"></span>
+            <div id="firebaseLiveIndicator" class="bg-green-900/40 border border-green-500 text-green-400 px-2.5 py-1 rounded font-bold flex items-center">
+                <span id="firebaseLiveDot" class="live-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1.5"></span>
                 <span id="firebaseLiveText">LIVE</span>
             </div>
 
             <!-- TIME -->
-            <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
-                <i class="fas fa-clock text-green-400 mr-2"></i>
+            <div class="bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
+                <i class="fas fa-clock text-green-400 mr-1.5"></i>
                 <span id="topLiveTime" class="font-mono font-semibold">00:00:00</span>
             </div>
 
             <!-- USER INFO -->
-            <div id="userInfo" class="hidden items-center space-x-3">
+            <div id="userInfo" class="hidden items-center space-x-2">
                 <span id="userBadge" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span>
-                <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold transition">
+                <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded font-bold transition">
                     <i class="fas fa-sign-out-alt mr-1"></i> Logout
                 </button>
             </div>
@@ -571,17 +571,23 @@
         function setFirebaseLive() {
             const indicator = document.getElementById("firebaseLiveIndicator");
             const text = document.getElementById("firebaseLiveText");
+            const dot = document.getElementById("firebaseLiveDot");
             if (!indicator || !text) return;
-            indicator.className = "bg-green-900/40 border border-green-500 text-green-400 px-3 py-1.5 rounded font-bold flex items-center";
+
+            indicator.className = "bg-green-900/40 border border-green-500 text-green-400 px-2.5 py-1 rounded font-bold flex items-center";
             text.innerText = "LIVE";
+            if (dot) dot.className = "live-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1.5";
         }
 
         function setFirebaseOffline() {
             const indicator = document.getElementById("firebaseLiveIndicator");
             const text = document.getElementById("firebaseLiveText");
+            const dot = document.getElementById("firebaseLiveDot");
             if (!indicator || !text) return;
-            indicator.className = "bg-red-900/40 border border-red-500 text-red-400 px-3 py-1.5 rounded font-bold flex items-center";
+
+            indicator.className = "bg-red-900/40 border border-red-500 text-red-400 px-2.5 py-1 rounded font-bold flex items-center";
             text.innerText = "OFFLINE";
+            if (dot) dot.className = "inline-block w-2 h-2 bg-red-400 rounded-full mr-1.5";
         }
 
         function startFirebaseConnectionMonitor() {
@@ -611,7 +617,6 @@
                     activeSetup = { ...defaultSetup };
                 }
                 renderAllLiveData();
-                setFirebaseLive();
             }, error => {
                 console.error("Firebase listener error:", error);
                 setFirebaseOffline();

@@ -16,7 +16,6 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen">
 
-    <!-- Header -->
     <header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-6">
         <div>
             <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
@@ -41,7 +40,6 @@
         </div>
     </header>
 
-    <!-- Authentication / Login Section -->
     <div id="authSection" class="flex justify-center items-center py-10 px-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
             <h2 class="text-2xl font-bold text-center text-slate-800 mb-2">Department Login</h2>
@@ -49,8 +47,8 @@
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">User Name</label>
-                    <input type="text" id="loginName" required placeholder="Enter Full Name" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Employee Name</label>
+                    <input type="text" id="loginName" required placeholder="Enter Employee Name" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Employee ID</label>
@@ -79,42 +77,15 @@
         </div>
     </div>
 
-    <!-- Main Dashboard Section -->
-    <div id="dashboardSection" class="hidden flex flex-col md:flex-row min-h-[calc(100vh-65px)]">
+    <div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]">
 
-        <!-- Navigation Sidebar -->
-        <nav class="w-full md:w-64 bg-slate-900 text-slate-300 p-4 space-y-2 border-r border-slate-800">
-            <div class="text-xs font-semibold text-slate-500 uppercase mb-2 px-2">Departments</div>
-            <button id="nav-setter" onclick="switchTab('setter')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
-                <i class="fas fa-tools w-5"></i> <span>1. SETTER</span>
-            </button>
-            <button id="nav-toolroom" onclick="switchTab('toolroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
-                <i class="fas fa-wrench w-5"></i> <span>2. TOOL ROOM</span>
-            </button>
-            <button id="nav-stdroom" onclick="switchTab('stdroom')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
-                <i class="fas fa-microscope w-5"></i> <span>3. CMM / STD ROOM</span>
-            </button>
-            <button id="nav-quality" onclick="switchTab('quality')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
-                <i class="fas fa-check-double w-5"></i> <span>4. QUALITY</span>
-            </button>
-            <button id="nav-supervisor" onclick="switchTab('supervisor')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
-                <i class="fas fa-user-tie w-5"></i> <span>5. SUPERVISOR</span>
-            </button>
-            <button id="nav-hod" onclick="switchTab('hod')" class="tab-btn w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-slate-800 transition">
-                <i class="fas fa-chart-line w-5"></i> <span>6. HOD VIEW</span>
-            </button>
-        </nav>
-
-        <!-- Main Content Area -->
         <main class="flex-1 p-6 overflow-y-auto">
 
-            <!-- SETTER TAB -->
             <div id="tab-setter" class="tab-content space-y-6 hidden">
                 <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
                     <h2 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4"><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
                         
-                        <!-- 2) Register New Setup Click opens Form -->
                         <div onclick="openSetupForm()" class="bg-blue-50 p-3 rounded-xl border border-blue-200 cursor-pointer hover:bg-blue-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Register New Setup</p>
@@ -155,7 +126,6 @@
                             <p id="metric-sop-approve" class="text-sm font-bold mt-1 text-emerald-700">Pending</p>
                         </div>
 
-                        <!-- 3) Setter Correction Required Icon -->
                         <div onclick="openSetterCorrectionModal()" class="bg-orange-50 p-3 rounded-xl border border-orange-200 cursor-pointer hover:bg-orange-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Correction Required</p>
@@ -183,7 +153,6 @@
                     </div>
                 </div>
 
-                <!-- Setup Registration Form -->
                 <div id="setupFormContainer" class="bg-white p-6 rounded-xl shadow border">
                     <h3 class="text-md font-bold mb-4 text-slate-800 border-b pb-2"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup Change</h3>
                     <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -240,12 +209,10 @@
                 </div>
             </div>
 
-            <!-- TOOL ROOM TAB -->
             <div id="tab-toolroom" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
                     <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-wrench text-blue-600 mr-2"></i> Tool Room Dashboard</h2>
                     
-                    <!-- 5) Tool Room Fixture Check Section -->
                     <div class="bg-slate-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Fixture Serial No. Available?</label>
@@ -283,7 +250,6 @@
                 </div>
             </div>
 
-            <!-- CMM / STD ROOM TAB -->
             <div id="tab-stdroom" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
                     <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-microscope text-blue-600 mr-2"></i> CMM / STD Room Dashboard</h2>
@@ -299,7 +265,6 @@
                 </div>
             </div>
 
-            <!-- QUALITY TAB -->
             <div id="tab-quality" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
                     <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-check-double text-blue-600 mr-2"></i> Quality Approval Dashboard</h2>
@@ -313,7 +278,6 @@
                             </button>
                         </div>
 
-                        <!-- 3) Quality Sample Correction Request -->
                         <div class="space-y-3">
                             <h3 class="font-bold text-slate-700 text-sm">Action 2: Sample Correction Request</h3>
                             <div>
@@ -334,7 +298,6 @@
                 </div>
             </div>
 
-            <!-- SUPERVISOR TAB -->
             <div id="tab-supervisor" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border mb-6">
                     <h2 class="text-lg font-bold border-b pb-2 text-slate-800"><i class="fas fa-user-tie text-blue-600 mr-2"></i> Supervisor Dashboard</h2>
@@ -351,7 +314,6 @@
                 </div>
             </div>
 
-            <!-- HOD TAB -->
             <div id="tab-hod" class="tab-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl shadow border">
                     <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-blue-600 mr-2"></i> HOD Master Live View (Read Only)</h2>
@@ -376,7 +338,6 @@
         </main>
     </div>
 
-    <!-- 2) Excel Style Data Viewer Modal -->
     <div id="excelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 border">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -398,7 +359,6 @@
                         </tr>
                     </thead>
                     <tbody id="excelTableBody">
-                        <!-- Dynamic Excel Data -->
                     </tbody>
                 </table>
             </div>
@@ -408,7 +368,6 @@
         </div>
     </div>
 
-    <!-- 3) Setter Correction Required Action Modal -->
     <div id="setterCorrectionModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-orange-300 text-center">
             <div class="text-orange-500 text-4xl mb-2">
@@ -427,7 +386,6 @@
         </div>
     </div>
 
-    <!-- System Alert Modal -->
     <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active">
             <div class="text-red-500 text-5xl mb-3">
@@ -463,16 +421,13 @@
             correctionRequirement: "None"
         };
 
-        // 4) Updated Shift Timing Dynamic Calculations
+        // Live Shift Timing Dynamic Calculations
         function updateLiveTime() {
             const now = new Date();
             document.getElementById('topLiveTime').innerText = now.toLocaleTimeString();
 
             const minutes = now.getHours() * 60 + now.getMinutes();
             
-            // Shift A: 7:45 AM (465 min) to 4:15 PM (975 min)
-            // Shift B: 4:15 PM (975 min) to 12:00 AM (1440 min)
-            // Shift C: 12:00 AM (0 min) to 7:45 AM (465 min)
             let shift = "Shift C";
             if (minutes >= 465 && minutes < 975) {
                 shift = "Shift A";
@@ -488,6 +443,15 @@
         setInterval(updateLiveTime, 1000);
         updateLiveTime();
 
+        // 2) Restore session state after page refresh
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('sutom_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                loadDashboard(currentUser);
+            }
+        });
+
         function handleLogin(e) {
             e.preventDefault();
             currentUser = {
@@ -496,47 +460,54 @@
                 dept: document.getElementById('loginDept').value
             };
 
+            // Save user info in localStorage for refresh support
+            localStorage.setItem('sutom_user', JSON.stringify(currentUser));
+            loadDashboard(currentUser);
+        }
+
+        function loadDashboard(user) {
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('flex');
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userInfo').classList.add('flex');
-            document.getElementById('userBadge').innerText = `${currentUser.name} (${currentUser.dept.toUpperCase()})`;
+            document.getElementById('userBadge').innerText = `${user.name} (${user.dept.toUpperCase()})`;
 
-            switchTab(currentUser.dept);
+            showDepartmentTab(user.dept);
         }
 
         function handleLogout() {
+            localStorage.removeItem('sutom_user');
             currentUser = null;
             document.getElementById('authSection').classList.remove('hidden');
             document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('flex');
             document.getElementById('userInfo').classList.add('hidden');
             document.getElementById('userInfo').classList.remove('flex');
         }
 
-        function switchTab(tabId) {
+        // Show ONLY the specific logged-in department dashboard
+        function showDepartmentTab(deptId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
-                btn.classList.add('hover:bg-slate-800');
-            });
 
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            const activeNav = document.getElementById('nav-' + tabId);
-            if(activeNav) {
-                activeNav.classList.add('bg-blue-600', 'text-white');
+            const activeTab = document.getElementById('tab-' + deptId);
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
             }
 
-            if(tabId === 'toolroom') renderToolroom();
-            if(tabId === 'hod') renderHOD();
-            if(tabId === 'supervisor') renderSupervisor();
+            if(deptId === 'toolroom') renderToolroom();
+            if(deptId === 'hod') renderHOD();
+            if(deptId === 'supervisor') renderSupervisor();
         }
 
-        // 2) Setter "Register New Setup" Card Action
+        // 3) Open Register New Setup Form upon Card Click
         function openSetupForm() {
             const formElem = document.getElementById('setupFormContainer');
-            formElem.scrollIntoView({ behavior: 'smooth' });
-            formElem.classList.add('ring-2', 'ring-blue-500');
-            setTimeout(() => formElem.classList.remove('ring-2', 'ring-blue-500'), 2000);
+            if (formElem) {
+                formElem.scrollIntoView({ behavior: 'smooth' });
+                formElem.classList.add('ring-2', 'ring-blue-500');
+                setTimeout(() => formElem.classList.remove('ring-2', 'ring-blue-500'), 2000);
+            }
         }
 
         function handleSetterSubmit(e) {
@@ -554,7 +525,7 @@
             triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
         }
 
-        // 2) Show Data in Excel Format Table Modal
+        // Excel View Modal
         function showExcelView(title) {
             document.getElementById('excelModalTitle').innerHTML = `<i class="fas fa-file-excel text-green-600 mr-2"></i> Excel View: ${title}`;
             const tbody = document.getElementById('excelTableBody');
@@ -577,7 +548,6 @@
             document.getElementById('excelModal').classList.add('hidden');
         }
 
-        // 3) Setter Correction Required Logic & Modal
         function openSetterCorrectionModal() {
             const req = activeSetup.correctionRequirement;
             document.getElementById('setterCorrectionText').innerText = req;
@@ -602,11 +572,9 @@
             document.getElementById('metric-correction-req').innerText = "None";
             document.getElementById('metric-sop-approve').innerText = "Pending";
 
-            // Notification direct to STD Room and regular process runs
             triggerAlert("ALERT TO CMM / STD ROOM", `Setter completed correction for ${activeSetup.partName}. Regular inspection process initiated!`);
         }
 
-        // 5) Tool Room Fixture Functions
         function toggleFixtureInput() {
             const avail = document.getElementById('toolroomFixtureAvail').value;
             const inputGroup = document.getElementById('toolroomFixtureNoGroup');
@@ -659,6 +627,7 @@
 
         function renderToolroom() {
             const tbody = document.getElementById('toolroomTable');
+            if (!tbody) return;
             tbody.innerHTML = `
                 <tr class="border-b">
                     <td class="p-3 font-semibold">${activeSetup.partName} (${activeSetup.partNo})</td>
@@ -700,8 +669,10 @@
         }
 
         function updateMetrics() {
-            document.getElementById('metric-tool-ready').innerText = activeSetup.toolingReady ? "1" : "0";
-            document.getElementById('metric-tool-notready').innerText = activeSetup.toolingReady ? "0" : "1";
+            const readyElem = document.getElementById('metric-tool-ready');
+            const notReadyElem = document.getElementById('metric-tool-notready');
+            if(readyElem) readyElem.innerText = activeSetup.toolingReady ? "1" : "0";
+            if(notReadyElem) notReadyElem.innerText = activeSetup.toolingReady ? "0" : "1";
         }
 
         function sendSampleCuttingAlert() {
@@ -720,36 +691,44 @@
             activeSetup.qualityStatus = status;
             activeSetup.correctionRequirement = reqText;
 
-            document.getElementById('metric-sop-approve').innerText = status === 'SOP APPROVED' ? 'APPROVED' : 'Pending';
-            document.getElementById('metric-correction-req').innerText = reqText;
+            const sopElem = document.getElementById('metric-sop-approve');
+            const reqElem = document.getElementById('metric-correction-req');
+            if(sopElem) sopElem.innerText = status === 'SOP APPROVED' ? 'APPROVED' : 'Pending';
+            if(reqElem) reqElem.innerText = reqText;
 
             triggerAlert("ALERT TO SETTER", `Quality Department Status: ${status}`);
         }
 
-        // 3) Quality Sample Correction Request Trigger
         function submitQualityCorrection() {
             const selectedRequirement = document.getElementById('sampleCorrectionSelect').value;
             activeSetup.qualityStatus = "CORRECTION REQUIRED";
             activeSetup.correctionRequirement = selectedRequirement;
 
-            document.getElementById('metric-sop-approve').innerText = 'Pending';
-            document.getElementById('metric-correction-req').innerText = selectedRequirement;
+            const sopElem = document.getElementById('metric-sop-approve');
+            const reqElem = document.getElementById('metric-correction-req');
+            if(sopElem) sopElem.innerText = 'Pending';
+            if(reqElem) reqElem.innerText = selectedRequirement;
 
             triggerAlert("CRITICAL SETTER ALERT", `QUALITY ALERT: ${selectedRequirement}. Immediate action required!`, true);
         }
 
         function renderSupervisor() {
+            const appElem = document.getElementById('supApprovedCount');
+            const pendElem = document.getElementById('supPendingCount');
+            if(!appElem || !pendElem) return;
+
             if(activeSetup.qualityStatus === 'SOP APPROVED') {
-                document.getElementById('supApprovedCount').innerText = "1";
-                document.getElementById('supPendingCount').innerText = "0";
+                appElem.innerText = "1";
+                pendElem.innerText = "0";
             } else {
-                document.getElementById('supApprovedCount').innerText = "0";
-                document.getElementById('supPendingCount').innerText = "1";
+                appElem.innerText = "0";
+                pendElem.innerText = "1";
             }
         }
 
         function renderHOD() {
             const tbody = document.getElementById('hodTable');
+            if(!tbody) return;
             tbody.innerHTML = `
                 <tr class="border-b">
                     <td class="p-3 font-bold">${activeSetup.partName} - ${activeSetup.partNo}</td>

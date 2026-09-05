@@ -104,7 +104,7 @@
                     <h2 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4"><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
                         
-                        <div onclick="openSetupForm()" class="bg-blue-50 p-3 rounded-xl border border-blue-200 cursor-pointer hover:bg-blue-100 transition shadow-sm">
+                        <div onclick="toggleSetupForm()" class="bg-blue-50 p-3 rounded-xl border border-blue-200 cursor-pointer hover:bg-blue-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Register New Setup</p>
                                 <i class="fas fa-plus-circle text-blue-600 text-xs"></i>
@@ -112,7 +112,7 @@
                             <p id="metric-total" class="text-xl font-bold text-blue-700">1</p>
                         </div>
 
-                        <div onclick="showExcelView('Tool Room Ready')" class="bg-green-50 p-3 rounded-xl border border-green-200 cursor-pointer hover:bg-green-100 transition shadow-sm">
+                        <div onclick="showInlineExcelView('Tool Room Ready')" class="bg-green-50 p-3 rounded-xl border border-green-200 cursor-pointer hover:bg-green-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Tool Room Ready</p>
                                 <i class="fas fa-check text-green-600 text-xs"></i>
@@ -120,7 +120,7 @@
                             <p id="metric-tool-ready" class="text-xl font-bold text-green-700">0</p>
                         </div>
 
-                        <div onclick="showExcelView('Pending Setup')" class="bg-yellow-50 p-3 rounded-xl border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition shadow-sm">
+                        <div onclick="showInlineExcelView('Pending Setup')" class="bg-yellow-50 p-3 rounded-xl border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Pending Setup</p>
                                 <i class="fas fa-hourglass-half text-yellow-600 text-xs"></i>
@@ -128,7 +128,7 @@
                             <p id="metric-pending" class="text-xl font-bold text-yellow-700">1</p>
                         </div>
 
-                        <div onclick="showExcelView('Tooling Not Ready')" class="bg-red-50 p-3 rounded-xl border border-red-200 cursor-pointer hover:bg-red-100 transition shadow-sm">
+                        <div onclick="showInlineExcelView('Tooling Not Ready')" class="bg-red-50 p-3 rounded-xl border border-red-200 cursor-pointer hover:bg-red-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Tooling Not Ready</p>
                                 <i class="fas fa-exclamation-circle text-red-600 text-xs"></i>
@@ -136,7 +136,7 @@
                             <p id="metric-tool-notready" class="text-xl font-bold text-red-700">1</p>
                         </div>
 
-                        <div onclick="showExcelView('SOP Approved Status')" class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition shadow-sm">
+                        <div onclick="showInlineExcelView('SOP Approved Status')" class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">SOP Approve</p>
                                 <i class="fas fa-file-signature text-emerald-600 text-xs"></i>
@@ -152,7 +152,7 @@
                             <p id="metric-correction-req" class="text-xs font-bold mt-1 text-orange-700">None</p>
                         </div>
 
-                        <div onclick="showExcelView('Fixture Serial Details')" class="bg-purple-50 p-3 rounded-xl border border-purple-200 cursor-pointer hover:bg-purple-100 transition shadow-sm">
+                        <div onclick="showInlineExcelView('Fixture Serial Details')" class="bg-purple-50 p-3 rounded-xl border border-purple-200 cursor-pointer hover:bg-purple-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Fixture Serial No.</p>
                                 <i class="fas fa-hashtag text-purple-600 text-xs"></i>
@@ -160,7 +160,7 @@
                             <p id="metric-fixture-no" class="text-xs font-bold mt-1 text-purple-700">FIX-102</p>
                         </div>
 
-                        <div onclick="showExcelView('Available Fixtures')" class="bg-teal-50 p-3 rounded-xl border border-teal-200 cursor-pointer hover:bg-teal-100 transition shadow-sm">
+                        <div onclick="showInlineExcelView('Available Fixtures')" class="bg-teal-50 p-3 rounded-xl border border-teal-200 cursor-pointer hover:bg-teal-100 transition shadow-sm">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-[11px] text-slate-600 font-bold">Available Fixtures</p>
                                 <i class="fas fa-cubes text-teal-600 text-xs"></i>
@@ -171,7 +171,39 @@
                     </div>
                 </div>
 
-                <div id="setupFormContainer" class="bg-white p-6 rounded-xl shadow border">
+                <!-- बदल २: Premium Inline Excel View Component (Dashboard च्या अगदी खाली) -->
+                <div id="inlineExcelContainer" class="hidden bg-white rounded-xl border-2 border-emerald-600 shadow-xl overflow-hidden transition-all duration-300">
+                    <div class="bg-emerald-700 text-white p-3.5 flex justify-between items-center px-5">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-file-excel text-emerald-200 text-xl"></i>
+                            <h3 id="inlineExcelTitle" class="font-bold text-md tracking-wide">Excel View: Tool Room Ready</h3>
+                        </div>
+                        <button onclick="closeInlineExcelView()" class="text-emerald-100 hover:text-white bg-emerald-800 hover:bg-emerald-900 w-8 h-8 rounded-full flex items-center justify-center transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto p-4 bg-emerald-50/30">
+                        <table class="w-full text-xs text-left border-collapse border border-emerald-200 bg-white rounded-lg shadow-sm">
+                            <thead>
+                                <tr class="bg-emerald-600 text-white">
+                                    <th class="p-3 border border-emerald-700 font-semibold">Part Name</th>
+                                    <th class="p-3 border border-emerald-700 font-semibold">Part No.</th>
+                                    <th class="p-3 border border-emerald-700 font-semibold">Fixture No.</th>
+                                    <th class="p-3 border border-emerald-700 font-semibold">Setup Type</th>
+                                    <th class="p-3 border border-emerald-700 font-semibold">Priority</th>
+                                    <th class="p-3 border border-emerald-700 font-semibold">Tooling Status</th>
+                                    <th class="p-3 border border-emerald-700 font-semibold">Correction Required</th>
+                                    <th class="p-3 border border-emerald-700 font-semibold">Quality Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inlineExcelTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- बदल १: Form लपवला आहे (hidden class) -->
+                <div id="setupFormContainer" class="hidden bg-white p-6 rounded-xl shadow border transition-all duration-300">
                     <h3 class="text-md font-bold mb-4 text-slate-800 border-b pb-2"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup Change</h3>
                     <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
@@ -356,36 +388,6 @@
         </main>
     </div>
 
-    <div id="excelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full p-6 border">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 id="excelModalTitle" class="text-lg font-bold text-slate-800"><i class="fas fa-file-excel text-green-600 mr-2"></i> Excel Data View</h3>
-                <button onclick="closeExcelModal()" class="text-slate-500 hover:text-slate-800 font-bold text-lg">&times;</button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left border border-slate-300">
-                    <thead class="bg-green-700 text-white">
-                        <tr>
-                            <th class="p-2 border">Part Name</th>
-                            <th class="p-2 border">Part No.</th>
-                            <th class="p-2 border">Fixture No.</th>
-                            <th class="p-2 border">Setup Type</th>
-                            <th class="p-2 border">Priority</th>
-                            <th class="p-2 border">Tooling Status</th>
-                            <th class="p-2 border">Correction Required</th>
-                            <th class="p-2 border">Quality Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="excelTableBody">
-                    </tbody>
-                </table>
-            </div>
-            <div class="text-right mt-4">
-                <button onclick="closeExcelModal()" class="bg-slate-700 text-white px-4 py-2 rounded text-xs font-bold hover:bg-slate-800">Close</button>
-            </div>
-        </div>
-    </div>
-
     <div id="setterCorrectionModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-orange-300 text-center">
             <div class="text-orange-500 text-4xl mb-2">
@@ -525,12 +527,16 @@
             if(deptId === 'supervisor') renderSupervisor();
         }
 
-        function openSetupForm() {
+        // नवीनन कार्य: फॉर्म दाखवणे किंवा लपवणे (Toggle)
+        function toggleSetupForm() {
             const formElem = document.getElementById('setupFormContainer');
             if (formElem) {
-                formElem.scrollIntoView({ behavior: 'smooth' });
-                formElem.classList.add('ring-2', 'ring-blue-500');
-                setTimeout(() => formElem.classList.remove('ring-2', 'ring-blue-500'), 2000);
+                if (formElem.classList.contains('hidden')) {
+                    formElem.classList.remove('hidden');
+                    formElem.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    formElem.classList.add('hidden');
+                }
             }
         }
 
@@ -549,26 +555,29 @@
             triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
         }
 
-        function showExcelView(title) {
-            document.getElementById('excelModalTitle').innerHTML = `<i class="fas fa-file-excel text-green-600 mr-2"></i> Excel View: ${title}`;
-            const tbody = document.getElementById('excelTableBody');
+        // नवीन कार्य: डॅशबोर्डच्या खाली प्रीमिअम एक्सेल व्ह्यू दाखवणे
+        function showInlineExcelView(title) {
+            document.getElementById('inlineExcelTitle').innerText = `Excel View: ${title}`;
+            const tbody = document.getElementById('inlineExcelTableBody');
             tbody.innerHTML = `
-                <tr class="bg-white hover:bg-slate-50">
-                    <td class="p-2 border font-bold text-slate-800">${activeSetup.partName}</td>
-                    <td class="p-2 border">${activeSetup.partNo}</td>
-                    <td class="p-2 border font-semibold">${activeSetup.fixtureNo} (${activeSetup.fixtureAvailable})</td>
-                    <td class="p-2 border">${activeSetup.setupType}</td>
-                    <td class="p-2 border font-bold text-blue-600">${activeSetup.priority}</td>
-                    <td class="p-2 border">${activeSetup.toolingReady ? '<span class="text-green-600 font-bold">READY</span>' : '<span class="text-red-500 font-bold">PENDING</span>'}</td>
-                    <td class="p-2 border text-orange-600 font-bold">${activeSetup.correctionRequirement}</td>
-                    <td class="p-2 border font-bold">${activeSetup.qualityStatus}</td>
+                <tr class="bg-white hover:bg-emerald-50 transition">
+                    <td class="p-3 border border-emerald-200 font-bold text-slate-800">${activeSetup.partName}</td>
+                    <td class="p-3 border border-emerald-200 text-slate-600">${activeSetup.partNo}</td>
+                    <td class="p-3 border border-emerald-200 font-semibold text-slate-700">${activeSetup.fixtureNo} (${activeSetup.fixtureAvailable})</td>
+                    <td class="p-3 border border-emerald-200 text-slate-600">${activeSetup.setupType}</td>
+                    <td class="p-3 border border-emerald-200 font-bold text-blue-600">${activeSetup.priority}</td>
+                    <td class="p-3 border border-emerald-200">${activeSetup.toolingReady ? '<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded font-bold">READY</span>' : '<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded font-bold">PENDING</span>'}</td>
+                    <td class="p-3 border border-emerald-200 text-orange-600 font-bold">${activeSetup.correctionRequirement}</td>
+                    <td class="p-3 border border-emerald-200 font-bold text-slate-700">${activeSetup.qualityStatus}</td>
                 </tr>
             `;
-            document.getElementById('excelModal').classList.remove('hidden');
+            const container = document.getElementById('inlineExcelContainer');
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth' });
         }
 
-        function closeExcelModal() {
-            document.getElementById('excelModal').classList.add('hidden');
+        function closeInlineExcelView() {
+            document.getElementById('inlineExcelContainer').classList.add('hidden');
         }
 
         function openSetterCorrectionModal() {

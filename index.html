@@ -29,15 +29,13 @@
         }
        .alert-active { animation: pulse-red 0.8s infinite; }
 
-        /* FIX 2: PREMIUM COLOUR FOR TOOL ROOM EXCEL VIEW */
-       .premium-toolroom {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2a1a 100%)!important;
-            border: 1px solid #22c55e!important;
-            box-shadow: 0 0 30px rgba(34,197,94,0.3)!important;
-        }
-       .premium-toolroom-header {
-            background: linear-gradient(90deg, #15803d, #22c55e, #16a34a)!important;
-        }
+        /* PRODUCTION DASHBOARD - EXACT AS YOUR EXAMPLE PHOTO - PREMIUM */
+       .prod-wrap { background: #010b18; border: 1px solid #123055; border-radius: 12px; padding: 14px; }
+       .kpi-card { background: #02101f; border-radius: 8px; padding: 14px 16px; border: 1px solid; display: flex; align-items: center; gap: 14px; }
+       .prod-table th { background: #0a2342; color: #cbd5e1; padding: 12px 8px; font-size: 14px; border: 1px solid #123055; }
+       .prod-table td { padding: 10px 8px; font-size: 14px; border: 1px solid #123055; background: #020f1f; text-align: center; }
+       .badge-on { background: #16732e; color: white; padding: 5px 16px; border-radius: 6px; font-weight: bold; font-size: 12px; display: inline-block; }
+       .badge-off { background: #8b1a1a; color: white; padding: 5px 16px; border-radius: 6px; font-weight: bold; font-size: 12px; display: inline-block; }
     </style>
 </head>
 <body class="font-sans min-h-screen">
@@ -129,22 +127,22 @@
                             <p id="metric-total" class="text-2xl font-bold text-cyan-400 mt-1"><i class="fas fa-plus-circle"></i></p>
                         </div>
 
-                        <div onclick="showInlineExcelView('Tool Room Ready')" class="card-dark p-3 rounded-xl cursor-pointer hover:border-green-400 transition shadow-sm text-center">
+                        <div onclick="showProductionDashboard()" class="card-dark p-3 rounded-xl cursor-pointer hover:border-green-400 transition shadow-sm text-center">
                             <p class="text-[11px] text-green-300 font-bold">Tool Room Ready</p>
-                            <p id="metric-tool-ready" class="text-2xl font-bold text-green-400 mt-1">0</p>
+                            <p id="metric-tool-ready" class="text-2xl font-bold text-green-400 mt-1">7</p>
                         </div>
 
-                        <div onclick="showInlineExcelView('Pending Setup')" class="card-dark p-3 rounded-xl cursor-pointer hover:border-yellow-400 transition shadow-sm text-center">
+                        <div onclick="showProductionDashboard()" class="card-dark p-3 rounded-xl cursor-pointer hover:border-yellow-400 transition shadow-sm text-center">
                             <p class="text-[11px] text-yellow-300 font-bold">Pending Setup</p>
                             <p id="metric-pending" class="text-2xl font-bold text-yellow-400 mt-1">1</p>
                         </div>
 
-                        <div onclick="showInlineExcelView('Tooling Not Ready')" class="card-dark p-3 rounded-xl cursor-pointer hover:border-red-400 transition shadow-sm text-center">
+                        <div onclick="showProductionDashboard()" class="card-dark p-3 rounded-xl cursor-pointer hover:border-red-400 transition shadow-sm text-center">
                             <p class="text-[11px] text-red-300 font-bold">Tooling Not Ready</p>
                             <p id="metric-tool-notready" class="text-2xl font-bold text-red-400 mt-1">1</p>
                         </div>
 
-                        <div onclick="showInlineExcelView('SOP Approved Status')" class="card-dark p-3 rounded-xl cursor-pointer hover:border-emerald-400 transition shadow-sm text-center">
+                        <div onclick="showProductionDashboard()" class="card-dark p-3 rounded-xl cursor-pointer hover:border-emerald-400 transition shadow-sm text-center">
                             <p class="text-[11px] text-emerald-300 font-bold">SOP Approve</p>
                             <p id="metric-sop-approve" class="text-xs font-bold text-emerald-400 mt-2">Pending</p>
                         </div>
@@ -154,12 +152,12 @@
                             <p id="metric-correction-req" class="text-xs font-bold text-orange-400 mt-2">None</p>
                         </div>
 
-                        <div onclick="showInlineExcelView('Fixture Serial Details')" class="card-dark p-3 rounded-xl cursor-pointer hover:border-purple-400 transition shadow-sm text-center">
+                        <div onclick="showProductionDashboard()" class="card-dark p-3 rounded-xl cursor-pointer hover:border-purple-400 transition shadow-sm text-center">
                             <p class="text-[11px] text-purple-300 font-bold">Fixture Serial No.</p>
                             <p id="metric-fixture-no" class="text-xs font-bold text-purple-400 mt-2">FIX-102</p>
                         </div>
 
-                        <div onclick="showInlineExcelView('Available Fixtures')" class="card-dark p-3 rounded-xl cursor-pointer hover:border-teal-400 transition shadow-sm text-center">
+                        <div onclick="showProductionDashboard()" class="card-dark p-3 rounded-xl cursor-pointer hover:border-teal-400 transition shadow-sm text-center">
                             <p class="text-[11px] text-teal-300 font-bold">Available Fixtures</p>
                             <p class="text-2xl font-bold text-teal-400 mt-1">5</p>
                         </div>
@@ -167,11 +165,85 @@
                     </div>
                 </div>
 
-                <!-- DARK PRODUCTION LAYOUT (EXCEL VIEW TABLE) - DASHBOARD KHALI PREMIUM -->
+                <!-- PRODUCTION DASHBOARD - YOUR EXAMPLE PHOTO EXACT - BELOW DASHBOARD PREMIUM -->
+                <div id="productionDashboardView" class="hidden prod-wrap">
+                    <div class="flex justify-between items-center px-2 py-2">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-industry text-2xl text-cyan-400"></i>
+                            <h1 class="text-2xl font-black text-[#00b7ff] tracking-wide">PRODUCTION DASHBOARD</h1>
+                        </div>
+                        <div class="flex items-center gap-4 text-white text-sm font-bold">
+                            <span><i class="far fa-calendar-alt mr-2"></i>01 SEP 2026</span>
+                            <span class="w-[1px] h-6 bg-slate-600"></span>
+                            <span><i class="far fa-clock mr-2"></i><span id="prodLiveTime">08:45:30 PM</span></span>
+                            <button onclick="closeProductionDashboard()" class="bg-slate-800 w-8 h-8 rounded-full ml-3"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mt-3">
+                        <div class="kpi-card border-[#00b7ff]">
+                            <i class="fas fa-cubes text-3xl text-[#00b7ff]"></i>
+                            <div class="text-center w-full">
+                                <p class="text-[11px] text-white">TOTAL PARTS</p>
+                                <p class="text-3xl font-bold">12</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card border-[#22c55e] bg-[#071a0f]">
+                            <i class="far fa-check-circle text-3xl text-[#22c55e]"></i>
+                            <div class="text-center w-full">
+                                <p class="text-[11px] text-[#f87171] font-bold">ON TIME</p>
+                                <p class="text-3xl font-bold">7</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card border-[#ef4444] bg-[#1a0a0a]">
+                            <i class="far fa-clock text-3xl text-[#ef4444]"></i>
+                            <div class="text-center w-full">
+                                <p class="text-[11px] text-[#f87171] font-bold">DELAYED</p>
+                                <p class="text-3xl font-bold">3</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card border-[#eab308] bg-[#1a1600]">
+                            <i class="fas fa-box-open text-3xl text-[#eab308]"></i>
+                            <div class="text-center w-full">
+                                <p class="text-[11px] text-[#facc15] font-bold">MAT. SHORTAGE</p>
+                                <p class="text-3xl font-bold">2</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card border-[#334155] bg-[#0f172a]">
+                            <div class="w-full">
+                                <p class="text-[12px] font-bold">STATUS:</p>
+                                <div class="flex gap-3 mt-1 text-[11px]">
+                                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#22c55e] rounded-full"></span>ON TIME</span>
+                                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#ef4444] rounded-full"></span>DELAYED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto mt-4 rounded-lg border border-[#123055]">
+                        <table class="w-full prod-table border-collapse">
+                            <thead>
+                                <tr>
+                                    <th>Part No</th>
+                                    <th>Part Name</th>
+                                    <th>Machine</th>
+                                    <th>Scheduled</th>
+                                    <th>Delay Time</th>
+                                    <th>Mat. Shortage</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prodTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- OLD INLINE EXCEL - KEPT FOR OTHER CARDS -->
                 <div id="inlineExcelContainer" class="hidden card-dark rounded-xl shadow-2xl overflow-hidden border border-cyan-500/30 transition-all duration-300">
-                    <div id="inlineExcelHeader" class="bg-slate-900 text-white p-3.5 flex justify-between items-center px-5 border-b border-slate-800">
+                    <div class="bg-slate-900 text-white p-3.5 flex justify-between items-center px-5 border-b border-slate-800">
                         <div class="flex items-center space-x-2">
-                            <i id="inlineExcelIcon" class="fas fa-table text-cyan-400 text-xl"></i>
+                            <i class="fas fa-table text-cyan-400 text-xl"></i>
                             <h3 id="inlineExcelTitle" class="font-bold text-md text-cyan-400 tracking-wide">PRODUCTION TABLE VIEW</h3>
                         </div>
                         <button onclick="closeInlineExcelView()" class="text-slate-400 hover:text-white bg-slate-800 w-8 h-8 rounded-full flex items-center justify-center transition">
@@ -338,7 +410,7 @@
         </main>
     </div>
 
-    <!-- REGISTER NEW SETUP MODAL (पॉप-अप फॉर्म) - FIX 1: HIDDEN BY DEFAULT -->
+    <!-- REGISTER NEW SETUP MODAL (पॉप-अप फॉर्म) - FIX 1 -->
     <div id="setupModal" class="fixed inset-0 bg-black/75 flex items-center justify-center hidden z-50 p-4">
         <div class="card-dark rounded-2xl shadow-2xl max-w-xl w-full p-6 border border-cyan-500/30">
             <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
@@ -427,7 +499,6 @@
     </div>
 
     <script>
-        // PWA Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -439,14 +510,19 @@
         let currentUser = null;
         let vibrateInterval = null;
 
-        // स्क्रीनशॉटसारखा उत्पादन डेटा (Production Data Array)
-        let productionList = [
-            { partNo: '22W84300', partName: 'JP Rear Caliper', machine: 'EN-3', scheduled: '8:10:59 PM TO 4:10:59 PM', delay: '00:00 Mins', shortage: 'NO', status: 'ONTIME' },
-            { partNo: '22W84310', partName: 'JP Front Caliper', machine: 'EN-5', scheduled: '8:00:00 PM TO 4:00:00 PM', delay: '00:07 Mins', shortage: 'NO', status: 'DELAYED' },
-            { partNo: '22W84320', partName: 'JP Caliper Bracket', machine: 'EN-8', scheduled: '8:15:00 PM TO 4:15:00 PM', delay: '00:12 Mins', shortage: 'YES', status: 'DELAYED' },
-            { partNo: '22W84330', partName: 'Caliper Pin', machine: 'MK-3', scheduled: '8:30:00 PM TO 4:30:00 PM', delay: '00:00 Mins', shortage: 'NO', status: 'ONTIME' },
-            { partNo: '22W84340', partName: 'Bleeder Screw', machine: 'MK-7', scheduled: '8:20:00 PM TO 4:20:00 PM', delay: '00:00 Mins', shortage: 'NO', status: 'ONTIME' },
-            { partNo: '22W84350', partName: 'Pad Retainer', machine: 'M-2', scheduled: '8:05:00 PM TO 4:05:00 PM', delay: '00:15 Mins', shortage: 'YES', status: 'DELAYED' }
+        let productionData = [
+            { no: '22W84300', name: 'JP Rear Caliper', mc: 'EN-3', sch: '8:10:59 PM TO 4:10:59 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' },
+            { no: '22W84310', name: 'JP Front Caliper', mc: 'EN-5', sch: '8:00:00 PM TO 4:00:00 PM', delay: '00:07 Mins', short: 'NO', status: 'DELAYED' },
+            { no: '22W84320', name: 'JP Caliper Bracket', mc: 'EN-8', sch: '8:15:00 PM TO 4:15:00 PM', delay: '00:12 Mins', short: 'YES', status: 'DELAYED' },
+            { no: '22W84330', name: 'Caliper Pin', mc: 'MK-3', sch: '8:30:00 PM TO 4:30:00 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' },
+            { no: '22W84340', name: 'Bleeder Screw', mc: 'MK-7', sch: '8:20:00 PM TO 4:20:00 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' },
+            { no: '22W84350', name: 'Pad Retainer', mc: 'M-2', sch: '8:05:00 PM TO 4:05:00 PM', delay: '00:15 Mins', short: 'YES', status: 'DELAYED' },
+            { no: '22W84360', name: 'Shim Plate', mc: 'L-1', sch: '8:10:00 PM TO 4:10:00 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' },
+            { no: '22W84370', name: 'Piston', mc: 'PN-2', sch: '8:00:00 PM TO 4:00:00 PM', delay: '00:05 Mins', short: 'NO', status: 'DELAYED' },
+            { no: '22W84380', name: 'Seal Kit', mc: 'BR-1', sch: '8:25:00 PM TO 4:25:00 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' },
+            { no: '22W84390', name: 'Guide Pin', mc: 'EN-10', sch: '8:10:00 PM TO 4:10:00 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' },
+            { no: '22W84400', name: 'Boot', mc: 'M-5', sch: '8:30:00 PM TO 4:30:00 PM', delay: '00:00 Mins', short: 'YES', status: 'ONTIME' },
+            { no: '22W84410', name: 'Washer', mc: 'MK-11', sch: '8:15:00 PM TO 4:15:00 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' },
         ];
 
         let activeSetup = {
@@ -467,25 +543,44 @@
             correctionRequirement: "None"
         };
 
+        function renderProdTable(){
+            const tbody=document.getElementById('prodTableBody');
+            if(!tbody) return;
+            tbody.innerHTML='';
+            productionData.forEach(r=>{
+                const isDelay=r.status==='DELAYED';
+                tbody.innerHTML+=`
+                <tr>
+                    <td style="color:#00ccff;font-weight:bold">${r.no}</td>
+                    <td style="text-align:left;padding-left:12px">${r.name}</td>
+                    <td>${r.mc}</td>
+                    <td style="color:#ccc">${r.sch}</td>
+                    <td class="${r.delay!=='00:00 Mins'?'text-[#ff1a1a]':'text-[#22c55e]'} font-bold">${r.delay}</td>
+                    <td class="${r.short==='YES'?'text-[#ff1a1a]':'text-[#22c55e]'} font-bold">${r.short}</td>
+                    <td><span class="${isDelay?'badge-off':'badge-on'}">${r.status}</span></td>
+                </tr>`;
+            });
+        }
+
         function updateLiveTime() {
             const now = new Date();
-            document.getElementById('topLiveTime').innerText = now.toLocaleTimeString();
-
+            const topTime=document.getElementById('topLiveTime');
+            if(topTime) topTime.innerText = now.toLocaleTimeString();
+            const prodTime=document.getElementById('prodLiveTime');
+            if(prodTime) prodTime.innerText = now.toLocaleTimeString();
             const minutes = now.getHours() * 60 + now.getMinutes();
             let shift = "Shift C";
-            if (minutes >= 465 && minutes < 975) {
-                shift = "Shift A";
-            } else if (minutes >= 975 && minutes < 1440) {
-                shift = "Shift B";
-            } else {
-                shift = "Shift C";
-            }
-
-            document.getElementById('topLiveShift').innerText = "Shift: " + shift;
-            document.getElementById('shiftDate').value = now.toLocaleDateString() + " - " + shift;
+            if (minutes >= 465 && minutes < 975) { shift = "Shift A"; }
+            else if (minutes >= 975 && minutes < 1440) { shift = "Shift B"; }
+            else { shift = "Shift C"; }
+            const topShift=document.getElementById('topLiveShift');
+            if(topShift) topShift.innerText = "Shift: " + shift;
+            const sd=document.getElementById('shiftDate');
+            if(sd) sd.value = now.toLocaleDateString() + " - " + shift;
         }
         setInterval(updateLiveTime, 1000);
         updateLiveTime();
+        renderProdTable();
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('sutom_user');
@@ -502,7 +597,6 @@
                 id: document.getElementById('loginId').value,
                 dept: document.getElementById('loginDept').value
             };
-
             localStorage.setItem('sutom_user', JSON.stringify(currentUser));
             loadDashboard(currentUser);
         }
@@ -514,7 +608,6 @@
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userInfo').classList.add('flex');
             document.getElementById('userBadge').innerText = `${user.name} (${user.dept.toUpperCase()})`;
-
             showDepartmentTab(user.dept);
         }
 
@@ -530,25 +623,22 @@
 
         function showDepartmentTab(deptId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-
             const activeTab = document.getElementById('tab-' + deptId);
-            if (activeTab) {
-                activeTab.classList.remove('hidden');
-            }
-
+            if (activeTab) { activeTab.classList.remove('hidden'); }
             if(deptId === 'toolroom') renderToolroom();
             if(deptId === 'hod') renderHOD();
             if(deptId === 'supervisor') renderSupervisor();
         }
 
-        // FIX 1: Modal Controls - HIDDEN BY DEFAULT
-        function openSetupModal() {
-            document.getElementById('setupModal').classList.remove('hidden');
-        }
+        function openSetupModal() { document.getElementById('setupModal').classList.remove('hidden'); }
+        function closeSetupModal() { document.getElementById('setupModal').classList.add('hidden'); }
 
-        function closeSetupModal() {
-            document.getElementById('setupModal').classList.add('hidden');
+        function showProductionDashboard(){
+            document.getElementById('productionDashboardView').classList.remove('hidden');
+            document.getElementById('productionDashboardView').scrollIntoView({behavior:'smooth', block:'start'});
+            renderProdTable();
         }
+        function closeProductionDashboard(){ document.getElementById('productionDashboardView').classList.add('hidden'); }
 
         function handleSetterSubmit(e) {
             e.preventDefault();
@@ -558,86 +648,31 @@
             activeSetup.fixtureNo = document.getElementById('fixtureNo').value;
             activeSetup.priority = document.getElementById('priority').value;
             activeSetup.pallet = document.getElementById('pallet').value;
-
             const machine = document.getElementById('machineNo').value || 'EN-1';
-
-            // Add to production array
-            productionList.unshift({
-                partNo: activeSetup.partNo,
-                partName: activeSetup.partName,
-                machine: machine,
-                scheduled: '8:00:00 PM TO 4:00:00 PM',
-                delay: '00:00 Mins',
-                shortage: 'NO',
-                status: 'ONTIME'
-            });
-
+            productionData.unshift({ no: activeSetup.partNo, name: activeSetup.partName, mc: machine, sch: '8:00:00 PM TO 4:00:00 PM', delay: '00:00 Mins', short: 'NO', status: 'ONTIME' });
             document.getElementById('metric-fixture-no').innerText = activeSetup.fixtureNo;
-            document.getElementById('stdSampleText').innerText = `Sample Pending for Part: ${activeSetup.partName} (${activeSetup.partNo})`;
-
             closeSetupModal();
-            showInlineExcelView('Register New Setup');
+            showProductionDashboard();
             triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
         }
 
-        // FIX 2: DARK EXCEL TABLE WITH PREMIUM COLOUR FOR TOOL ROOM
-        function showInlineExcelView(title) {
+        function showInlineExcelView(title){
             const isToolRoom = title.toLowerCase().includes('tool room');
-            const container = document.getElementById('inlineExcelContainer');
-            const header = document.getElementById('inlineExcelHeader');
-            const titleEl = document.getElementById('inlineExcelTitle');
-            const iconEl = document.getElementById('inlineExcelIcon');
-
-            if(isToolRoom){
-                container.className = "premium-toolroom rounded-xl shadow-2xl overflow-hidden transition-all duration-300 block";
-                header.className = "premium-toolroom-header text-white p-4 flex justify-between items-center px-5 border-b border-green-600";
-                titleEl.className = "font-bold text-md tracking-wide text-white";
-                titleEl.innerText = "🔧 TOOL ROOM READY - PREMIUM EXCEL VIEW";
-                iconEl.className = "fas fa-crown text-yellow-300 text-xl";
-            } else {
-                container.className = "card-dark rounded-xl shadow-2xl overflow-hidden border border-cyan-500/30 transition-all duration-300 block";
-                header.className = "bg-slate-900 text-white p-3.5 flex justify-between items-center px-5 border-b border-slate-800";
-                titleEl.className = "font-bold text-md text-cyan-400 tracking-wide";
-                titleEl.innerText = title.toUpperCase() + " - PRODUCTION TABLE VIEW";
-                iconEl.className = "fas fa-table text-cyan-400 text-xl";
-            }
-
+            if(isToolRoom){ showProductionDashboard(); return; }
+            document.getElementById('inlineExcelTitle').innerText = title.toUpperCase();
             const tbody = document.getElementById('inlineExcelTableBody');
             tbody.innerHTML = '';
-
-            productionList.forEach(item => {
-                const isOntime = item.status === 'ONTIME';
-                const isShortage = item.shortage === 'YES';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-800/50 transition border-b border-slate-800">
-                        <td class="p-3 font-mono text-cyan-400 font-bold">${item.partNo}</td>
-                        <td class="p-3 font-semibold text-slate-200">${item.partName}</td>
-                        <td class="p-3 text-slate-300">${item.machine}</td>
-                        <td class="p-3 text-slate-400">${item.scheduled}</td>
-                        <td class="p-3 font-mono ${item.delay!== '00:00 Mins'? 'text-red-400 font-bold' : 'text-green-400'}">${item.delay}</td>
-                        <td class="p-3 font-bold ${isShortage? 'text-red-500' : 'text-slate-400'}">${item.shortage}</td>
-                        <td class="p-3">
-                            <span class="px-3 py-1 rounded-full text-[11px] font-bold ${isOntime? 'bg-green-600/20 text-green-400 border border-green-500' : 'bg-red-600/20 text-red-400 border border-red-500'}">
-                                ${item.status}
-                            </span>
-                        </td>
-                    </tr>
-                `;
+            productionData.forEach(item => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800"><td class="p-3 font-mono text-cyan-400 font-bold">${item.no}</td><td class="p-3 font-semibold text-slate-200">${item.name}</td><td class="p-3 text-slate-300">${item.mc}</td><td class="p-3 text-slate-400">${item.sch}</td><td class="p-3 font-mono ${item.delay!== '00:00 Mins'? 'text-red-400 font-bold' : 'text-green-400'}">${item.delay}</td><td class="p-3 font-bold ${item.short === 'YES'? 'text-red-500' : 'text-slate-400'}">${item.short}</td><td class="p-3"><span class="px-3 py-1 rounded-full text-[11px] font-bold ${item.status==='ONTIME'? 'bg-green-600/20 text-green-400 border border-green-500' : 'bg-red-600/20 text-red-400 border border-red-500'}">${item.status}</span></td></tr>`;
             });
-
-            container.classList.remove('hidden');
-            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('inlineExcelContainer').classList.remove('hidden');
+            document.getElementById('inlineExcelContainer').scrollIntoView({ behavior: 'smooth' });
         }
-
-        function closeInlineExcelView() {
-            document.getElementById('inlineExcelContainer').classList.add('hidden');
-        }
+        function closeInlineExcelView() { document.getElementById('inlineExcelContainer').classList.add('hidden'); }
 
         function openSetterCorrectionModal() {
             const req = activeSetup.correctionRequirement;
             document.getElementById('setterCorrectionText').innerText = req;
-
             if (req!== "None" && activeSetup.qualityStatus === "CORRECTION REQUIRED") {
                 document.getElementById('correctionActionArea').classList.remove('hidden');
             } else {
@@ -645,40 +680,27 @@
             }
             document.getElementById('setterCorrectionModal').classList.remove('hidden');
         }
-
-        function closeSetterCorrectionModal() {
-            document.getElementById('setterCorrectionModal').classList.add('hidden');
-        }
-
+        function closeSetterCorrectionModal() { document.getElementById('setterCorrectionModal').classList.add('hidden'); }
         function handleCorrectionDone() {
             closeSetterCorrectionModal();
             activeSetup.qualityStatus = "Correction Done (Pending Inspection)";
             activeSetup.correctionRequirement = "None";
-
             document.getElementById('metric-correction-req').innerText = "None";
             document.getElementById('metric-sop-approve').innerText = "Pending";
-
-            triggerAlert("ALERT TO CMM / STD ROOM", `Setter completed correction for ${activeSetup.partName}. Regular inspection process initiated!`);
+            triggerAlert("ALERT TO CMM / STD ROOM", `Setter completed correction for ${activeSetup.partName}.`);
         }
 
         function toggleFixtureInput() {
             const avail = document.getElementById('toolroomFixtureAvail').value;
             const inputGroup = document.getElementById('toolroomFixtureNoGroup');
-            if (avail === 'YES') {
-                inputGroup.classList.remove('hidden');
-            } else {
-                inputGroup.classList.add('hidden');
-            }
+            if (avail === 'YES') { inputGroup.classList.remove('hidden'); }
+            else { inputGroup.classList.add('hidden'); }
         }
-
         function updateToolroomFixture() {
             const avail = document.getElementById('toolroomFixtureAvail').value;
             activeSetup.fixtureAvailable = avail;
-            if (avail === 'YES') {
-                activeSetup.fixtureNo = document.getElementById('toolroomFixtureNo').value || "FIX-102";
-            } else {
-                activeSetup.fixtureNo = "NOT AVAILABLE";
-            }
+            if (avail === 'YES') { activeSetup.fixtureNo = document.getElementById('toolroomFixtureNo').value || "FIX-102"; }
+            else { activeSetup.fixtureNo = "NOT AVAILABLE"; }
             document.getElementById('metric-fixture-no').innerText = activeSetup.fixtureNo;
             alert(`Tool Room Fixture Updated: Available = ${avail}, Serial = ${activeSetup.fixtureNo}`);
         }
@@ -687,29 +709,8 @@
             document.getElementById('alertTitle').innerText = title;
             document.getElementById('alertMessage').innerText = message;
             document.getElementById('alertModal').classList.remove('hidden');
-
-            if ("vibrate" in navigator) {
-                if (isContinuousVibrate) {
-                    navigator.vibrate([500, 200, 500, 200]);
-                    vibrateInterval = setInterval(() => {
-                        navigator.vibrate([500, 200, 500, 200]);
-                    }, 1500);
-                } else {
-                    navigator.vibrate([500, 200, 500, 200, 500]);
-                }
-            }
         }
-
-        function acknowledgeAlert() {
-            document.getElementById('alertModal').classList.add('hidden');
-            if (vibrateInterval) {
-                clearInterval(vibrateInterval);
-                vibrateInterval = null;
-            }
-            if ("vibrate" in navigator) {
-                navigator.vibrate(0);
-            }
-        }
+        function acknowledgeAlert() { document.getElementById('alertModal').classList.add('hidden'); }
 
         function renderToolroom() {
             const tbody = document.getElementById('toolroomTable');
@@ -719,12 +720,8 @@
                     <td class="p-3 font-semibold text-slate-200">${activeSetup.partName} (${activeSetup.partNo})</td>
                     <td class="p-3 font-bold text-purple-400">${activeSetup.fixtureNo}</td>
                     <td class="p-3"><span class="bg-red-900/40 text-red-400 text-xs font-bold px-2 py-1 rounded border border-red-700">${activeSetup.priority}</span></td>
-                    <td class="p-3 font-bold ${activeSetup.toolingReady? 'text-green-400':'text-red-400'}">
-                        ${activeSetup.toolingReady? 'READY' : 'PENDING'}
-                    </td>
-                    <td class="p-3 font-bold ${activeSetup.fixtureReady? 'text-green-400':'text-red-400'}">
-                        ${activeSetup.fixtureReady? 'READY' : 'PENDING'}
-                    </td>
+                    <td class="p-3 font-bold ${activeSetup.toolingReady? 'text-green-400':'text-red-400'}">${activeSetup.toolingReady? 'READY' : 'PENDING'}</td>
+                    <td class="p-3 font-bold ${activeSetup.fixtureReady? 'text-green-400':'text-red-400'}">${activeSetup.fixtureReady? 'READY' : 'PENDING'}</td>
                     <td class="p-3 space-x-1">
                         <button onclick="toggleTooling()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button>
                         <button onclick="toggleFixture()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-2 py-1 rounded">Fixture Toggle</button>
@@ -733,85 +730,47 @@
                 </tr>
             `;
         }
-
-        function toggleTooling() {
-            activeSetup.toolingReady =!activeSetup.toolingReady;
-            updateMetrics();
-            renderToolroom();
-        }
-
-        function toggleFixture() {
-            activeSetup.fixtureReady =!activeSetup.fixtureReady;
-            renderToolroom();
-        }
-
+        function toggleTooling() { activeSetup.toolingReady =!activeSetup.toolingReady; renderToolroom(); }
+        function toggleFixture() { activeSetup.fixtureReady =!activeSetup.fixtureReady; renderToolroom(); }
         function sendSetupReady() {
             if(activeSetup.toolingReady && activeSetup.fixtureReady) {
                 activeSetup.setupReady = true;
                 triggerAlert("ALERT TO SETTER", "Tool Room setup materials are READY!");
-            } else {
-                alert("Please ensure both Tooling and Fixture are marked READY first!");
-            }
+            } else { alert("Please ensure both Tooling and Fixture are marked READY first!"); }
         }
-
-        function updateMetrics() {
-            const readyElem = document.getElementById('metric-tool-ready');
-            const notReadyElem = document.getElementById('metric-tool-notready');
-            if(readyElem) readyElem.innerText = activeSetup.toolingReady? "1" : "0";
-            if(notReadyElem) notReadyElem.innerText = activeSetup.toolingReady? "0" : "1";
-        }
-
         function sendSampleCuttingAlert() {
             activeSetup.sampleCutting = true;
             document.getElementById('stdStatusBadge').className = "bg-blue-900/40 text-blue-400 text-xs px-2.5 py-1 rounded font-bold border border-blue-700";
             document.getElementById('stdStatusBadge').innerText = "Sample Received - Inspecting";
             triggerAlert("ALERT TO STD ROOM", "1st Sample Cutting Completed. Please proceed with inspection.");
         }
-
-        function sendQualityAlert() {
-            activeSetup.inspectionDone = true;
-            triggerAlert("ALERT TO QUALITY", "CMM/STD Room Inspection completed. Pending Quality Approval.");
-        }
-
+        function sendQualityAlert() { activeSetup.inspectionDone = true; triggerAlert("ALERT TO QUALITY", "CMM/STD Room Inspection completed. Pending Quality Approval."); }
         function handleQualityAction(status, reqText = "None") {
             activeSetup.qualityStatus = status;
             activeSetup.correctionRequirement = reqText;
-
             const sopElem = document.getElementById('metric-sop-approve');
             const reqElem = document.getElementById('metric-correction-req');
             if(sopElem) sopElem.innerText = status === 'SOP APPROVED'? 'APPROVED' : 'Pending';
             if(reqElem) reqElem.innerText = reqText;
-
             triggerAlert("ALERT TO SETTER", `Quality Department Status: ${status}`);
         }
-
         function submitQualityCorrection() {
             const selectedRequirement = document.getElementById('sampleCorrectionSelect').value;
             activeSetup.qualityStatus = "CORRECTION REQUIRED";
             activeSetup.correctionRequirement = selectedRequirement;
-
             const sopElem = document.getElementById('metric-sop-approve');
             const reqElem = document.getElementById('metric-correction-req');
             if(sopElem) sopElem.innerText = 'Pending';
             if(reqElem) reqElem.innerText = selectedRequirement;
-
             triggerAlert("CRITICAL SETTER ALERT", `QUALITY ALERT: ${selectedRequirement}. Immediate action required!`, true);
         }
-
         function renderSupervisor() {
             const appElem = document.getElementById('supApprovedCount');
             const pendElem = document.getElementById('supPendingCount');
             if(!appElem ||!pendElem) return;
-
-            if(activeSetup.qualityStatus === 'SOP APPROVED') {
-                appElem.innerText = "1";
-                pendElem.innerText = "0";
-            } else {
-                appElem.innerText = "0";
-                pendElem.innerText = "1";
-            }
+            if(activeSetup.qualityStatus === 'SOP APPROVED') { appElem.innerText = "1"; pendElem.innerText = "0"; }
+            else { appElem.innerText = "0"; pendElem.innerText = "1"; }
         }
-
         function renderHOD() {
             const tbody = document.getElementById('hodTable');
             if(!tbody) return;
@@ -828,4 +787,4 @@
         }
     </script>
 </body>
-    </html>
+                                </html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUTOM - Setup Time Monitor</title>
-    
+
     <!-- PWA & Favicon Configurations -->
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
@@ -18,16 +18,26 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background-color: #0b132b; color: #ffffff; }
-        .card-dark { background-color: #1c2541; border: 1px solid #2a3a5e; }
-        .table-dark { background-color: #0b132b; border-color: #1c2541; }
-        .table-dark th { background-color: #131c31; color: #5bc0be; }
-        .table-dark td { border-color: #1c2541; }
-        
+       .card-dark { background-color: #1c2541; border: 1px solid #2a3a5e; }
+       .table-dark { background-color: #0b132b; border-color: #1c2541; }
+       .table-dark th { background-color: #131c31; color: #5bc0be; }
+       .table-dark td { border-color: #1c2541; }
+
         @keyframes pulse-red {
             0%, 100% { background-color: #450a0a; border-color: #ef4444; }
             50% { background-color: #7f1d1d; border-color: #dc2626; }
         }
-        .alert-active { animation: pulse-red 0.8s infinite; }
+       .alert-active { animation: pulse-red 0.8s infinite; }
+
+        /* FIX 2: PREMIUM COLOUR FOR TOOL ROOM EXCEL VIEW */
+       .premium-toolroom {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2a1a 100%)!important;
+            border: 1px solid #22c55e!important;
+            box-shadow: 0 0 30px rgba(34,197,94,0.3)!important;
+        }
+       .premium-toolroom-header {
+            background: linear-gradient(90deg, #15803d, #22c55e, #16a34a)!important;
+        }
     </style>
 </head>
 <body class="font-sans min-h-screen">
@@ -110,10 +120,10 @@
             <div id="tab-setter" class="tab-content space-y-6 hidden">
                 <div class="card-dark p-4 rounded-xl shadow">
                     <h2 class="text-lg font-bold text-cyan-400 border-b border-slate-800 pb-2 mb-4"><i class="fas fa-tools text-cyan-400 mr-2"></i> Setter Control Center</h2>
-                    
+
                     <!-- TOP CARDS -->
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-                        
+
                         <div onclick="openSetupModal()" class="card-dark p-3 rounded-xl cursor-pointer hover:border-cyan-400 transition shadow-sm text-center">
                             <p class="text-[11px] text-cyan-300 font-bold">Register New Setup</p>
                             <p id="metric-total" class="text-2xl font-bold text-cyan-400 mt-1"><i class="fas fa-plus-circle"></i></p>
@@ -157,11 +167,11 @@
                     </div>
                 </div>
 
-                <!-- DARK PRODUCTION LAYOUT (EXCEL VIEW TABLE) -->
+                <!-- DARK PRODUCTION LAYOUT (EXCEL VIEW TABLE) - DASHBOARD KHALI PREMIUM -->
                 <div id="inlineExcelContainer" class="hidden card-dark rounded-xl shadow-2xl overflow-hidden border border-cyan-500/30 transition-all duration-300">
-                    <div class="bg-slate-900 text-white p-3.5 flex justify-between items-center px-5 border-b border-slate-800">
+                    <div id="inlineExcelHeader" class="bg-slate-900 text-white p-3.5 flex justify-between items-center px-5 border-b border-slate-800">
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-table text-cyan-400 text-xl"></i>
+                            <i id="inlineExcelIcon" class="fas fa-table text-cyan-400 text-xl"></i>
                             <h3 id="inlineExcelTitle" class="font-bold text-md text-cyan-400 tracking-wide">PRODUCTION TABLE VIEW</h3>
                         </div>
                         <button onclick="closeInlineExcelView()" class="text-slate-400 hover:text-white bg-slate-800 w-8 h-8 rounded-full flex items-center justify-center transition">
@@ -202,7 +212,7 @@
             <div id="tab-toolroom" class="tab-content hidden space-y-6">
                 <div class="card-dark p-6 rounded-xl shadow">
                     <h2 class="text-lg font-bold mb-4 border-b border-slate-800 pb-2 text-cyan-400"><i class="fas fa-wrench text-cyan-400 mr-2"></i> Tool Room Dashboard</h2>
-                    
+
                     <div class="bg-slate-900 p-4 rounded-lg border border-slate-800 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                         <div>
                             <label class="block text-xs font-bold text-slate-300 mb-1">Fixture Serial No. Available?</label>
@@ -259,7 +269,7 @@
                 <div class="card-dark p-6 rounded-xl shadow">
                     <h2 class="text-lg font-bold mb-4 border-b border-slate-800 pb-2 text-cyan-400"><i class="fas fa-check-double text-cyan-400 mr-2"></i> Quality Approval Dashboard</h2>
                     <p class="text-sm text-slate-400 mb-4">Process inspection approval status or select sample correction requirement:</p>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-4 rounded-xl border border-slate-800">
                         <div class="space-y-3 border-r md:pr-6 border-slate-800">
                             <h3 class="font-bold text-slate-300 text-sm">Action 1: SOP Approval</h3>
@@ -328,7 +338,7 @@
         </main>
     </div>
 
-    <!-- REGISTER NEW SETUP MODAL (पॉप-अप फॉर्म) -->
+    <!-- REGISTER NEW SETUP MODAL (पॉप-अप फॉर्म) - FIX 1: HIDDEN BY DEFAULT -->
     <div id="setupModal" class="fixed inset-0 bg-black/75 flex items-center justify-center hidden z-50 p-4">
         <div class="card-dark rounded-2xl shadow-2xl max-w-xl w-full p-6 border border-cyan-500/30">
             <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
@@ -421,8 +431,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registered:', reg))
-                    .catch(err => console.log('SW registration failed:', err));
+                   .then(reg => console.log('SW registered:', reg))
+                   .catch(err => console.log('SW registration failed:', err));
             });
         }
 
@@ -531,7 +541,7 @@
             if(deptId === 'supervisor') renderSupervisor();
         }
 
-        // Modal Controls
+        // FIX 1: Modal Controls - HIDDEN BY DEFAULT
         function openSetupModal() {
             document.getElementById('setupModal').classList.remove('hidden');
         }
@@ -570,9 +580,28 @@
             triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
         }
 
-        // Dark Excel Table Display Logic
+        // FIX 2: DARK EXCEL TABLE WITH PREMIUM COLOUR FOR TOOL ROOM
         function showInlineExcelView(title) {
-            document.getElementById('inlineExcelTitle').innerText = title.toUpperCase() + " - PRODUCTION TABLE VIEW";
+            const isToolRoom = title.toLowerCase().includes('tool room');
+            const container = document.getElementById('inlineExcelContainer');
+            const header = document.getElementById('inlineExcelHeader');
+            const titleEl = document.getElementById('inlineExcelTitle');
+            const iconEl = document.getElementById('inlineExcelIcon');
+
+            if(isToolRoom){
+                container.className = "premium-toolroom rounded-xl shadow-2xl overflow-hidden transition-all duration-300 block";
+                header.className = "premium-toolroom-header text-white p-4 flex justify-between items-center px-5 border-b border-green-600";
+                titleEl.className = "font-bold text-md tracking-wide text-white";
+                titleEl.innerText = "🔧 TOOL ROOM READY - PREMIUM EXCEL VIEW";
+                iconEl.className = "fas fa-crown text-yellow-300 text-xl";
+            } else {
+                container.className = "card-dark rounded-xl shadow-2xl overflow-hidden border border-cyan-500/30 transition-all duration-300 block";
+                header.className = "bg-slate-900 text-white p-3.5 flex justify-between items-center px-5 border-b border-slate-800";
+                titleEl.className = "font-bold text-md text-cyan-400 tracking-wide";
+                titleEl.innerText = title.toUpperCase() + " - PRODUCTION TABLE VIEW";
+                iconEl.className = "fas fa-table text-cyan-400 text-xl";
+            }
+
             const tbody = document.getElementById('inlineExcelTableBody');
             tbody.innerHTML = '';
 
@@ -586,10 +615,10 @@
                         <td class="p-3 font-semibold text-slate-200">${item.partName}</td>
                         <td class="p-3 text-slate-300">${item.machine}</td>
                         <td class="p-3 text-slate-400">${item.scheduled}</td>
-                        <td class="p-3 font-mono ${item.delay !== '00:00 Mins' ? 'text-red-400 font-bold' : 'text-green-400'}">${item.delay}</td>
-                        <td class="p-3 font-bold ${isShortage ? 'text-red-500' : 'text-slate-400'}">${item.shortage}</td>
+                        <td class="p-3 font-mono ${item.delay!== '00:00 Mins'? 'text-red-400 font-bold' : 'text-green-400'}">${item.delay}</td>
+                        <td class="p-3 font-bold ${isShortage? 'text-red-500' : 'text-slate-400'}">${item.shortage}</td>
                         <td class="p-3">
-                            <span class="px-3 py-1 rounded-full text-[11px] font-bold ${isOntime ? 'bg-green-600/20 text-green-400 border border-green-500' : 'bg-red-600/20 text-red-400 border border-red-500'}">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-bold ${isOntime? 'bg-green-600/20 text-green-400 border border-green-500' : 'bg-red-600/20 text-red-400 border border-red-500'}">
                                 ${item.status}
                             </span>
                         </td>
@@ -597,9 +626,8 @@
                 `;
             });
 
-            const container = document.getElementById('inlineExcelContainer');
             container.classList.remove('hidden');
-            container.scrollIntoView({ behavior: 'smooth' });
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function closeInlineExcelView() {
@@ -609,8 +637,8 @@
         function openSetterCorrectionModal() {
             const req = activeSetup.correctionRequirement;
             document.getElementById('setterCorrectionText').innerText = req;
-            
-            if (req !== "None" && activeSetup.qualityStatus === "CORRECTION REQUIRED") {
+
+            if (req!== "None" && activeSetup.qualityStatus === "CORRECTION REQUIRED") {
                 document.getElementById('correctionActionArea').classList.remove('hidden');
             } else {
                 document.getElementById('correctionActionArea').classList.add('hidden');
@@ -626,7 +654,7 @@
             closeSetterCorrectionModal();
             activeSetup.qualityStatus = "Correction Done (Pending Inspection)";
             activeSetup.correctionRequirement = "None";
-            
+
             document.getElementById('metric-correction-req').innerText = "None";
             document.getElementById('metric-sop-approve').innerText = "Pending";
 
@@ -691,11 +719,11 @@
                     <td class="p-3 font-semibold text-slate-200">${activeSetup.partName} (${activeSetup.partNo})</td>
                     <td class="p-3 font-bold text-purple-400">${activeSetup.fixtureNo}</td>
                     <td class="p-3"><span class="bg-red-900/40 text-red-400 text-xs font-bold px-2 py-1 rounded border border-red-700">${activeSetup.priority}</span></td>
-                    <td class="p-3 font-bold ${activeSetup.toolingReady ? 'text-green-400':'text-red-400'}">
-                        ${activeSetup.toolingReady ? 'READY' : 'PENDING'}
+                    <td class="p-3 font-bold ${activeSetup.toolingReady? 'text-green-400':'text-red-400'}">
+                        ${activeSetup.toolingReady? 'READY' : 'PENDING'}
                     </td>
-                    <td class="p-3 font-bold ${activeSetup.fixtureReady ? 'text-green-400':'text-red-400'}">
-                        ${activeSetup.fixtureReady ? 'READY' : 'PENDING'}
+                    <td class="p-3 font-bold ${activeSetup.fixtureReady? 'text-green-400':'text-red-400'}">
+                        ${activeSetup.fixtureReady? 'READY' : 'PENDING'}
                     </td>
                     <td class="p-3 space-x-1">
                         <button onclick="toggleTooling()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button>
@@ -707,13 +735,13 @@
         }
 
         function toggleTooling() {
-            activeSetup.toolingReady = !activeSetup.toolingReady;
+            activeSetup.toolingReady =!activeSetup.toolingReady;
             updateMetrics();
             renderToolroom();
         }
 
         function toggleFixture() {
-            activeSetup.fixtureReady = !activeSetup.fixtureReady;
+            activeSetup.fixtureReady =!activeSetup.fixtureReady;
             renderToolroom();
         }
 
@@ -729,8 +757,8 @@
         function updateMetrics() {
             const readyElem = document.getElementById('metric-tool-ready');
             const notReadyElem = document.getElementById('metric-tool-notready');
-            if(readyElem) readyElem.innerText = activeSetup.toolingReady ? "1" : "0";
-            if(notReadyElem) notReadyElem.innerText = activeSetup.toolingReady ? "0" : "1";
+            if(readyElem) readyElem.innerText = activeSetup.toolingReady? "1" : "0";
+            if(notReadyElem) notReadyElem.innerText = activeSetup.toolingReady? "0" : "1";
         }
 
         function sendSampleCuttingAlert() {
@@ -751,7 +779,7 @@
 
             const sopElem = document.getElementById('metric-sop-approve');
             const reqElem = document.getElementById('metric-correction-req');
-            if(sopElem) sopElem.innerText = status === 'SOP APPROVED' ? 'APPROVED' : 'Pending';
+            if(sopElem) sopElem.innerText = status === 'SOP APPROVED'? 'APPROVED' : 'Pending';
             if(reqElem) reqElem.innerText = reqText;
 
             triggerAlert("ALERT TO SETTER", `Quality Department Status: ${status}`);
@@ -773,7 +801,7 @@
         function renderSupervisor() {
             const appElem = document.getElementById('supApprovedCount');
             const pendElem = document.getElementById('supPendingCount');
-            if(!appElem || !pendElem) return;
+            if(!appElem ||!pendElem) return;
 
             if(activeSetup.qualityStatus === 'SOP APPROVED') {
                 appElem.innerText = "1";
@@ -791,13 +819,13 @@
                 <tr class="border-b border-slate-800">
                     <td class="p-3 font-bold text-slate-200">${activeSetup.partName} - ${activeSetup.partNo}</td>
                     <td class="p-3 text-slate-400">${activeSetup.pallet}</td>
-                    <td class="p-3">${activeSetup.toolingReady ? '✅ Ready':'❌ Pending'}</td>
-                    <td class="p-3">${activeSetup.fixtureReady ? '✅ Ready':'❌ Pending'}</td>
-                    <td class="p-3">${activeSetup.setupReady ? '✅ Setup Ready':'⏳ In Progress'}</td>
+                    <td class="p-3">${activeSetup.toolingReady? '✅ Ready':'❌ Pending'}</td>
+                    <td class="p-3">${activeSetup.fixtureReady? '✅ Ready':'❌ Pending'}</td>
+                    <td class="p-3">${activeSetup.setupReady? '✅ Setup Ready':'⏳ In Progress'}</td>
                     <td class="p-3"><span class="bg-blue-900/40 text-blue-300 p-1 px-2 rounded font-bold text-xs border border-blue-700">${activeSetup.qualityStatus} (${activeSetup.correctionRequirement})</span></td>
                 </tr>
             `;
         }
     </script>
 </body>
-</html>
+    </html>

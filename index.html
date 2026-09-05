@@ -3,27 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>SUTOM - Setup Time Monitor</title>
 
     <!-- PWA -->
     <link rel="manifest" href="./manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
-    <link rel="apple-touch-icon" href="./icon-192.png">
+
+    <link rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="./icon-192.png">
+
+    <link rel="icon"
+          type="image/png"
+          sizes="512x512"
+          href="./icon-512.png">
+
+    <link rel="apple-touch-icon"
+          href="./icon-192.png">
 
     <meta name="theme-color" content="#2563eb">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <meta name="apple-mobile-web-app-capable"
+          content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent">
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        rel="stylesheet">
 
     <style>
+
         @keyframes pulse-red {
             0%, 100% {
                 background-color: #fee2e2;
                 border-color: #ef4444;
             }
+
             50% {
                 background-color: #fca5a5;
                 border-color: #dc2626;
@@ -34,949 +56,1069 @@
             animation: pulse-red 0.8s infinite;
         }
 
-        /* ================================
-           INLINE EXCEL STYLE
-        ================================= */
-
-        .excel-wrapper {
-            background: #07111b;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow:
-                0 10px 30px rgba(0,0,0,0.25),
-                inset 0 0 30px rgba(14,165,233,0.03);
-        }
-
-        .excel-title {
-            background: linear-gradient(90deg, #0f172a, #10283d, #0f172a);
-            color: #38bdf8;
-            padding: 18px 20px;
-            border-bottom: 1px solid #2563eb;
-        }
-
-        .excel-title h3 {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .excel-title p {
-            color: #94a3b8;
-            font-size: 11px;
-            margin-top: 3px;
-        }
-
-        .excel-summary {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(150px, 1fr));
-            gap: 10px;
-            padding: 14px;
-            background: #020617;
-            border-bottom: 1px solid #334155;
-        }
-
-        .excel-summary-card {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 10px 12px;
-        }
-
-        .excel-summary-card .label {
-            color: #94a3b8;
-            font-size: 10px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .excel-summary-card .value {
-            color: white;
-            font-size: 18px;
-            font-weight: 800;
-            margin-top: 3px;
-        }
-
-        .excel-scroll {
-            overflow-x: auto;
-            width: 100%;
-        }
-
+        /* Excel Table */
         .excel-table {
-            width: 100%;
-            min-width: 1500px;
             border-collapse: collapse;
-            background: #020617;
-            color: #e2e8f0;
-            font-size: 12px;
+            width: 100%;
+            min-width: 1250px;
         }
 
         .excel-table th {
-            background: #0b2742;
-            color: #f8fafc;
-            border: 1px solid #334155;
-            padding: 11px 10px;
+            background: #00843d;
+            color: white;
+            padding: 12px;
+            border: 1px solid #006b31;
+            font-weight: 700;
             white-space: nowrap;
-            text-align: center;
-            font-weight: 800;
         }
 
         .excel-table td {
-            border: 1px solid #334155;
-            padding: 10px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
             white-space: nowrap;
-            text-align: center;
-            background: #07111b;
         }
 
-        .excel-table tbody tr:hover td {
-            background: #102235;
+        .excel-table tbody tr:hover {
+            background: #f8fafc;
         }
 
-        .excel-part {
-            color: #38bdf8;
-            font-weight: 800;
+        .excel-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .excel-green {
-            color: #22c55e;
-            font-weight: 800;
-        }
-
-        .excel-red {
-            color: #ef4444;
-            font-weight: 800;
-        }
-
-        .excel-yellow {
-            color: #facc15;
-            font-weight: 800;
-        }
-
-        .excel-orange {
-            color: #fb923c;
-            font-weight: 800;
-        }
-
-        .excel-blue {
-            color: #60a5fa;
-            font-weight: 800;
-        }
-
-        .excel-badge {
+        .live-dot {
+            width: 9px;
+            height: 9px;
+            background: #22c55e;
+            border-radius: 50%;
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 5px;
-            font-size: 10px;
-            font-weight: 800;
+            margin-right: 6px;
+            animation: livePulse 1.2s infinite;
         }
 
-        .excel-badge-green {
-            background: rgba(34,197,94,0.15);
-            color: #4ade80;
-            border: 1px solid rgba(34,197,94,0.35);
-        }
-
-        .excel-badge-red {
-            background: rgba(239,68,68,0.15);
-            color: #f87171;
-            border: 1px solid rgba(239,68,68,0.35);
-        }
-
-        .excel-badge-yellow {
-            background: rgba(250,204,21,0.15);
-            color: #fde047;
-            border: 1px solid rgba(250,204,21,0.35);
-        }
-
-        .excel-badge-blue {
-            background: rgba(59,130,246,0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(59,130,246,0.35);
-        }
-
-        .excel-footer {
-            padding: 12px 15px;
-            background: #020617;
-            color: #64748b;
-            font-size: 10px;
-            border-top: 1px solid #334155;
-        }
-
-        @media (max-width: 768px) {
-            .excel-summary {
-                grid-template-columns: repeat(2, minmax(130px, 1fr));
+        @keyframes livePulse {
+            0% {
+                opacity: 1;
             }
 
-            .excel-title h3 {
-                font-size: 16px;
+            50% {
+                opacity: .35;
+            }
+
+            100% {
+                opacity: 1;
             }
         }
 
-        @media (max-width: 450px) {
-            .excel-summary {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
     </style>
+
 </head>
 
 <body class="bg-slate-100 font-sans min-h-screen">
 
-<header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-6">
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header
+    class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50
+           flex flex-wrap justify-between items-center px-6">
 
     <div class="flex items-center space-x-3">
-        <img src="./icon-192.png"
-             alt="SuTOM Logo"
-             class="w-10 h-10 rounded-lg border border-slate-700">
+
+        <img
+            src="./icon-192.png"
+            alt="SuTOM Logo"
+            class="w-10 h-10 rounded-lg border border-slate-700">
 
         <div>
-            <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
-            <p class="text-xs text-slate-400">Setup Time Monitor System</p>
+
+            <h1 class="text-xl font-bold tracking-wide text-blue-400">
+                SUTOM
+            </h1>
+
+            <p class="text-xs text-slate-400">
+                Setup Time Monitor System
+            </p>
+
         </div>
+
     </div>
 
-    <div class="flex items-center space-x-6 text-xs md:text-sm mt-2 md:mt-0">
 
-        <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
+    <div
+        class="flex items-center space-x-6 text-xs md:text-sm
+               mt-2 md:mt-0">
+
+        <div
+            class="bg-slate-800 px-3 py-1.5 rounded
+                   border border-slate-700">
+
             <i class="fas fa-calendar-alt text-blue-400 mr-2"></i>
-            <span id="topLiveShift" class="font-semibold">Shift: A</span>
-        </div>
 
-        <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
-            <i class="fas fa-clock text-green-400 mr-2"></i>
-            <span id="topLiveTime" class="font-mono font-semibold">00:00:00 AM</span>
-        </div>
-
-        <div id="userInfo" class="hidden items-center space-x-3">
-            <span id="userBadge"
-                  class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase">
+            <span
+                id="topLiveShift"
+                class="font-semibold">
+                Shift: A
             </span>
 
-            <button onclick="handleLogout()"
-                    class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold transition">
+        </div>
+
+
+        <div
+            class="bg-slate-800 px-3 py-1.5 rounded
+                   border border-slate-700">
+
+            <i class="fas fa-clock text-green-400 mr-2"></i>
+
+            <span
+                id="topLiveTime"
+                class="font-mono font-semibold">
+                00:00:00 AM
+            </span>
+
+        </div>
+
+
+        <div
+            id="userInfo"
+            class="hidden items-center space-x-3">
+
+            <span
+                id="userBadge"
+                class="bg-blue-600 text-white text-xs
+                       px-2.5 py-1 rounded-full font-bold uppercase">
+            </span>
+
+            <button
+                onclick="handleLogout()"
+                class="bg-red-600 hover:bg-red-700
+                       text-white px-3 py-1.5 rounded
+                       font-bold transition">
+
                 <i class="fas fa-sign-out-alt mr-1"></i>
                 Logout
+
             </button>
+
         </div>
 
     </div>
+
 </header>
 
 
-<!-- ================= LOGIN ================= -->
+<!-- =========================================================
+     LOGIN
+========================================================= -->
 
-<div id="authSection" class="flex justify-center items-center py-10 px-4">
+<div
+    id="authSection"
+    class="flex justify-center items-center py-10 px-4">
 
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
+    <div
+        class="bg-white p-8 rounded-2xl shadow-xl
+               w-full max-w-md border">
 
         <div class="flex flex-col items-center mb-4">
 
-            <img src="./icon-192.png"
-                 alt="SuTOM Logo"
-                 class="w-16 h-16 rounded-xl shadow mb-2">
+            <img
+                src="./icon-192.png"
+                alt="SuTOM Logo"
+                class="w-16 h-16 rounded-xl shadow mb-2">
 
-            <h2 class="text-2xl font-bold text-center text-slate-800">
+            <h2
+                class="text-2xl font-bold text-center text-slate-800">
                 Department Login
             </h2>
 
-            <p class="text-xs text-center text-slate-500">
+            <p
+                class="text-xs text-center text-slate-500">
                 Enter your details to access department dashboard
             </p>
 
         </div>
 
-        <form onsubmit="handleLogin(event)" class="space-y-4">
+
+        <form
+            onsubmit="handleLogin(event)"
+            class="space-y-4">
 
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">
+
+                <label
+                    class="block text-xs font-bold text-slate-700 mb-1">
                     Employee Name
                 </label>
 
-                <input type="text"
-                       id="loginName"
-                       required
-                       placeholder="Enter Employee Name"
-                       class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input
+                    type="text"
+                    id="loginName"
+                    required
+                    placeholder="Enter Employee Name"
+                    class="w-full p-2.5 border rounded-lg
+                           text-sm focus:ring-2
+                           focus:ring-blue-500 outline-none">
+
             </div>
 
+
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">
+
+                <label
+                    class="block text-xs font-bold text-slate-700 mb-1">
                     Employee ID
                 </label>
 
-                <input type="text"
-                       id="loginId"
-                       required
-                       placeholder="Enter Employee ID"
-                       class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input
+                    type="text"
+                    id="loginId"
+                    required
+                    placeholder="Enter Employee ID"
+                    class="w-full p-2.5 border rounded-lg
+                           text-sm focus:ring-2
+                           focus:ring-blue-500 outline-none">
+
             </div>
 
+
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">
+
+                <label
+                    class="block text-xs font-bold text-slate-700 mb-1">
                     Password
                 </label>
 
-                <input type="password"
-                       id="loginPass"
-                       required
-                       placeholder="••••••••"
-                       class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <input
+                    type="password"
+                    id="loginPass"
+                    required
+                    placeholder="••••••••"
+                    class="w-full p-2.5 border rounded-lg
+                           text-sm focus:ring-2
+                           focus:ring-blue-500 outline-none">
+
             </div>
 
+
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">
+
+                <label
+                    class="block text-xs font-bold text-slate-700 mb-1">
                     Select Department
                 </label>
 
-                <select id="loginDept"
-                        required
-                        class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                <select
+                    id="loginDept"
+                    required
+                    class="w-full p-2.5 border rounded-lg
+                           text-sm focus:ring-2
+                           focus:ring-blue-500
+                           outline-none bg-white">
 
-                    <option value="">-- Choose Department --</option>
-                    <option value="setter">1. SETTER</option>
-                    <option value="toolroom">2. TOOL ROOM</option>
-                    <option value="stdroom">3. CMM / STD ROOM</option>
-                    <option value="quality">4. QUALITY</option>
-                    <option value="supervisor">5. SUPERVISOR</option>
-                    <option value="hod">6. HOD VIEW</option>
+                    <option value="">
+                        -- Choose Department --
+                    </option>
+
+                    <option value="setter">
+                        1. SETTER
+                    </option>
+
+                    <option value="toolroom">
+                        2. TOOL ROOM
+                    </option>
+
+                    <option value="stdroom">
+                        3. CMM / STD ROOM
+                    </option>
+
+                    <option value="quality">
+                        4. QUALITY
+                    </option>
+
+                    <option value="supervisor">
+                        5. SUPERVISOR
+                    </option>
+
+                    <option value="hod">
+                        6. HOD VIEW
+                    </option>
 
                 </select>
+
             </div>
 
-            <button type="submit"
-                    class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg mt-2">
+
+            <button
+                type="submit"
+                class="w-full bg-blue-600
+                       text-white font-bold py-3
+                       rounded-lg hover:bg-blue-700
+                       transition shadow-lg mt-2">
+
                 Access Dashboard
+
             </button>
 
         </form>
+
     </div>
+
 </div>
 
 
-<!-- ================= DASHBOARD ================= -->
+<!-- =========================================================
+     DASHBOARD
+========================================================= -->
 
-<div id="dashboardSection"
-     class="hidden flex-col min-h-[calc(100vh-65px)]">
+<div
+    id="dashboardSection"
+    class="hidden flex-col min-h-[calc(100vh-65px)]">
 
-<main class="flex-1 p-6 overflow-y-auto">
-
-
-<!-- ================= SETTER ================= -->
-
-<div id="tab-setter"
-     class="tab-content space-y-6 hidden">
-
-    <!-- SETTER CONTROL -->
-
-    <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
-
-        <h2 class="text-lg font-bold text-slate-800 border-b pb-2 mb-4">
-            <i class="fas fa-tools text-blue-600 mr-2"></i>
-            Setter Control Center
-        </h2>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+    <main
+        class="flex-1 p-6 overflow-y-auto">
 
 
-            <!-- REGISTER -->
+        <!-- =====================================================
+             SETTER
+        ====================================================== -->
 
-            <div onclick="openSetupForm()"
-                 class="bg-blue-50 p-3 rounded-xl border border-blue-200 cursor-pointer hover:bg-blue-100 transition shadow-sm">
+        <div
+            id="tab-setter"
+            class="tab-content space-y-6 hidden">
 
-                <div class="flex items-center justify-between mb-1">
 
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        Register New Setup
-                    </p>
+            <!-- SETTER CONTROL CENTER -->
 
-                    <i class="fas fa-plus-circle text-blue-600 text-xs"></i>
+            <div
+                class="bg-white p-4 rounded-xl shadow
+                       border border-slate-200">
+
+                <h2
+                    class="text-lg font-bold text-slate-800
+                           border-b pb-2 mb-4">
+
+                    <i class="fas fa-tools text-blue-600 mr-2"></i>
+
+                    Setter Control Center
+
+                </h2>
+
+
+                <div
+                    class="grid grid-cols-2 md:grid-cols-4
+                           lg:grid-cols-8 gap-3">
+
+
+                    <!-- TOTAL -->
+
+                    <div
+                        onclick="openSetupForm()"
+                        class="bg-blue-50 p-3 rounded-xl
+                               border border-blue-200
+                               cursor-pointer hover:bg-blue-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                Register New Setup
+
+                            </p>
+
+                            <i
+                                class="fas fa-plus-circle
+                                       text-blue-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-total"
+                            class="text-xl font-bold
+                                   text-blue-700">
+                            1
+                        </p>
+
+                    </div>
+
+
+                    <!-- TOOL ROOM READY -->
+
+                    <div
+                        onclick="showSetterExcel('Tool Room Ready')"
+                        class="bg-green-50 p-3 rounded-xl
+                               border border-green-200
+                               cursor-pointer hover:bg-green-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                Tool Room Ready
+
+                            </p>
+
+                            <i
+                                class="fas fa-check
+                                       text-green-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-tool-ready"
+                            class="text-xl font-bold
+                                   text-green-700">
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <!-- PENDING -->
+
+                    <div
+                        onclick="showSetterExcel('Pending Setup')"
+                        class="bg-yellow-50 p-3 rounded-xl
+                               border border-yellow-200
+                               cursor-pointer hover:bg-yellow-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                Pending Setup
+
+                            </p>
+
+                            <i
+                                class="fas fa-hourglass-half
+                                       text-yellow-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-pending"
+                            class="text-xl font-bold
+                                   text-yellow-700">
+                            1
+                        </p>
+
+                    </div>
+
+
+                    <!-- TOOLING NOT READY -->
+
+                    <div
+                        onclick="showSetterExcel('Tooling Not Ready')"
+                        class="bg-red-50 p-3 rounded-xl
+                               border border-red-200
+                               cursor-pointer hover:bg-red-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                Tooling Not Ready
+
+                            </p>
+
+                            <i
+                                class="fas fa-exclamation-circle
+                                       text-red-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-tool-notready"
+                            class="text-xl font-bold
+                                   text-red-700">
+                            1
+                        </p>
+
+                    </div>
+
+
+                    <!-- SOP -->
+
+                    <div
+                        onclick="showSetterExcel('SOP Approved Status')"
+                        class="bg-emerald-50 p-3 rounded-xl
+                               border border-emerald-200
+                               cursor-pointer hover:bg-emerald-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                SOP Approve
+
+                            </p>
+
+                            <i
+                                class="fas fa-file-signature
+                                       text-emerald-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-sop-approve"
+                            class="text-sm font-bold mt-1
+                                   text-emerald-700">
+                            Pending
+                        </p>
+
+                    </div>
+
+
+                    <!-- CORRECTION -->
+
+                    <div
+                        onclick="openSetterCorrectionModal()"
+                        class="bg-orange-50 p-3 rounded-xl
+                               border border-orange-200
+                               cursor-pointer hover:bg-orange-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                Correction Required
+
+                            </p>
+
+                            <i
+                                class="fas fa-triangle-exclamation
+                                       text-orange-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-correction-req"
+                            class="text-xs font-bold mt-1
+                                   text-orange-700">
+                            None
+                        </p>
+
+                    </div>
+
+
+                    <!-- FIXTURE -->
+
+                    <div
+                        onclick="showSetterExcel('Fixture Serial Details')"
+                        class="bg-purple-50 p-3 rounded-xl
+                               border border-purple-200
+                               cursor-pointer hover:bg-purple-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                Fixture Serial No.
+
+                            </p>
+
+                            <i
+                                class="fas fa-hashtag
+                                       text-purple-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-fixture-no"
+                            class="text-xs font-bold mt-1
+                                   text-purple-700">
+                            FIX-102
+                        </p>
+
+                    </div>
+
+
+                    <!-- AVAILABLE FIXTURES -->
+
+                    <div
+                        onclick="showSetterExcel('Available Fixtures')"
+                        class="bg-teal-50 p-3 rounded-xl
+                               border border-teal-200
+                               cursor-pointer hover:bg-teal-100
+                               transition shadow-sm">
+
+                        <div
+                            class="flex items-center
+                                   justify-between mb-1">
+
+                            <p
+                                class="text-[11px]
+                                      text-slate-600 font-bold">
+
+                                Available Fixtures
+
+                            </p>
+
+                            <i
+                                class="fas fa-cubes
+                                       text-teal-600 text-xs">
+                            </i>
+
+                        </div>
+
+                        <p
+                            id="metric-fixture-available"
+                            class="text-xl font-bold
+                                   text-teal-700">
+                            5
+                        </p>
+
+                    </div>
 
                 </div>
 
-                <p id="metric-total"
-                   class="text-xl font-bold text-blue-700">
-                    1
-                </p>
+            </div>
+
+
+            <!-- =================================================
+                 REGISTER SETUP
+            ================================================== -->
+
+            <div
+                id="setupFormContainer"
+                class="bg-white p-6 rounded-xl
+                       shadow border">
+
+                <h3
+                    class="text-md font-bold mb-4
+                           text-slate-800 border-b pb-2">
+
+                    <i class="fas fa-plus-circle
+                              text-blue-600 mr-2"></i>
+
+                    Register New Setup Change
+
+                </h3>
+
+
+                <form
+                    id="setterForm"
+                    onsubmit="handleSetterSubmit(event)"
+                    class="grid grid-cols-1 md:grid-cols-2
+                           lg:grid-cols-4 gap-4">
+
+
+                    <div>
+
+                        <label
+                            class="block text-xs
+                                   font-semibold mb-1">
+
+                            Part Name
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="partName"
+                            required
+                            class="w-full p-2 border rounded
+                                   text-sm focus:ring-2
+                                   focus:ring-blue-500"
+                            placeholder="e.g. Gear Shaft">
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="block text-xs
+                                   font-semibold mb-1">
+
+                            Part Number
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="partNo"
+                            required
+                            class="w-full p-2 border rounded
+                                   text-sm focus:ring-2
+                                   focus:ring-blue-500"
+                            placeholder="e.g. PN-9988">
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="block text-xs
+                                   font-semibold mb-1">
+
+                            Date & Shift
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="shiftDate"
+                            readonly
+                            class="w-full p-2 bg-slate-100
+                                   border rounded text-sm
+                                   font-medium">
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="block text-xs
+                                   font-semibold mb-1">
+
+                            Setup Type
+
+                        </label>
+
+                        <select
+                            id="setupType"
+                            class="w-full p-2 border rounded
+                                   text-sm focus:ring-2
+                                   focus:ring-blue-500">
+
+                            <option value="Long Setup">
+                                Long Setup
+                            </option>
+
+                            <option value="Short Setup">
+                                Short Setup
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="block text-xs
+                                   font-semibold mb-1">
+
+                            Fixture No.
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="fixtureNo"
+                            required
+                            class="w-full p-2 border rounded
+                                   text-sm focus:ring-2
+                                   focus:ring-blue-500"
+                            placeholder="e.g. FIX-102">
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="block text-xs
+                                   font-semibold mb-1">
+
+                            Priority (1 - 10)
+
+                        </label>
+
+                        <input
+                            type="number"
+                            id="priority"
+                            min="1"
+                            max="10"
+                            value="1"
+                            required
+                            class="w-full p-2 border rounded
+                                   text-sm focus:ring-2
+                                   focus:ring-blue-500">
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="block text-xs
+                                   font-semibold mb-1">
+
+                            Pallet Selection
+
+                        </label>
+
+                        <select
+                            id="pallet"
+                            class="w-full p-2 border rounded
+                                   text-sm focus:ring-2
+                                   focus:ring-blue-500">
+
+                            <option value="Pallet A">
+                                Pallet A
+                            </option>
+
+                            <option value="Pallet B">
+                                Pallet B
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="flex items-end">
+
+                        <button
+                            type="submit"
+                            class="w-full bg-blue-600
+                                   text-white font-bold py-2
+                                   rounded hover:bg-blue-700
+                                   transition shadow">
+
+                            Submit & Notify
+
+                        </button>
+
+                    </div>
+
+                </form>
 
             </div>
 
 
-            <!-- TOOL READY -->
+            <!-- =================================================
+                 EXCEL STYLE LIVE VIEW
+            ================================================== -->
 
-            <div onclick="showSetterExcelView('Tool Room Ready')"
-                 class="bg-green-50 p-3 rounded-xl border border-green-200 cursor-pointer hover:bg-green-100 transition shadow-sm">
+            <div
+                id="setterExcelSection"
+                class="bg-white p-4 md:p-6
+                       rounded-xl shadow
+                       border border-slate-200">
 
-                <div class="flex items-center justify-between mb-1">
 
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        Tool Room Ready
-                    </p>
+                <div
+                    class="flex flex-wrap
+                           justify-between items-center
+                           gap-3 mb-4 border-b pb-3">
 
-                    <i class="fas fa-check text-green-600 text-xs"></i>
+
+                    <div>
+
+                        <h3
+                            class="text-lg md:text-xl
+                                   font-bold text-slate-800">
+
+                            <i
+                                class="fas fa-file-excel
+                                       text-green-600 mr-2">
+                            </i>
+
+                            <span id="setterExcelTitle">
+                                Setup Details
+                            </span>
+
+                        </h3>
+
+
+                        <p
+                            class="text-xs text-slate-500 mt-1">
+
+                            Complete Live Setup Information
+
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="bg-green-100
+                               text-green-700
+                               px-3 py-1 rounded-full
+                               text-xs font-bold">
+
+                        <span class="live-dot"></span>
+
+                        LIVE
+
+                    </div>
 
                 </div>
 
-                <p id="metric-tool-ready"
-                   class="text-xl font-bold text-green-700">
-                    0
-                </p>
 
-            </div>
+                <div
+                    class="excel-wrapper
+                           border border-slate-300
+                           rounded-lg">
 
+                    <table
+                        class="excel-table text-sm text-left">
 
-            <!-- PENDING -->
+                        <thead>
 
-            <div onclick="showSetterExcelView('Pending Setup')"
-                 class="bg-yellow-50 p-3 rounded-xl border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition shadow-sm">
+                            <tr>
 
-                <div class="flex items-center justify-between mb-1">
+                                <th>
+                                    Part Name
+                                </th>
 
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        Pending Setup
-                    </p>
+                                <th>
+                                    Part No.
+                                </th>
 
-                    <i class="fas fa-hourglass-half text-yellow-600 text-xs"></i>
+                                <th>
+                                    Date / Shift
+                                </th>
 
-                </div>
+                                <th>
+                                    Setup Type
+                                </th>
 
-                <p id="metric-pending"
-                   class="text-xl font-bold text-yellow-700">
-                    1
-                </p>
+                                <th>
+                                    Fixture No.
+                                </th>
 
-            </div>
+                                <th>
+                                    Fixture Status
+                                </th>
 
+                                <th>
+                                    Priority
+                                </th>
 
-            <!-- TOOL NOT READY -->
+                                <th>
+                                    Pallet
+                                </th>
 
-            <div onclick="showSetterExcelView('Tooling Not Ready')"
-                 class="bg-red-50 p-3 rounded-xl border border-red-200 cursor-pointer hover:bg-red-100 transition shadow-sm">
+                                <th>
+                                    Tooling Status
+                                </th>
 
-                <div class="flex items-center justify-between mb-1">
+                                <th>
+                                    Setup Status
+                                </th>
 
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        Tooling Not Ready
-                    </p>
+                                <th>
+                                    Sample Cutting
+                                </th>
 
-                    <i class="fas fa-exclamation-circle text-red-600 text-xs"></i>
+                                <th>
+                                    Inspection
+                                </th>
 
-                </div>
+                                <th>
+                                    SOP Status
+                                </th>
 
-                <p id="metric-tool-notready"
-                   class="text-xl font-bold text-red-700">
-                    1
-                </p>
+                                <th>
+                                    Correction
+                                </th>
 
-            </div>
+                            </tr>
 
-
-            <!-- SOP -->
-
-            <div onclick="showSetterExcelView('SOP Approved Status')"
-                 class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 cursor-pointer hover:bg-emerald-100 transition shadow-sm">
-
-                <div class="flex items-center justify-between mb-1">
-
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        SOP Approve
-                    </p>
-
-                    <i class="fas fa-file-signature text-emerald-600 text-xs"></i>
-
-                </div>
-
-                <p id="metric-sop-approve"
-                   class="text-sm font-bold mt-1 text-emerald-700">
-                    Pending
-                </p>
-
-            </div>
+                        </thead>
 
 
-            <!-- CORRECTION -->
+                        <tbody
+                            id="setterExcelBody">
 
-            <div onclick="openSetterCorrectionModal()"
-                 class="bg-orange-50 p-3 rounded-xl border border-orange-200 cursor-pointer hover:bg-orange-100 transition shadow-sm">
+                        </tbody>
 
-                <div class="flex items-center justify-between mb-1">
-
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        Correction Required
-                    </p>
-
-                    <i class="fas fa-triangle-exclamation text-orange-600 text-xs"></i>
+                    </table>
 
                 </div>
 
-                <p id="metric-correction-req"
-                   class="text-xs font-bold mt-1 text-orange-700">
-                    None
-                </p>
-
             </div>
 
 
-            <!-- FIXTURE -->
-
-            <div onclick="showSetterExcelView('Fixture Serial Details')"
-                 class="bg-purple-50 p-3 rounded-xl border border-purple-200 cursor-pointer hover:bg-purple-100 transition shadow-sm">
-
-                <div class="flex items-center justify-between mb-1">
-
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        Fixture Serial No.
-                    </p>
-
-                    <i class="fas fa-hashtag text-purple-600 text-xs"></i>
-
-                </div>
-
-                <p id="metric-fixture-no"
-                   class="text-xs font-bold mt-1 text-purple-700">
-                    FIX-102
-                </p>
-
-            </div>
-
-
-            <!-- AVAILABLE FIXTURES -->
-
-            <div onclick="showSetterExcelView('Available Fixtures')"
-                 class="bg-teal-50 p-3 rounded-xl border border-teal-200 cursor-pointer hover:bg-teal-100 transition shadow-sm">
-
-                <div class="flex items-center justify-between mb-1">
-
-                    <p class="text-[11px] text-slate-600 font-bold">
-                        Available Fixtures
-                    </p>
-
-                    <i class="fas fa-cubes text-teal-600 text-xs"></i>
-
-                </div>
-
-                <p class="text-xl font-bold text-teal-700">
-                    5
-                </p>
-
-            </div>
-
-        </div>
-    </div>
-
-
-    <!-- ================= SETUP FORM ================= -->
-
-    <div id="setupFormContainer"
-         class="bg-white p-6 rounded-xl shadow border">
-
-        <h3 class="text-md font-bold mb-4 text-slate-800 border-b pb-2">
-
-            <i class="fas fa-plus-circle text-blue-600 mr-2"></i>
-
-            Register New Setup Change
-
-        </h3>
-
-
-        <form id="setterForm"
-              onsubmit="handleSetterSubmit(event)"
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-
-            <div>
-
-                <label class="block text-xs font-semibold mb-1">
-                    Part Name
-                </label>
-
-                <input type="text"
-                       id="partName"
-                       required
-                       class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500"
-                       placeholder="e.g. Gear Shaft">
-
-            </div>
-
-
-            <div>
-
-                <label class="block text-xs font-semibold mb-1">
-                    Part Number
-                </label>
-
-                <input type="text"
-                       id="partNo"
-                       required
-                       class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500"
-                       placeholder="e.g. PN-9988">
-
-            </div>
-
-
-            <div>
-
-                <label class="block text-xs font-semibold mb-1">
-                    Date & Shift
-                </label>
-
-                <input type="text"
-                       id="shiftDate"
-                       readonly
-                       class="w-full p-2 bg-slate-100 border rounded text-sm font-medium">
-
-            </div>
-
-
-            <div>
-
-                <label class="block text-xs font-semibold mb-1">
-                    Setup Type
-                </label>
-
-                <select id="setupType"
-                        class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
-
-                    <option value="Long Setup">
-                        Long Setup
-                    </option>
-
-                    <option value="Short Setup">
-                        Short Setup
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div>
-
-                <label class="block text-xs font-semibold mb-1">
-                    Fixture No.
-                </label>
-
-                <input type="text"
-                       id="fixtureNo"
-                       required
-                       class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500"
-                       placeholder="e.g. FIX-102">
-
-            </div>
-
-
-            <div>
-
-                <label class="block text-xs font-semibold mb-1">
-                    Priority (1 - 10)
-                </label>
-
-                <input type="number"
-                       id="priority"
-                       min="1"
-                       max="10"
-                       value="1"
-                       required
-                       class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
-
-            </div>
-
-
-            <div>
-
-                <label class="block text-xs font-semibold mb-1">
-                    Pallet Selection
-                </label>
-
-                <select id="pallet"
-                        class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500">
-
-                    <option value="Pallet A">
-                        Pallet A
-                    </option>
-
-                    <option value="Pallet B">
-                        Pallet B
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="flex items-end">
-
-                <button type="submit"
-                        class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition shadow">
-
-                    Submit & Notify
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-
-    <!-- ================= SAMPLE ================= -->
-
-    <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl flex justify-between items-center">
-
-        <div>
-
-            <h3 class="font-bold text-indigo-900">
-                1st Sample Cutting Completed?
-            </h3>
-
-            <p class="text-xs text-indigo-700">
-                Trigger pop-up notification directly to CMM / STD Room.
-            </p>
-
-        </div>
-
-        <button onclick="sendSampleCuttingAlert()"
-                class="bg-indigo-600 text-white px-4 py-2 rounded font-semibold text-sm hover:bg-indigo-700 transition">
-
-            <i class="fas fa-paper-plane mr-1"></i>
-            Send to STD Room
-
-        </button>
-
-    </div>
-
-
-    <!-- ==================================================
-         NEW INLINE EXCEL VIEW
-         NO MODAL
-    =================================================== -->
-
-    <div id="setterExcelSection"
-         class="excel-wrapper">
-
-        <div class="excel-title">
-
-            <div class="flex items-center justify-between gap-3">
+            <!-- SAMPLE CUTTING -->
+
+            <div
+                class="bg-indigo-50 border
+                       border-indigo-200 p-4 rounded-xl
+                       flex justify-between items-center">
 
                 <div>
 
-                    <h3>
-                        <i class="fas fa-table mr-2"></i>
-                        SETTER - COMPLETE SETUP INFORMATION
+                    <h3
+                        class="font-bold text-indigo-900">
+
+                        1st Sample Cutting Completed?
+
                     </h3>
 
-                    <p id="excelFilterText">
-                        Complete information from current setup
+                    <p
+                        class="text-xs text-indigo-700">
+
+                        Trigger pop-up notification directly
+                        to CMM / STD Room.
+
                     </p>
 
                 </div>
 
-                <div class="text-right">
 
-                    <span class="text-[10px] text-slate-400 block">
-                        VIEW
-                    </span>
+                <button
+                    onclick="sendSampleCuttingAlert()"
+                    class="bg-indigo-600
+                           text-white px-4 py-2
+                           rounded font-semibold
+                           text-sm hover:bg-indigo-700
+                           transition">
 
-                    <span class="text-xs font-bold text-green-400">
-                        LIVE
-                    </span>
+                    <i class="fas fa-paper-plane mr-1"></i>
 
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- SUMMARY -->
-
-        <div class="excel-summary">
-
-            <div class="excel-summary-card">
-
-                <div class="label">
-                    Part
-                </div>
-
-                <div id="excelSummaryPart"
-                     class="value">
-                    Gear Shaft
-                </div>
-
-            </div>
-
-
-            <div class="excel-summary-card">
-
-                <div class="label">
-                    Part Number
-                </div>
-
-                <div id="excelSummaryPartNo"
-                     class="value">
-                    PN-9988
-                </div>
-
-            </div>
-
-
-            <div class="excel-summary-card">
-
-                <div class="label">
-                    Priority
-                </div>
-
-                <div id="excelSummaryPriority"
-                     class="value">
-                    1
-                </div>
-
-            </div>
-
-
-            <div class="excel-summary-card">
-
-                <div class="label">
-                    Quality
-                </div>
-
-                <div id="excelSummaryQuality"
-                     class="value">
-                    Pending SOP
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- TABLE -->
-
-        <div class="excel-scroll">
-
-            <table class="excel-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Sr. No.</th>
-
-                        <th>Part Name</th>
-
-                        <th>Part No.</th>
-
-                        <th>Date & Shift</th>
-
-                        <th>Setup Type</th>
-
-                        <th>Fixture No.</th>
-
-                        <th>Fixture Available</th>
-
-                        <th>Priority</th>
-
-                        <th>Pallet</th>
-
-                        <th>Tooling Status</th>
-
-                        <th>Fixture Status</th>
-
-                        <th>Setup Status</th>
-
-                        <th>Sample Cutting</th>
-
-                        <th>Inspection</th>
-
-                        <th>Quality Status</th>
-
-                        <th>Correction Required</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="setterExcelTableBody">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        <div class="excel-footer">
-
-            <i class="fas fa-info-circle mr-1"></i>
-
-            This layout displays the same information maintained by the Setter dashboard.
-            No separate Excel window is required.
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ================= TOOL ROOM ================= -->
-
-<div id="tab-toolroom"
-     class="tab-content hidden space-y-6">
-
-    <div class="bg-white p-6 rounded-xl shadow border">
-
-        <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
-
-            <i class="fas fa-wrench text-blue-600 mr-2"></i>
-
-            Tool Room Dashboard
-
-        </h2>
-
-
-        <div class="bg-slate-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-
-            <div>
-
-                <label class="block text-xs font-bold text-slate-700 mb-1">
-                    Fixture Serial No. Available?
-                </label>
-
-                <select id="toolroomFixtureAvail"
-                        onchange="toggleFixtureInput()"
-                        class="w-full p-2 border rounded text-sm bg-white font-semibold">
-
-                    <option value="YES">YES</option>
-                    <option value="NO">NO</option>
-
-                </select>
-
-            </div>
-
-
-            <div id="toolroomFixtureNoGroup">
-
-                <label class="block text-xs font-bold text-slate-700 mb-1">
-                    Available Fixture Serial No.
-                </label>
-
-                <input type="text"
-                       id="toolroomFixtureNo"
-                       value="FIX-102"
-                       class="w-full p-2 border rounded text-sm bg-white"
-                       placeholder="Enter Fixture No.">
-
-            </div>
-
-
-            <div class="flex items-end">
-
-                <button onclick="updateToolroomFixture()"
-                        class="bg-blue-600 text-white text-xs px-4 py-2.5 rounded font-bold hover:bg-blue-700 transition">
-
-                    Update Fixture Info
+                    Send to STD Room
 
                 </button>
 
@@ -985,312 +1127,622 @@
         </div>
 
 
-        <div class="overflow-x-auto">
+        <!-- =====================================================
+             TOOL ROOM
+        ====================================================== -->
 
-            <table class="w-full text-sm text-left border rounded-lg">
+        <div
+            id="tab-toolroom"
+            class="tab-content hidden space-y-6">
 
-                <thead class="bg-slate-100 border-b">
+            <div
+                class="bg-white p-6 rounded-xl
+                       shadow border">
 
-                    <tr>
+                <h2
+                    class="text-lg font-bold mb-4
+                           border-b pb-2 text-slate-800">
 
-                        <th class="p-3">Part Details</th>
-                        <th class="p-3">Fixture No.</th>
-                        <th class="p-3">Priority</th>
-                        <th class="p-3">Tooling Status</th>
-                        <th class="p-3">Fixture Status</th>
-                        <th class="p-3">Action</th>
+                    <i class="fas fa-wrench
+                              text-blue-600 mr-2"></i>
 
-                    </tr>
+                    Tool Room Dashboard
 
-                </thead>
+                </h2>
 
-                <tbody id="toolroomTable"></tbody>
 
-            </table>
+                <div
+                    class="bg-slate-50 p-4 rounded-lg
+                           border mb-6 grid grid-cols-1
+                           md:grid-cols-3 gap-4
+                           items-center">
 
-        </div>
 
-    </div>
+                    <div>
 
-</div>
+                        <label
+                            class="block text-xs
+                                   font-bold text-slate-700 mb-1">
 
+                            Fixture Serial No. Available?
 
-<!-- ================= STD ROOM ================= -->
+                        </label>
 
-<div id="tab-stdroom"
-     class="tab-content hidden space-y-6">
+                        <select
+                            id="toolroomFixtureAvail"
+                            onchange="toggleFixtureInput()"
+                            class="w-full p-2 border rounded
+                                   text-sm bg-white
+                                   font-semibold">
 
-    <div class="bg-white p-6 rounded-xl shadow border">
+                            <option value="YES">
+                                YES
+                            </option>
 
-        <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
+                            <option value="NO">
+                                NO
+                            </option>
 
-            <i class="fas fa-microscope text-blue-600 mr-2"></i>
+                        </select>
 
-            CMM / STD Room Dashboard
+                    </div>
 
-        </h2>
 
+                    <div id="toolroomFixtureNoGroup">
 
-        <div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center">
+                        <label
+                            class="block text-xs
+                                   font-bold text-slate-700 mb-1">
 
-            <div>
+                            Available Fixture Serial No.
 
-                <span id="stdStatusBadge"
-                      class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold">
+                        </label>
 
-                    Inspection Pending
+                        <input
+                            type="text"
+                            id="toolroomFixtureNo"
+                            value="FIX-102"
+                            class="w-full p-2 border rounded
+                                   text-sm bg-white"
+                            placeholder="Enter Fixture No.">
 
-                </span>
+                    </div>
 
-                <h3 class="font-bold text-slate-800 mt-2"
-                    id="stdSampleText">
 
-                    Sample Pending for Part: Gear Shaft (PN-9988)
+                    <div class="flex items-end">
 
-                </h3>
+                        <button
+                            onclick="updateToolroomFixture()"
+                            class="bg-blue-600 text-white
+                                   text-xs px-4 py-2.5
+                                   rounded font-bold
+                                   hover:bg-blue-700
+                                   transition">
 
-            </div>
+                            Update Fixture Info
 
+                        </button>
 
-            <button onclick="sendQualityAlert()"
-                    class="bg-green-600 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-green-700 transition">
-
-                Inspection Done (Send to Quality)
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ================= QUALITY ================= -->
-
-<div id="tab-quality"
-     class="tab-content hidden space-y-6">
-
-    <div class="bg-white p-6 rounded-xl shadow border">
-
-        <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
-
-            <i class="fas fa-check-double text-blue-600 mr-2"></i>
-
-            Quality Approval Dashboard
-
-        </h2>
-
-
-        <p class="text-sm text-slate-600 mb-4">
-
-            Process inspection approval status or select sample correction requirement:
-
-        </p>
-
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border">
-
-            <div class="space-y-3 border-r md:pr-6 border-slate-200">
-
-                <h3 class="font-bold text-slate-700 text-sm">
-                    Action 1: SOP Approval
-                </h3>
-
-                <button onclick="handleQualityAction('SOP APPROVED', 'None')"
-                        class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition shadow flex items-center justify-center">
-
-                    <i class="fas fa-check-circle mr-2"></i>
-
-                    SOP APPROVE
-
-                </button>
-
-            </div>
-
-
-            <div class="space-y-3">
-
-                <h3 class="font-bold text-slate-700 text-sm">
-                    Action 2: Sample Correction Request
-                </h3>
-
-
-                <div>
-
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">
-                        Select Sample Correction Stage:
-                    </label>
-
-                    <select id="sampleCorrectionSelect"
-                            class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-red-500 outline-none">
-
-                        <option value="1st Sample Correction Require">
-                            1st Sample Correction Require
-                        </option>
-
-                        <option value="2nd Sample Correction Require">
-                            2nd Sample Correction Require
-                        </option>
-
-                        <option value="3rd Sample Correction Require">
-                            3rd Sample Correction Require
-                        </option>
-
-                        <option value="4th Sample Correction Require">
-                            4th Sample Correction Require
-                        </option>
-
-                    </select>
+                    </div>
 
                 </div>
 
 
-                <button onclick="submitQualityCorrection()"
-                        class="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition shadow flex items-center justify-center">
+                <div class="overflow-x-auto">
 
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <table
+                        class="w-full text-sm text-left
+                               border rounded-lg">
 
-                    SEND CORRECTION ALERT TO SETTER
+                        <thead
+                            class="bg-slate-100 border-b">
 
-                </button>
+                            <tr>
+
+                                <th class="p-3">
+                                    Part Details
+                                </th>
+
+                                <th class="p-3">
+                                    Fixture No.
+                                </th>
+
+                                <th class="p-3">
+                                    Priority
+                                </th>
+
+                                <th class="p-3">
+                                    Tooling Status
+                                </th>
+
+                                <th class="p-3">
+                                    Fixture Status
+                                </th>
+
+                                <th class="p-3">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody
+                            id="toolroomTable">
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
 
-</div>
+        <!-- =====================================================
+             STD ROOM
+        ====================================================== -->
+
+        <div
+            id="tab-stdroom"
+            class="tab-content hidden space-y-6">
+
+            <div
+                class="bg-white p-6 rounded-xl
+                       shadow border">
+
+                <h2
+                    class="text-lg font-bold mb-4
+                           border-b pb-2 text-slate-800">
+
+                    <i class="fas fa-microscope
+                              text-blue-600 mr-2"></i>
+
+                    CMM / STD Room Dashboard
+
+                </h2>
 
 
-<!-- ================= SUPERVISOR ================= -->
+                <div
+                    class="p-4 bg-slate-50 border
+                           rounded-lg flex
+                           justify-between items-center">
 
-<div id="tab-supervisor"
-     class="tab-content hidden space-y-6">
+                    <div>
 
-    <div class="bg-white p-6 rounded-xl shadow border mb-6">
+                        <span
+                            id="stdStatusBadge"
+                            class="bg-yellow-100
+                                   text-yellow-800
+                                   text-xs px-2.5 py-1
+                                   rounded font-bold">
 
-        <h2 class="text-lg font-bold border-b pb-2 text-slate-800">
+                            Inspection Pending
 
-            <i class="fas fa-user-tie text-blue-600 mr-2"></i>
-
-            Supervisor Dashboard
-
-        </h2>
-
-    </div>
+                        </span>
 
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <h3
+                            class="font-bold text-slate-800 mt-2"
+                            id="stdSampleText">
 
-        <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+                            Sample Pending for Part:
+                            Gear Shaft (PN-9988)
 
-            <h3 class="text-lg font-bold text-green-900">
-                SOP Approved
-            </h3>
+                        </h3>
 
-            <p id="supApprovedCount"
-               class="text-4xl font-extrabold text-green-600 mt-2">
-                0
-            </p>
+                    </div>
+
+
+                    <button
+                        onclick="sendQualityAlert()"
+                        class="bg-green-600
+                               text-white px-4 py-2
+                               rounded text-sm
+                               font-semibold
+                               hover:bg-green-700
+                               transition">
+
+                        Inspection Done
+                        (Send to Quality)
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             QUALITY
+        ====================================================== -->
+
+        <div
+            id="tab-quality"
+            class="tab-content hidden space-y-6">
+
+            <div
+                class="bg-white p-6 rounded-xl
+                       shadow border">
+
+                <h2
+                    class="text-lg font-bold mb-4
+                           border-b pb-2 text-slate-800">
+
+                    <i class="fas fa-check-double
+                              text-blue-600 mr-2"></i>
+
+                    Quality Approval Dashboard
+
+                </h2>
+
+
+                <p
+                    class="text-sm text-slate-600 mb-4">
+
+                    Process inspection approval status
+                    or select sample correction requirement:
+
+                </p>
+
+
+                <div
+                    class="grid grid-cols-1
+                           md:grid-cols-2 gap-6
+                           bg-slate-50 p-4
+                           rounded-xl border">
+
+
+                    <div
+                        class="space-y-3 border-r
+                               md:pr-6
+                               border-slate-200">
+
+                        <h3
+                            class="font-bold text-slate-700
+                                   text-sm">
+
+                            Action 1: SOP Approval
+
+                        </h3>
+
+
+                        <button
+                            onclick="handleQualityAction(
+                                'SOP APPROVED',
+                                'None'
+                            )"
+                            class="w-full bg-green-600
+                                   text-white px-6 py-3
+                                   rounded-lg font-bold
+                                   hover:bg-green-700
+                                   transition shadow
+                                   flex items-center
+                                   justify-center">
+
+                            <i class="fas fa-check-circle mr-2"></i>
+
+                            SOP APPROVE
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="space-y-3">
+
+                        <h3
+                            class="font-bold text-slate-700
+                                   text-sm">
+
+                            Action 2:
+                            Sample Correction Request
+
+                        </h3>
+
+
+                        <div>
+
+                            <label
+                                class="block text-xs
+                                       font-semibold
+                                       text-slate-600 mb-1">
+
+                                Select Sample Correction Stage:
+
+                            </label>
+
+
+                            <select
+                                id="sampleCorrectionSelect"
+                                class="w-full p-2.5
+                                       border rounded-lg
+                                       text-sm bg-white
+                                       focus:ring-2
+                                       focus:ring-red-500
+                                       outline-none">
+
+                                <option value="1st Sample Correction Require">
+                                    1st Sample Correction Require
+                                </option>
+
+                                <option value="2nd Sample Correction Require">
+                                    2nd Sample Correction Require
+                                </option>
+
+                                <option value="3rd Sample Correction Require">
+                                    3rd Sample Correction Require
+                                </option>
+
+                                <option value="4th Sample Correction Require">
+                                    4th Sample Correction Require
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <button
+                            onclick="submitQualityCorrection()"
+                            class="w-full bg-red-600
+                                   text-white px-6 py-3
+                                   rounded-lg font-bold
+                                   hover:bg-red-700
+                                   transition shadow
+                                   flex items-center
+                                   justify-center">
+
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+
+                            SEND CORRECTION ALERT TO SETTER
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
 
-        <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+        <!-- =====================================================
+             SUPERVISOR
+        ====================================================== -->
 
-            <h3 class="text-lg font-bold text-yellow-900">
-                Pending SOP
-            </h3>
+        <div
+            id="tab-supervisor"
+            class="tab-content hidden space-y-6">
 
-            <p id="supPendingCount"
-               class="text-4xl font-extrabold text-yellow-600 mt-2">
-                1
-            </p>
+
+            <div
+                class="bg-white p-6 rounded-xl
+                       shadow border mb-6">
+
+                <h2
+                    class="text-lg font-bold
+                           border-b pb-2
+                           text-slate-800">
+
+                    <i class="fas fa-user-tie
+                              text-blue-600 mr-2"></i>
+
+                    Supervisor Dashboard
+
+                </h2>
+
+            </div>
+
+
+            <div
+                class="grid grid-cols-1
+                       md:grid-cols-2 gap-4">
+
+
+                <div
+                    class="bg-green-50 p-6
+                           rounded-xl
+                           border border-green-200">
+
+                    <h3
+                        class="text-lg font-bold
+                               text-green-900">
+
+                        SOP Approved
+
+                    </h3>
+
+                    <p
+                        id="supApprovedCount"
+                        class="text-4xl font-extrabold
+                               text-green-600 mt-2">
+
+                        0
+
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="bg-yellow-50 p-6
+                           rounded-xl
+                           border border-yellow-200">
+
+                    <h3
+                        class="text-lg font-bold
+                               text-yellow-900">
+
+                        Pending SOP
+
+                    </h3>
+
+                    <p
+                        id="supPendingCount"
+                        class="text-4xl font-extrabold
+                               text-yellow-600 mt-2">
+
+                        1
+
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
-    </div>
 
-</div>
+        <!-- =====================================================
+             HOD
+        ====================================================== -->
+
+        <div
+            id="tab-hod"
+            class="tab-content hidden space-y-6">
+
+            <div
+                class="bg-white p-6 rounded-xl
+                       shadow border">
+
+                <h2
+                    class="text-lg font-bold mb-4
+                           border-b pb-2 text-slate-800">
+
+                    <i class="fas fa-chart-line
+                              text-blue-600 mr-2"></i>
+
+                    HOD Master Live View
+                    (Read Only)
+
+                </h2>
 
 
-<!-- ================= HOD ================= -->
+                <div class="overflow-x-auto">
 
-<div id="tab-hod"
-     class="tab-content hidden space-y-6">
+                    <table
+                        class="w-full text-xs
+                               text-left border
+                               rounded-lg">
 
-    <div class="bg-white p-6 rounded-xl shadow border">
+                        <thead
+                            class="bg-slate-200
+                                   text-slate-800">
 
-        <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
+                            <tr>
 
-            <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                                <th class="p-3">
+                                    Part Info
+                                </th>
 
-            HOD Master Live View (Read Only)
+                                <th class="p-3">
+                                    Shift/Pallet
+                                </th>
 
-        </h2>
+                                <th class="p-3">
+                                    Tooling
+                                </th>
 
+                                <th class="p-3">
+                                    Fixture
+                                </th>
 
-        <div class="overflow-x-auto">
+                                <th class="p-3">
+                                    Setup Status
+                                </th>
 
-            <table class="w-full text-xs text-left border rounded-lg">
+                                <th class="p-3">
+                                    Quality Status
+                                </th>
 
-                <thead class="bg-slate-200 text-slate-800">
+                            </tr>
 
-                    <tr>
+                        </thead>
 
-                        <th class="p-3">Part Info</th>
-                        <th class="p-3">Shift/Pallet</th>
-                        <th class="p-3">Tooling</th>
-                        <th class="p-3">Fixture</th>
-                        <th class="p-3">Setup Status</th>
-                        <th class="p-3">Quality Status</th>
+                        <tbody id="hodTable"></tbody>
 
-                    </tr>
+                    </table>
 
-                </thead>
+                </div>
 
-                <tbody id="hodTable"></tbody>
-
-            </table>
+            </div>
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
 
-</main>
-</div>
+<!-- =========================================================
+     SETTER CORRECTION MODAL
+========================================================= -->
+
+<div
+    id="setterCorrectionModal"
+    class="fixed inset-0
+           bg-black bg-opacity-60
+           flex items-center
+           justify-center hidden
+           z-50 p-4">
 
 
-<!-- ================= SETTER CORRECTION MODAL ================= -->
+    <div
+        class="bg-white rounded-xl
+               shadow-2xl max-w-md
+               w-full p-6
+               border border-orange-300
+               text-center">
 
-<div id="setterCorrectionModal"
-     class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
 
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border border-orange-300 text-center">
+        <div
+            class="text-orange-500
+                   text-4xl mb-2">
 
-        <div class="text-orange-500 text-4xl mb-2">
             <i class="fas fa-tools"></i>
+
         </div>
 
-        <h3 class="text-lg font-bold text-slate-800 mb-1">
+
+        <h3
+            class="text-lg font-bold
+                   text-slate-800 mb-1">
+
             Correction Required Status
+
         </h3>
 
-        <p id="setterCorrectionText"
-           class="text-sm font-semibold text-red-600 bg-red-50 p-3 rounded my-3 border border-red-200">
+
+        <p
+            id="setterCorrectionText"
+            class="text-sm font-semibold
+                   text-red-600 bg-red-50
+                   p-3 rounded my-3
+                   border border-red-200">
+
             None
+
         </p>
 
-        <div id="correctionActionArea"
-             class="hidden">
 
-            <button onclick="handleCorrectionDone()"
-                    class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition shadow-md w-full">
+        <div
+            id="correctionActionArea"
+            class="hidden">
+
+            <button
+                onclick="handleCorrectionDone()"
+                class="bg-green-600
+                       hover:bg-green-700
+                       text-white font-bold
+                       px-6 py-2.5
+                       rounded-lg text-sm
+                       transition shadow-md
+                       w-full">
 
                 <i class="fas fa-check-circle mr-1"></i>
 
@@ -1300,40 +1752,80 @@
 
         </div>
 
-        <button onclick="closeSetterCorrectionModal()"
-                class="mt-3 text-xs text-slate-500 underline font-semibold">
+
+        <button
+            onclick="closeSetterCorrectionModal()"
+            class="mt-3 text-xs
+                   text-slate-500
+                   underline font-semibold">
 
             Close
 
         </button>
 
     </div>
+
 </div>
 
 
-<!-- ================= ALERT ================= -->
+<!-- =========================================================
+     ALERT MODAL
+========================================================= -->
 
-<div id="alertModal"
-     class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+<div
+    id="alertModal"
+    class="fixed inset-0
+           bg-black bg-opacity-70
+           flex items-center
+           justify-center hidden
+           z-50 p-4">
 
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active">
 
-        <div class="text-red-500 text-5xl mb-3">
+    <div
+        class="bg-white rounded-xl
+               shadow-2xl max-w-md
+               w-full p-6 text-center
+               border-4 border-red-500
+               alert-active">
+
+
+        <div
+            class="text-red-500
+                   text-5xl mb-3">
+
             <i class="fas fa-bell fa-bounce"></i>
+
         </div>
 
-        <h3 id="alertTitle"
-            class="text-xl font-extrabold text-red-600">
+
+        <h3
+            id="alertTitle"
+            class="text-xl font-extrabold
+                   text-red-600">
+
             NEW SYSTEM ALERT!
+
         </h3>
 
-        <p id="alertMessage"
-           class="text-sm text-slate-700 my-4 font-semibold">
+
+        <p
+            id="alertMessage"
+            class="text-sm text-slate-700
+                   my-4 font-semibold">
+
             Alert received from department.
+
         </p>
 
-        <button onclick="acknowledgeAlert()"
-                class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-red-700 text-lg transition">
+
+        <button
+            onclick="acknowledgeAlert()"
+            class="bg-red-600
+                   text-white font-bold
+                   px-8 py-3
+                   rounded-lg shadow-lg
+                   hover:bg-red-700
+                   text-lg transition">
 
             OK (ACKNOWLEDGE)
 
@@ -1344,36 +1836,57 @@
 </div>
 
 
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
 <script>
 
-/* =====================================================
+
+/* =========================================================
    SERVICE WORKER
-===================================================== */
+========================================================= */
 
 if ('serviceWorker' in navigator) {
 
     window.addEventListener('load', () => {
 
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW registered successfully:', reg))
-            .catch(err => console.log('SW registration failed:', err));
+        navigator.serviceWorker
+            .register('./sw.js')
+            .then(reg => {
+
+                console.log(
+                    'SW registered successfully:',
+                    reg
+                );
+
+            })
+            .catch(err => {
+
+                console.log(
+                    'SW registration failed:',
+                    err
+                );
+
+            });
 
     });
 
 }
 
 
-/* =====================================================
+/* =========================================================
    GLOBAL VARIABLES
-===================================================== */
+========================================================= */
 
 let currentUser = null;
+
 let vibrateInterval = null;
 
 
-/* =====================================================
+/* =========================================================
    ACTIVE SETUP
-===================================================== */
+========================================================= */
 
 let activeSetup = {
 
@@ -1410,15 +1923,17 @@ let activeSetup = {
 };
 
 
-/* =====================================================
+/* =========================================================
    LIVE TIME / SHIFT
-===================================================== */
+========================================================= */
 
 function updateLiveTime() {
 
     const now = new Date();
 
-    document.getElementById('topLiveTime').innerText =
+    document.getElementById(
+        'topLiveTime'
+    ).innerText =
         now.toLocaleTimeString();
 
 
@@ -1430,75 +1945,113 @@ function updateLiveTime() {
     let shift = "Shift C";
 
 
-    if (minutes >= 465 && minutes < 975) {
+    if (
+        minutes >= 465 &&
+        minutes < 975
+    ) {
 
         shift = "Shift A";
 
-    } else if (minutes >= 975 && minutes < 1440) {
+    }
+
+    else if (
+        minutes >= 975 &&
+        minutes < 1440
+    ) {
 
         shift = "Shift B";
 
-    } else {
+    }
+
+    else {
 
         shift = "Shift C";
 
     }
 
 
-    document.getElementById('topLiveShift').innerText =
+    document.getElementById(
+        'topLiveShift'
+    ).innerText =
         "Shift: " + shift;
 
 
-    const shiftDate =
+    const shiftDateElement =
+        document.getElementById('shiftDate');
+
+
+    if (shiftDateElement) {
+
+        shiftDateElement.value =
+            now.toLocaleDateString() +
+            " - " +
+            shift;
+
+    }
+
+
+    activeSetup.shiftDate =
         now.toLocaleDateString() +
         " - " +
         shift;
 
 
-    document.getElementById('shiftDate').value =
-        shiftDate;
+    /* Keep Excel table updated */
 
+    if (document.getElementById(
+        'setterExcelBody'
+    )) {
 
-    activeSetup.shiftDate = shiftDate;
+        renderSetterExcel();
 
-    renderSetterExcelView();
+    }
 
 }
 
 
-setInterval(updateLiveTime, 1000);
+setInterval(
+    updateLiveTime,
+    1000
+);
 
 updateLiveTime();
 
 
-/* =====================================================
+/* =========================================================
    PAGE LOAD
-===================================================== */
+========================================================= */
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener(
+    'DOMContentLoaded',
+    () => {
 
-    const savedUser =
-        localStorage.getItem('sutom_user');
+        const savedUser =
+            localStorage.getItem(
+                'sutom_user'
+            );
 
 
-    if (savedUser) {
+        if (savedUser) {
 
-        currentUser =
-            JSON.parse(savedUser);
+            currentUser =
+                JSON.parse(savedUser);
 
-        loadDashboard(currentUser);
+            loadDashboard(
+                currentUser
+            );
+
+        }
+
+
+        renderSetterExcel();
 
     }
+);
 
 
-    renderSetterExcelView();
-
-});
-
-
-/* =====================================================
+/* =========================================================
    LOGIN
-===================================================== */
+========================================================= */
 
 function handleLogin(e) {
 
@@ -1508,119 +2061,138 @@ function handleLogin(e) {
     currentUser = {
 
         name:
-            document.getElementById('loginName').value,
+            document.getElementById(
+                'loginName'
+            ).value,
 
         id:
-            document.getElementById('loginId').value,
+            document.getElementById(
+                'loginId'
+            ).value,
 
         dept:
-            document.getElementById('loginDept').value
+            document.getElementById(
+                'loginDept'
+            ).value
 
     };
 
 
     localStorage.setItem(
         'sutom_user',
-        JSON.stringify(currentUser)
+        JSON.stringify(
+            currentUser
+        )
     );
 
 
-    loadDashboard(currentUser);
+    loadDashboard(
+        currentUser
+    );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    LOAD DASHBOARD
-===================================================== */
+========================================================= */
 
 function loadDashboard(user) {
 
-    document
-        .getElementById('authSection')
-        .classList.add('hidden');
+    document.getElementById(
+        'authSection'
+    ).classList.add('hidden');
 
 
-    document
-        .getElementById('dashboardSection')
-        .classList.remove('hidden');
+    document.getElementById(
+        'dashboardSection'
+    ).classList.remove('hidden');
 
 
-    document
-        .getElementById('dashboardSection')
-        .classList.add('flex');
+    document.getElementById(
+        'dashboardSection'
+    ).classList.add('flex');
 
 
-    document
-        .getElementById('userInfo')
-        .classList.remove('hidden');
+    document.getElementById(
+        'userInfo'
+    ).classList.remove('hidden');
 
 
-    document
-        .getElementById('userInfo')
-        .classList.add('flex');
+    document.getElementById(
+        'userInfo'
+    ).classList.add('flex');
 
 
-    document
-        .getElementById('userBadge')
-        .innerText =
+    document.getElementById(
+        'userBadge'
+    ).innerText =
         `${user.name} (${user.dept.toUpperCase()})`;
 
 
-    showDepartmentTab(user.dept);
+    showDepartmentTab(
+        user.dept
+    );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    LOGOUT
-===================================================== */
+========================================================= */
 
 function handleLogout() {
 
-    localStorage.removeItem('sutom_user');
+    localStorage.removeItem(
+        'sutom_user'
+    );
+
 
     currentUser = null;
 
 
-    document
-        .getElementById('authSection')
-        .classList.remove('hidden');
+    document.getElementById(
+        'authSection'
+    ).classList.remove('hidden');
 
 
-    document
-        .getElementById('dashboardSection')
-        .classList.add('hidden');
+    document.getElementById(
+        'dashboardSection'
+    ).classList.add('hidden');
 
 
-    document
-        .getElementById('dashboardSection')
-        .classList.remove('flex');
+    document.getElementById(
+        'dashboardSection'
+    ).classList.remove('flex');
 
 
-    document
-        .getElementById('userInfo')
-        .classList.add('hidden');
+    document.getElementById(
+        'userInfo'
+    ).classList.add('hidden');
 
 
-    document
-        .getElementById('userInfo')
-        .classList.remove('flex');
+    document.getElementById(
+        'userInfo'
+    ).classList.remove('flex');
 
 }
 
 
-/* =====================================================
+/* =========================================================
    DEPARTMENT TAB
-===================================================== */
+========================================================= */
 
 function showDepartmentTab(deptId) {
 
     document
         .querySelectorAll('.tab-content')
-        .forEach(el =>
-            el.classList.add('hidden')
-        );
+        .forEach(el => {
+
+            el.classList.add(
+                'hidden'
+            );
+
+        });
 
 
     const activeTab =
@@ -1631,32 +2203,54 @@ function showDepartmentTab(deptId) {
 
     if (activeTab) {
 
-        activeTab.classList.remove('hidden');
+        activeTab.classList.remove(
+            'hidden'
+        );
 
     }
 
 
-    if (deptId === 'toolroom')
+    if (
+        deptId === 'setter'
+    ) {
+
+        renderSetterExcel();
+
+    }
+
+
+    if (
+        deptId === 'toolroom'
+    ) {
+
         renderToolroom();
 
+    }
 
-    if (deptId === 'hod')
+
+    if (
+        deptId === 'hod'
+    ) {
+
         renderHOD();
 
+    }
 
-    if (deptId === 'supervisor')
+
+    if (
+        deptId === 'supervisor'
+    ) {
+
         renderSupervisor();
 
-
-    if (deptId === 'setter')
-        renderSetterExcelView();
+    }
 
 }
 
 
-/* =====================================================
+/* =========================================================
    OPEN SETUP FORM
-===================================================== */
+========================================================= */
 
 function openSetupForm() {
 
@@ -1669,7 +2263,8 @@ function openSetupForm() {
     if (formElem) {
 
         formElem.scrollIntoView({
-            behavior: 'smooth'
+            behavior: 'smooth',
+            block: 'start'
         });
 
 
@@ -1693,9 +2288,9 @@ function openSetupForm() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SETTER SUBMIT
-===================================================== */
+========================================================= */
 
 function handleSetterSubmit(e) {
 
@@ -1756,10 +2351,7 @@ function handleSetterSubmit(e) {
         `Sample Pending for Part: ${activeSetup.partName} (${activeSetup.partNo})`;
 
 
-    updateMetrics();
-
-
-    renderSetterExcelView();
+    renderSetterExcel();
 
 
     triggerAlert(
@@ -1770,243 +2362,207 @@ function handleSetterSubmit(e) {
 }
 
 
-/* =====================================================
-   NEW INLINE EXCEL VIEW
-   NO MODAL
-===================================================== */
+/* =========================================================
+   EXCEL STYLE LIVE TABLE
+========================================================= */
 
-function showSetterExcelView(title = "Complete Setup Information") {
-
-    const section =
-        document.getElementById(
-            'setterExcelSection'
-        );
-
-
-    if (!section)
-        return;
-
-
-    document.getElementById(
-        'excelFilterText'
-    ).innerText =
-        `Selected: ${title} — Complete setup information`;
-
-
-    renderSetterExcelView();
-
-
-    section.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-    });
-
-
-    section.classList.add(
-        'ring-2',
-        'ring-blue-500'
-    );
-
-
-    setTimeout(() => {
-
-        section.classList.remove(
-            'ring-2',
-            'ring-blue-500'
-        );
-
-    }, 1500);
-
-}
-
-
-/* =====================================================
-   RENDER FULL EXCEL INFORMATION
-===================================================== */
-
-function renderSetterExcelView() {
+function renderSetterExcel() {
 
     const tbody =
         document.getElementById(
-            'setterExcelTableBody'
+            'setterExcelBody'
         );
 
 
-    if (!tbody)
-        return;
+    if (!tbody) return;
 
-
-    /* SUMMARY */
-
-    const summaryPart =
-        document.getElementById(
-            'excelSummaryPart'
-        );
-
-    const summaryPartNo =
-        document.getElementById(
-            'excelSummaryPartNo'
-        );
-
-    const summaryPriority =
-        document.getElementById(
-            'excelSummaryPriority'
-        );
-
-    const summaryQuality =
-        document.getElementById(
-            'excelSummaryQuality'
-        );
-
-
-    if (summaryPart)
-        summaryPart.innerText =
-            activeSetup.partName;
-
-
-    if (summaryPartNo)
-        summaryPartNo.innerText =
-            activeSetup.partNo;
-
-
-    if (summaryPriority)
-        summaryPriority.innerText =
-            activeSetup.priority;
-
-
-    if (summaryQuality)
-        summaryQuality.innerText =
-            activeSetup.qualityStatus;
-
-
-    /* STATUS */
 
     const toolingStatus =
         activeSetup.toolingReady
-            ? `<span class="excel-badge excel-badge-green">READY</span>`
-            : `<span class="excel-badge excel-badge-red">PENDING</span>`;
+            ? "READY"
+            : "PENDING";
 
 
     const fixtureStatus =
         activeSetup.fixtureReady
-            ? `<span class="excel-badge excel-badge-green">READY</span>`
-            : `<span class="excel-badge excel-badge-red">PENDING</span>`;
+            ? "READY"
+            : "PENDING";
 
 
     const setupStatus =
         activeSetup.setupReady
-            ? `<span class="excel-badge excel-badge-green">SETUP READY</span>`
-            : `<span class="excel-badge excel-badge-yellow">IN PROGRESS</span>`;
+            ? "SETUP READY"
+            : "IN PROGRESS";
 
 
     const sampleStatus =
         activeSetup.sampleCutting
-            ? `<span class="excel-badge excel-badge-blue">COMPLETED</span>`
-            : `<span class="excel-badge excel-badge-yellow">PENDING</span>`;
+            ? "COMPLETED"
+            : "PENDING";
 
 
     const inspectionStatus =
         activeSetup.inspectionDone
-            ? `<span class="excel-badge excel-badge-green">DONE</span>`
-            : `<span class="excel-badge excel-badge-yellow">PENDING</span>`;
-
-
-    let qualityClass =
-        activeSetup.qualityStatus === "SOP APPROVED"
-            ? "excel-badge-green"
-            : activeSetup.qualityStatus === "CORRECTION REQUIRED"
-                ? "excel-badge-red"
-                : "excel-badge-yellow";
+            ? "DONE"
+            : "PENDING";
 
 
     const qualityStatus =
-        `<span class="excel-badge ${qualityClass}">
-            ${activeSetup.qualityStatus}
-        </span>`;
-
-
-    const fixtureAvailable =
-        activeSetup.fixtureAvailable === "YES"
-            ? `<span class="excel-green">YES</span>`
-            : `<span class="excel-red">NO</span>`;
+        activeSetup.qualityStatus ||
+        "Pending SOP";
 
 
     const correction =
-        activeSetup.correctionRequirement !== "None"
-            ? `<span class="excel-orange">
-                ${activeSetup.correctionRequirement}
-               </span>`
-            : `<span class="excel-green">
-                None
-               </span>`;
+        activeSetup.correctionRequirement ||
+        "None";
 
 
     tbody.innerHTML = `
 
         <tr>
 
-            <td class="excel-blue">
-                1
-            </td>
-
-            <td class="excel-part">
+            <td class="font-bold text-blue-600">
                 ${escapeHTML(activeSetup.partName)}
             </td>
 
-            <td class="excel-part">
+
+            <td class="font-semibold">
                 ${escapeHTML(activeSetup.partNo)}
             </td>
+
 
             <td>
                 ${escapeHTML(activeSetup.shiftDate || "-")}
             </td>
 
+
             <td>
                 ${escapeHTML(activeSetup.setupType)}
             </td>
 
-            <td class="excel-blue">
+
+            <td class="font-bold text-purple-700">
+
                 ${escapeHTML(activeSetup.fixtureNo)}
+
+                <br>
+
+                <span
+                    class="text-xs ${
+                        activeSetup.fixtureAvailable === "YES"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }">
+
+                    (${escapeHTML(
+                        activeSetup.fixtureAvailable
+                    )})
+
+                </span>
+
             </td>
 
-            <td>
-                ${fixtureAvailable}
+
+            <td
+                class="font-bold ${
+                    activeSetup.fixtureReady
+                    ? "text-green-600"
+                    : "text-red-600"
+                }">
+
+                ${fixtureStatus}
+
             </td>
 
-            <td class="excel-blue">
-                ${escapeHTML(String(activeSetup.priority))}
+
+            <td
+                class="font-bold text-blue-600">
+
+                ${escapeHTML(
+                    String(activeSetup.priority)
+                )}
+
             </td>
+
 
             <td>
                 ${escapeHTML(activeSetup.pallet)}
             </td>
 
-            <td>
+
+            <td
+                class="font-bold ${
+                    activeSetup.toolingReady
+                    ? "text-green-600"
+                    : "text-red-600"
+                }">
+
                 ${toolingStatus}
+
             </td>
 
-            <td>
-                ${fixtureStatus}
-            </td>
 
-            <td>
+            <td
+                class="font-bold ${
+                    activeSetup.setupReady
+                    ? "text-green-600"
+                    : "text-yellow-600"
+                }">
+
                 ${setupStatus}
+
             </td>
 
-            <td>
+
+            <td
+                class="font-bold ${
+                    activeSetup.sampleCutting
+                    ? "text-green-600"
+                    : "text-yellow-600"
+                }">
+
                 ${sampleStatus}
+
             </td>
 
-            <td>
+
+            <td
+                class="font-bold ${
+                    activeSetup.inspectionDone
+                    ? "text-green-600"
+                    : "text-yellow-600"
+                }">
+
                 ${inspectionStatus}
+
             </td>
 
-            <td>
-                ${qualityStatus}
+
+            <td
+                class="font-bold ${
+                    qualityStatus === "SOP APPROVED"
+                    ? "text-green-600"
+                    : "text-yellow-600"
+                }">
+
+                ${escapeHTML(
+                    qualityStatus
+                )}
+
             </td>
 
-            <td>
-                ${correction}
+
+            <td
+                class="font-bold ${
+                    correction !== "None"
+                    ? "text-red-600"
+                    : "text-green-600"
+                }">
+
+                ${escapeHTML(
+                    correction
+                )}
+
             </td>
 
         </tr>
@@ -2016,25 +2572,82 @@ function renderSetterExcelView() {
 }
 
 
-/* =====================================================
-   HTML SAFE TEXT
-===================================================== */
+/* =========================================================
+   CARD CLICK
+========================================================= */
 
-function escapeHTML(value) {
+function showSetterExcel(title) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    const titleElement =
+        document.getElementById(
+            'setterExcelTitle'
+        );
+
+
+    if (titleElement) {
+
+        titleElement.innerText =
+            title;
+
+    }
+
+
+    renderSetterExcel();
+
+
+    const section =
+        document.getElementById(
+            'setterExcelSection'
+        );
+
+
+    if (section) {
+
+        section.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+
+        section.classList.add(
+            'ring-2',
+            'ring-green-500'
+        );
+
+
+        setTimeout(() => {
+
+            section.classList.remove(
+                'ring-2',
+                'ring-green-500'
+            );
+
+        }, 1500);
+
+    }
 
 }
 
 
-/* =====================================================
+/* =========================================================
+   HTML SECURITY
+========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+}
+
+
+/* =========================================================
    CORRECTION MODAL
-===================================================== */
+========================================================= */
 
 function openSetterCorrectionModal() {
 
@@ -2058,15 +2671,21 @@ function openSetterCorrectionModal() {
             .getElementById(
                 'correctionActionArea'
             )
-            .classList.remove('hidden');
+            .classList.remove(
+                'hidden'
+            );
 
-    } else {
+    }
+
+    else {
 
         document
             .getElementById(
                 'correctionActionArea'
             )
-            .classList.add('hidden');
+            .classList.add(
+                'hidden'
+            );
 
     }
 
@@ -2075,7 +2694,9 @@ function openSetterCorrectionModal() {
         .getElementById(
             'setterCorrectionModal'
         )
-        .classList.remove('hidden');
+        .classList.remove(
+            'hidden'
+        );
 
 }
 
@@ -2086,14 +2707,16 @@ function closeSetterCorrectionModal() {
         .getElementById(
             'setterCorrectionModal'
         )
-        .classList.add('hidden');
+        .classList.add(
+            'hidden'
+        );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    CORRECTION DONE
-===================================================== */
+========================================================= */
 
 function handleCorrectionDone() {
 
@@ -2120,7 +2743,7 @@ function handleCorrectionDone() {
         "Pending";
 
 
-    renderSetterExcelView();
+    renderSetterExcel();
 
 
     triggerAlert(
@@ -2131,9 +2754,9 @@ function handleCorrectionDone() {
 }
 
 
-/* =====================================================
-   TOOL ROOM FIXTURE
-===================================================== */
+/* =========================================================
+   FIXTURE INPUT
+========================================================= */
 
 function toggleFixtureInput() {
 
@@ -2151,16 +2774,26 @@ function toggleFixtureInput() {
 
     if (avail === 'YES') {
 
-        inputGroup.classList.remove('hidden');
+        inputGroup.classList.remove(
+            'hidden'
+        );
 
-    } else {
+    }
 
-        inputGroup.classList.add('hidden');
+    else {
+
+        inputGroup.classList.add(
+            'hidden'
+        );
 
     }
 
 }
 
+
+/* =========================================================
+   TOOL ROOM FIXTURE
+========================================================= */
 
 function updateToolroomFixture() {
 
@@ -2182,7 +2815,9 @@ function updateToolroomFixture() {
             ).value ||
             "FIX-102";
 
-    } else {
+    }
+
+    else {
 
         activeSetup.fixtureNo =
             "NOT AVAILABLE";
@@ -2196,7 +2831,10 @@ function updateToolroomFixture() {
         activeSetup.fixtureNo;
 
 
-    renderSetterExcelView();
+    renderSetterExcel();
+
+
+    renderToolroom();
 
 
     alert(
@@ -2206,9 +2844,9 @@ function updateToolroomFixture() {
 }
 
 
-/* =====================================================
+/* =========================================================
    ALERT
-===================================================== */
+========================================================= */
 
 function triggerAlert(
     title,
@@ -2230,7 +2868,9 @@ function triggerAlert(
 
     document.getElementById(
         'alertModal'
-    ).classList.remove('hidden');
+    ).classList.remove(
+        'hidden'
+    );
 
 
     if ("vibrate" in navigator) {
@@ -2257,7 +2897,9 @@ function triggerAlert(
 
                 }, 1500);
 
-        } else {
+        }
+
+        else {
 
             navigator.vibrate([
                 500,
@@ -2274,16 +2916,24 @@ function triggerAlert(
 }
 
 
+/* =========================================================
+   ACKNOWLEDGE ALERT
+========================================================= */
+
 function acknowledgeAlert() {
 
     document.getElementById(
         'alertModal'
-    ).classList.add('hidden');
+    ).classList.add(
+        'hidden'
+    );
 
 
     if (vibrateInterval) {
 
-        clearInterval(vibrateInterval);
+        clearInterval(
+            vibrateInterval
+        );
 
         vibrateInterval = null;
 
@@ -2299,9 +2949,9 @@ function acknowledgeAlert() {
 }
 
 
-/* =====================================================
-   TOOL ROOM TABLE
-===================================================== */
+/* =========================================================
+   TOOL ROOM RENDER
+========================================================= */
 
 function renderToolroom() {
 
@@ -2311,83 +2961,120 @@ function renderToolroom() {
         );
 
 
-    if (!tbody)
-        return;
+    if (!tbody) return;
 
 
     tbody.innerHTML = `
 
         <tr class="border-b">
 
-            <td class="p-3 font-semibold">
+            <td
+                class="p-3 font-semibold">
 
-                ${escapeHTML(activeSetup.partName)}
-                (${escapeHTML(activeSetup.partNo)})
+                ${escapeHTML(
+                    activeSetup.partName
+                )}
+
+                (${escapeHTML(
+                    activeSetup.partNo
+                )})
 
             </td>
 
-            <td class="p-3 font-bold text-purple-700">
 
-                ${escapeHTML(activeSetup.fixtureNo)}
+            <td
+                class="p-3 font-bold
+                       text-purple-700">
+
+                ${escapeHTML(
+                    activeSetup.fixtureNo
+                )}
 
             </td>
+
 
             <td class="p-3">
 
-                <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">
+                <span
+                    class="bg-red-100
+                           text-red-800
+                           text-xs font-bold
+                           px-2 py-1 rounded">
 
-                    ${escapeHTML(String(activeSetup.priority))}
+                    ${escapeHTML(
+                        String(activeSetup.priority)
+                    )}
 
                 </span>
 
             </td>
 
-            <td class="p-3 font-bold ${
-                activeSetup.toolingReady
-                    ? 'text-green-600'
-                    : 'text-red-500'
-            }">
+
+            <td
+                class="p-3 font-bold
+                       ${
+                           activeSetup.toolingReady
+                           ? 'text-green-600'
+                           : 'text-red-500'
+                       }">
 
                 ${
                     activeSetup.toolingReady
-                        ? 'READY'
-                        : 'PENDING'
+                    ? 'READY'
+                    : 'PENDING'
                 }
 
             </td>
 
-            <td class="p-3 font-bold ${
-                activeSetup.fixtureReady
-                    ? 'text-green-600'
-                    : 'text-red-500'
-            }">
+
+            <td
+                class="p-3 font-bold
+                       ${
+                           activeSetup.fixtureReady
+                           ? 'text-green-600'
+                           : 'text-red-500'
+                       }">
 
                 ${
                     activeSetup.fixtureReady
-                        ? 'READY'
-                        : 'PENDING'
+                    ? 'READY'
+                    : 'PENDING'
                 }
 
             </td>
 
-            <td class="p-3 space-x-1">
 
-                <button onclick="toggleTooling()"
-                        class="bg-blue-500 text-white text-xs px-2 py-1 rounded">
+            <td
+                class="p-3 space-x-1">
+
+                <button
+                    onclick="toggleTooling()"
+                    class="bg-blue-500
+                           text-white text-xs
+                           px-2 py-1 rounded">
 
                     Tooling Toggle
 
                 </button>
 
-                <button onclick="toggleFixture()"
-                        class="bg-purple-500 text-white text-xs px-2 py-1 rounded">
+
+                <button
+                    onclick="toggleFixture()"
+                    class="bg-purple-500
+                           text-white text-xs
+                           px-2 py-1 rounded">
 
                     Fixture Toggle
 
                 </button>
 
-                <button onclick="sendSetupReady()"
-                        class="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">
+
+                <button
+                    onclick="sendSetupReady()"
+                    class="bg-green-600
+                           text-white text-xs
+                           px-2 py-1 rounded
+                           font-bold">
 
                     SETUP READY
 
@@ -2402,9 +3089,9 @@ function renderToolroom() {
 }
 
 
-/* =====================================================
-   TOOLING
-===================================================== */
+/* =========================================================
+   TOOLING TOGGLE
+========================================================= */
 
 function toggleTooling() {
 
@@ -2414,12 +3101,18 @@ function toggleTooling() {
 
     updateMetrics();
 
+
     renderToolroom();
 
-    renderSetterExcelView();
+
+    renderSetterExcel();
 
 }
 
+
+/* =========================================================
+   FIXTURE TOGGLE
+========================================================= */
 
 function toggleFixture() {
 
@@ -2429,10 +3122,15 @@ function toggleFixture() {
 
     renderToolroom();
 
-    renderSetterExcelView();
+
+    renderSetterExcel();
 
 }
 
+
+/* =========================================================
+   SETUP READY
+========================================================= */
 
 function sendSetupReady() {
 
@@ -2445,7 +3143,7 @@ function sendSetupReady() {
             true;
 
 
-        renderSetterExcelView();
+        renderSetterExcel();
 
 
         triggerAlert(
@@ -2453,7 +3151,9 @@ function sendSetupReady() {
             "Tool Room setup materials are READY!"
         );
 
-    } else {
+    }
+
+    else {
 
         alert(
             "Please ensure both Tooling and Fixture are marked READY first!"
@@ -2464,9 +3164,9 @@ function sendSetupReady() {
 }
 
 
-/* =====================================================
-   METRICS
-===================================================== */
+/* =========================================================
+   UPDATE METRICS
+========================================================= */
 
 function updateMetrics() {
 
@@ -2482,25 +3182,34 @@ function updateMetrics() {
         );
 
 
-    if (readyElem)
+    if (readyElem) {
+
         readyElem.innerText =
             activeSetup.toolingReady
-                ? "1"
-                : "0";
+            ? "1"
+            : "0";
+
+    }
 
 
-    if (notReadyElem)
+    if (notReadyElem) {
+
         notReadyElem.innerText =
             activeSetup.toolingReady
-                ? "0"
-                : "1";
+            ? "0"
+            : "1";
+
+    }
+
+
+    renderSetterExcel();
 
 }
 
 
-/* =====================================================
+/* =========================================================
    SAMPLE CUTTING
-===================================================== */
+========================================================= */
 
 function sendSampleCuttingAlert() {
 
@@ -2508,21 +3217,19 @@ function sendSampleCuttingAlert() {
         true;
 
 
-    const badge =
-        document.getElementById(
-            'stdStatusBadge'
-        );
-
-
-    badge.className =
+    document.getElementById(
+        'stdStatusBadge'
+    ).className =
         "bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-bold";
 
 
-    badge.innerText =
+    document.getElementById(
+        'stdStatusBadge'
+    ).innerText =
         "Sample Received - Inspecting";
 
 
-    renderSetterExcelView();
+    renderSetterExcel();
 
 
     triggerAlert(
@@ -2533,9 +3240,9 @@ function sendSampleCuttingAlert() {
 }
 
 
-/* =====================================================
+/* =========================================================
    QUALITY ALERT
-===================================================== */
+========================================================= */
 
 function sendQualityAlert() {
 
@@ -2543,7 +3250,7 @@ function sendQualityAlert() {
         true;
 
 
-    renderSetterExcelView();
+    renderSetterExcel();
 
 
     triggerAlert(
@@ -2554,9 +3261,9 @@ function sendQualityAlert() {
 }
 
 
-/* =====================================================
+/* =========================================================
    QUALITY ACTION
-===================================================== */
+========================================================= */
 
 function handleQualityAction(
     status,
@@ -2583,21 +3290,31 @@ function handleQualityAction(
         );
 
 
-    if (sopElem)
+    if (sopElem) {
 
         sopElem.innerText =
             status === 'SOP APPROVED'
-                ? 'APPROVED'
-                : 'Pending';
+            ? 'APPROVED'
+            : 'Pending';
+
+    }
 
 
-    if (reqElem)
+    if (reqElem) {
 
         reqElem.innerText =
             reqText;
 
+    }
 
-    renderSetterExcelView();
+
+    renderSetterExcel();
+
+
+    renderSupervisor();
+
+
+    renderHOD();
 
 
     triggerAlert(
@@ -2608,9 +3325,9 @@ function handleQualityAction(
 }
 
 
-/* =====================================================
+/* =========================================================
    QUALITY CORRECTION
-===================================================== */
+========================================================= */
 
 function submitQualityCorrection() {
 
@@ -2640,17 +3357,29 @@ function submitQualityCorrection() {
         );
 
 
-    if (sopElem)
+    if (sopElem) {
+
         sopElem.innerText =
             'Pending';
 
+    }
 
-    if (reqElem)
+
+    if (reqElem) {
+
         reqElem.innerText =
             selectedRequirement;
 
+    }
 
-    renderSetterExcelView();
+
+    renderSetterExcel();
+
+
+    renderSupervisor();
+
+
+    renderHOD();
 
 
     triggerAlert(
@@ -2662,9 +3391,9 @@ function submitQualityCorrection() {
 }
 
 
-/* =====================================================
+/* =========================================================
    SUPERVISOR
-===================================================== */
+========================================================= */
 
 function renderSupervisor() {
 
@@ -2680,8 +3409,10 @@ function renderSupervisor() {
         );
 
 
-    if (!appElem || !pendElem)
-        return;
+    if (
+        !appElem ||
+        !pendElem
+    ) return;
 
 
     if (
@@ -2689,24 +3420,30 @@ function renderSupervisor() {
         'SOP APPROVED'
     ) {
 
-        appElem.innerText = "1";
+        appElem.innerText =
+            "1";
 
-        pendElem.innerText = "0";
+        pendElem.innerText =
+            "0";
 
-    } else {
+    }
 
-        appElem.innerText = "0";
+    else {
 
-        pendElem.innerText = "1";
+        appElem.innerText =
+            "0";
+
+        pendElem.innerText =
+            "1";
 
     }
 
 }
 
 
-/* =====================================================
+/* =========================================================
    HOD
-===================================================== */
+========================================================= */
 
 function renderHOD() {
 
@@ -2716,8 +3453,7 @@ function renderHOD() {
         );
 
 
-    if (!tbody)
-        return;
+    if (!tbody) return;
 
 
     tbody.innerHTML = `
@@ -2726,54 +3462,76 @@ function renderHOD() {
 
             <td class="p-3 font-bold">
 
-                ${escapeHTML(activeSetup.partName)}
+                ${escapeHTML(
+                    activeSetup.partName
+                )}
+
                 -
-                ${escapeHTML(activeSetup.partNo)}
+
+                ${escapeHTML(
+                    activeSetup.partNo
+                )}
 
             </td>
+
 
             <td class="p-3">
 
-                ${escapeHTML(activeSetup.pallet)}
+                ${escapeHTML(
+                    activeSetup.pallet
+                )}
 
             </td>
+
 
             <td class="p-3">
 
                 ${
                     activeSetup.toolingReady
-                        ? '✅ Ready'
-                        : '❌ Pending'
+                    ? '✅ Ready'
+                    : '❌ Pending'
                 }
 
             </td>
+
 
             <td class="p-3">
 
                 ${
                     activeSetup.fixtureReady
-                        ? '✅ Ready'
-                        : '❌ Pending'
+                    ? '✅ Ready'
+                    : '❌ Pending'
                 }
 
             </td>
+
 
             <td class="p-3">
 
                 ${
                     activeSetup.setupReady
-                        ? '✅ Setup Ready'
-                        : '⏳ In Progress'
+                    ? '✅ Setup Ready'
+                    : '⏳ In Progress'
                 }
 
             </td>
 
+
             <td class="p-3">
 
-                <span class="bg-blue-100 text-blue-800 p-1 rounded font-bold text-xs">
+                <span
+                    class="bg-blue-100
+                           text-blue-800
+                           p-1 rounded
+                           font-bold text-xs">
 
-                    ${escapeHTML(activeSetup.qualityStatus)}
-                    (${escapeHTML(activeSetup.correctionRequirement)})
+                    ${escapeHTML(
+                        activeSetup.qualityStatus
+                    )}
+
+                    (${escapeHTML(
+                        activeSetup.correctionRequirement
+                    )})
 
                 </span>
 
@@ -2785,7 +3543,14 @@ function renderHOD() {
 
 }
 
+
+/* =========================================================
+   INITIAL LIVE TABLE
+========================================================= */
+
+renderSetterExcel();
+
 </script>
 
 </body>
-    </html>
+                </html>

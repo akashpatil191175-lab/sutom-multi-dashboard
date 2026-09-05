@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUTOM - Setup Time Monitor</title>
+
+    <!-- PWA & Favicon Configurations -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -17,9 +27,13 @@
 <body class="bg-slate-100 font-sans min-h-screen">
 
     <header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50 flex flex-wrap justify-between items-center px-6">
-        <div>
-            <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
-            <p class="text-xs text-slate-400">Setup Time Monitor System</p>
+        <div class="flex items-center space-x-3">
+            <!-- Header App Logo -->
+            <img src="icon-192.png" alt="SuTOM Logo" class="w-10 h-10 rounded-lg border border-slate-700">
+            <div>
+                <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
+                <p class="text-xs text-slate-400">Setup Time Monitor System</p>
+            </div>
         </div>
 
         <div class="flex items-center space-x-6 text-xs md:text-sm mt-2 md:mt-0">
@@ -42,8 +56,12 @@
 
     <div id="authSection" class="flex justify-center items-center py-10 px-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
-            <h2 class="text-2xl font-bold text-center text-slate-800 mb-2">Department Login</h2>
-            <p class="text-xs text-center text-slate-500 mb-6">Enter your details to access department dashboard</p>
+            <!-- Login Form Logo Header -->
+            <div class="flex flex-col items-center mb-4">
+                <img src="icon-192.png" alt="SuTOM Logo" class="w-16 h-16 rounded-xl shadow mb-2">
+                <h2 class="text-2xl font-bold text-center text-slate-800">Department Login</h2>
+                <p class="text-xs text-center text-slate-500">Enter your details to access department dashboard</p>
+            </div>
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
@@ -400,6 +418,13 @@
     </div>
 
     <script>
+        // Register Service Worker for PWA (Optional but recommended)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration skipped:', err));
+            });
+        }
+
         let currentUser = null;
         let vibrateInterval = null;
 
@@ -443,7 +468,7 @@
         setInterval(updateLiveTime, 1000);
         updateLiveTime();
 
-        // 2) Restore session state after page refresh
+        // Restore session state after page refresh
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('sutom_user');
             if (savedUser) {
@@ -460,7 +485,6 @@
                 dept: document.getElementById('loginDept').value
             };
 
-            // Save user info in localStorage for refresh support
             localStorage.setItem('sutom_user', JSON.stringify(currentUser));
             loadDashboard(currentUser);
         }
@@ -486,7 +510,6 @@
             document.getElementById('userInfo').classList.remove('flex');
         }
 
-        // Show ONLY the specific logged-in department dashboard
         function showDepartmentTab(deptId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
 
@@ -500,7 +523,6 @@
             if(deptId === 'supervisor') renderSupervisor();
         }
 
-        // 3) Open Register New Setup Form upon Card Click
         function openSetupForm() {
             const formElem = document.getElementById('setupFormContainer');
             if (formElem) {
@@ -525,7 +547,6 @@
             triggerAlert("TOOL ROOM & STD ROOM ALERT", `New Setup Request: ${activeSetup.partName} (Priority: ${activeSetup.priority})`);
         }
 
-        // Excel View Modal
         function showExcelView(title) {
             document.getElementById('excelModalTitle').innerHTML = `<i class="fas fa-file-excel text-green-600 mr-2"></i> Excel View: ${title}`;
             const tbody = document.getElementById('excelTableBody');

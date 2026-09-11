@@ -1,324 +1,466 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUTOM - Setup Time Monitor</title>
+<title>SUTOM - Setter Dashboard</title>
 <link rel="manifest" href="manifest.json?v=20260909">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-@keyframes pulse-red { 0%,100% { background:#fee2e2; border-color:#ef4444; } 50% { background:#fca5a5; border-color:#dc2626; } }
-.alert-active { animation:pulse-red .8s infinite; }
+  /* Dark Industrial Excel Dashboard Theme */
+  body {
+    background-color: #0b1120;
+    color: #f1f5f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .excel-dashboard-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+  }
 
-/* Excel Sheet Style UI */
-.excel-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1px;
-  background-color: #cbd5e1;
-  border: 1px solid #94a3b8;
-}
-.excel-cell-header {
-  background-color: #0f172a;
-  color: #ffffff;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-.excel-cell {
-  background-color: #ffffff;
-  padding: 8px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #334155;
-}
-.excel-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-.excel-table th {
-  background-color: #1e293b;
-  color: #f8fafc;
-  border: 1px solid #475569;
-  padding: 8px;
-  font-size: 12px;
-  text-align: left;
-}
-.excel-table td {
-  border: 1px solid #cbd5e1;
-  padding: 8px;
-  font-size: 12px;
-  background-color: #ffffff;
-}
-.excel-table tr:nth-child(even) td {
-  background-color: #f8fafc;
-}
+  .excel-dashboard-table th {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    color: #94a3b8;
+    border-right: 1px solid #334155;
+    border-bottom: 2px solid #475569;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+  }
+
+  .excel-dashboard-table td {
+    border-right: 1px solid #1e293b;
+    border-bottom: 1px solid #1e293b;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #cbd5e1;
+    background-color: #0f172a;
+  }
+
+  .excel-dashboard-table tr:hover td {
+    background-color: #1e293b !important;
+  }
+
+  .stat-card {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .stat-card:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  .stat-card.active-filter {
+    border-color: #3b82f6;
+    background: linear-gradient(145deg, #1e293b, #1e3a8a);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0f172a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+  
+  @keyframes pulse-border {
+    0%, 100% { border-color: #ef4444; }
+    50% { border-color: #7f1d1d; }
+  }
+  .alert-pulse {
+    animation: pulse-border 1.5s infinite;
+  }
 </style>
 </head>
-<body class="bg-slate-100 font-sans min-h-screen">
-<header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
-  <div class="p-3 px-4 md:px-6 flex flex-wrap justify-between items-center gap-2">
-    <div class="flex items-center space-x-3">
-      <img src="icon-192.png" alt="SUTOM Logo" class="w-10 h-10 rounded-lg border border-slate-700">
-      <div>
-        <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
-        <p class="text-xs text-slate-400">Setup Time Monitor System</p>
-      </div>
-    </div>
-    
-    <div class="flex flex-wrap items-center gap-2 text-xs">
-      <!-- SUPABASE CONNECTION STATUS BUTTON -->
-      <button id="connectionStatusBtn" onclick="checkConnectionManual()" class="px-3 py-1.5 rounded font-bold flex items-center gap-1.5 transition-all shadow bg-amber-600 text-white">
-        <i id="connectionIcon" class="fas fa-circle-notch fa-spin"></i>
-        <span id="connectionText">CONNECTING...</span>
-      </button>
+<body class="min-h-screen flex flex-col">
 
-      <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
-        <i class="fas fa-calendar-alt text-blue-400 mr-1"></i><span id="topLiveShift">Shift: A</span>
-      </div>
-      <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
-        <i class="fas fa-clock text-green-400 mr-1"></i><span id="topLiveTime">00:00:00</span>
-      </div>
-      <div id="userInfo" class="hidden items-center space-x-2">
-        <span id="userBadge" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span>
-        <button onclick="handleLogout()" class="bg-red-600 text-white px-3 py-1.5 rounded font-bold">Logout</button>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- LOGIN SECTION -->
-<div id="authSection" class="flex justify-center items-center py-10 px-4">
-  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
-    <div class="flex flex-col items-center mb-4">
-      <img src="icon-192.png" class="w-16 h-16 rounded-xl shadow mb-2">
-      <h2 class="text-2xl font-bold text-slate-800">Department Login</h2>
-    </div>
-    <form onsubmit="handleLogin(event)" class="space-y-4">
-      <div><label class="block text-xs font-bold mb-1">Employee Name</label><input type="text" id="loginName" required class="w-full p-2.5 border rounded-lg text-sm"></div>
-      <div><label class="block text-xs font-bold mb-1">Employee ID</label><input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm"></div>
-      <div><label class="block text-xs font-bold mb-1">Password</label><input type="password" id="loginPass" required class="w-full p-2.5 border rounded-lg text-sm"></div>
-      <div>
-        <label class="block text-xs font-bold mb-1">Select Department</label>
-        <select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm bg-white">
-          <option value="">-- Choose --</option>
-          <option value="setter">1. SETTER</option>
-          <option value="toolroom">2. TOOL ROOM</option>
-          <option value="stdroom">3. CMM / STD ROOM</option>
-          <option value="quality">4. QUALITY</option>
-          <option value="supervisor">5. SUPERVISOR</option>
-          <option value="hod">6. HOD VIEW</option>
-        </select>
-      </div>
-      <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg">Access Dashboard</button>
-    </form>
-  </div>
-</div>
-
-<!-- DASHBOARD MAIN -->
-<div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]">
-  <main class="flex-1 p-4 md:p-6 overflow-y-auto">
-
-    <!-- SETTER TAB -->
-    <div id="tab-setter" class="tab-content space-y-6 hidden">
-      <div class="bg-white p-4 rounded-xl shadow border">
-        <h2 class="text-lg font-bold border-b pb-2 mb-4 flex justify-between items-center">
-          <span><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</span>
-          <span class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded">Multiple Setup Enabled</span>
-        </h2>
-        
-        <!-- Excel Grid Summary Layout -->
-        <div class="excel-grid rounded border overflow-hidden mb-4">
-          <div><div class="excel-cell-header">Total Setups</div><div id="metric-total" class="excel-cell text-lg font-bold text-blue-600">0</div></div>
-          <div><div class="excel-cell-header">Tooling Ready</div><div id="metric-tool-ready" class="excel-cell text-lg font-bold text-green-600">0</div></div>
-          <div><div class="excel-cell-header">Pending Setups</div><div id="metric-pending" class="excel-cell text-lg font-bold text-yellow-600">0</div></div>
-          <div><div class="excel-cell-header">Tooling Not Ready</div><div id="metric-tool-notready" class="excel-cell text-lg font-bold text-red-600">0</div></div>
+  <!-- HEADER NAVIGATION -->
+  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40">
+    <div class="px-4 py-2.5 flex flex-wrap justify-between items-center gap-3">
+      
+      <!-- Logo & System Title -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-blue-600/20 p-2 rounded-lg border border-blue-500/30">
+          <i class="fas fa-industry text-blue-400 text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-black tracking-wider text-blue-400 leading-tight">SUTOM</h1>
+          <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Setter Control Center</p>
         </div>
       </div>
+      
+      <!-- Connection & Status Bar -->
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <button id="connectionStatusBtn" onclick="checkConnectionManual()" class="px-3 py-1.5 rounded-md font-bold flex items-center gap-1.5 transition-all bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
+          <i id="connectionIcon" class="fas fa-wifi text-xs"></i>
+          <span id="connectionText">ONLINE</span>
+        </button>
 
-      <!-- Multiple Setup Registration Form -->
-      <div id="setupFormContainer" class="bg-white p-6 rounded-xl shadow border">
-        <h3 class="text-md font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup</h3>
-        <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div><label class="block text-xs font-semibold mb-1">Part Name</label><input type="text" id="partName" required class="w-full p-2 border rounded text-sm"></div>
-          <div><label class="block text-xs font-semibold mb-1">Part Number</label><input type="text" id="partNo" required class="w-full p-2 border rounded text-sm"></div>
-          <div><label class="block text-xs font-semibold mb-1">Date & Shift</label><input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm"></div>
-          <div><label class="block text-xs font-semibold mb-1">Setup Type</label><select id="setupType" class="w-full p-2 border rounded text-sm"><option>Long Setup</option><option>Short Setup</option></select></div>
-          <div><label class="block text-xs font-semibold mb-1">Fixture No.</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded text-sm"></div>
-          <div><label class="block text-xs font-semibold mb-1">Priority</label><input type="number" id="priority" min="1" max="10" value="1" required class="w-full p-2 border rounded text-sm"></div>
-          <div><label class="block text-xs font-semibold mb-1">Pallet</label><select id="pallet" class="w-full p-2 border rounded text-sm"><option>Pallet A</option><option>Pallet B</option></select></div>
-          <div class="flex items-end"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition">Add Setup</button></div>
-        </form>
+        <div class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700/60 font-mono text-slate-300">
+          <i class="fas fa-calendar-day text-blue-400 mr-1.5"></i><span id="topLiveShift">Shift: A</span>
+        </div>
+        
+        <div class="bg-slate-800/80 px-3 py-1.5 rounded-md border border-slate-700/60 font-mono text-slate-300">
+          <i class="fas fa-clock text-emerald-400 mr-1.5"></i><span id="topLiveTime">00:00:00</span>
+        </div>
+        
+        <div id="userInfo" class="flex items-center space-x-2">
+          <span id="userBadge" class="bg-blue-600/30 border border-blue-500/40 text-blue-300 text-xs px-2.5 py-1 rounded-md font-semibold uppercase">SETTER DEPT</span>
+          <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-md font-semibold transition">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOGIN SECTION -->
+  <div id="authSection" class="flex justify-center items-center flex-1 py-10 px-4">
+    <div class="bg-slate-900 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-800">
+      <div class="flex flex-col items-center mb-6">
+        <div class="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center border border-blue-500/30 mb-3">
+          <i class="fas fa-user-gear text-2xl text-blue-400"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-100">Setter Department Access</h2>
+        <p class="text-xs text-slate-400 mt-1">Please enter your operational credentials</p>
+      </div>
+      
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Setter Name</label>
+          <input type="text" id="loginName" required placeholder="e.g. Akash Patil" class="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Employee ID</label>
+          <input type="text" id="loginId" required placeholder="e.g. SET-8090" class="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="loginPass" required placeholder="••••••••" class="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-600/20 transition mt-2">
+          Open Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD MAIN -->
+  <div id="dashboardSection" class="hidden flex-col flex-1">
+    <main class="flex-1 p-4 md:p-6 space-y-6">
+
+      <!-- SETTER STATUS CARDS (8 MAIN CATEGORIES) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        
+        <!-- Card 1: Register New Setup -->
+        <div onclick="openSetupFormModal()" class="stat-card p-3 rounded-xl border border-blue-500/40 bg-blue-950/20 flex flex-col justify-between hover:border-blue-400">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-blue-400 uppercase leading-tight">1. Register Setup</span>
+            <i class="fas fa-plus-circle text-blue-400 text-sm"></i>
+          </div>
+          <div class="mt-3">
+            <span class="text-xs text-blue-300 font-semibold block">+ Add New</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Total Registered Setup -->
+        <div onclick="filterSetups('ALL')" id="card-ALL" class="stat-card p-3 rounded-xl active-filter flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-slate-300 uppercase leading-tight">2. Total Setup</span>
+            <i class="fas fa-layer-group text-slate-400 text-sm"></i>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="cnt-total" class="text-2xl font-black text-slate-100">0</span>
+            <span class="text-[10px] text-slate-500 font-bold">Total</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Tooling Ready -->
+        <div onclick="filterSetups('TOOL_READY')" id="card-TOOL_READY" class="stat-card p-3 rounded-xl flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-emerald-400 uppercase leading-tight">3. Tooling Ready</span>
+            <i class="fas fa-wrench text-emerald-400 text-sm"></i>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="cnt-tool-ready" class="text-2xl font-black text-emerald-400">0</span>
+            <span class="text-[10px] text-emerald-500/80 font-bold">Ready</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Tooling Not Ready -->
+        <div onclick="filterSetups('TOOL_NOT_READY')" id="card-TOOL_NOT_READY" class="stat-card p-3 rounded-xl flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-red-400 uppercase leading-tight">4. Tooling Not Ready</span>
+            <i class="fas fa-triangle-exclamation text-red-400 text-sm"></i>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="cnt-tool-notready" class="text-2xl font-black text-red-400">0</span>
+            <span class="text-[10px] text-red-500/80 font-bold">Pending</span>
+          </div>
+        </div>
+
+        <!-- Card 5: Fixture Ready -->
+        <div onclick="filterSetups('FIXTURE_READY')" id="card-FIXTURE_READY" class="stat-card p-3 rounded-xl flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-purple-400 uppercase leading-tight">5. Fixture Status</span>
+            <i class="fas fa-gear text-purple-400 text-sm"></i>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="cnt-fixture-ready" class="text-2xl font-black text-purple-400">0</span>
+            <span class="text-[10px] text-purple-400/80 font-bold">Available</span>
+          </div>
+        </div>
+
+        <!-- Card 6: Correction Required Setup -->
+        <div onclick="filterSetups('CORRECTION')" id="card-CORRECTION" class="stat-card p-3 rounded-xl flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-amber-400 uppercase leading-tight">6. Correction Req.</span>
+            <i class="fas fa-file-circle-exclamation text-amber-400 text-sm"></i>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="cnt-correction" class="text-2xl font-black text-amber-400">0</span>
+            <span class="text-[10px] text-amber-500/80 font-bold">Review</span>
+          </div>
+        </div>
+
+        <!-- Card 7: Setup Start -->
+        <div onclick="filterSetups('START')" id="card-START" class="stat-card p-3 rounded-xl flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-cyan-400 uppercase leading-tight">7. Setup Start</span>
+            <i class="fas fa-play text-cyan-400 text-sm"></i>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="cnt-start" class="text-2xl font-black text-cyan-400">0</span>
+            <span class="text-[10px] text-cyan-500/80 font-bold">Active</span>
+          </div>
+        </div>
+
+        <!-- Card 8: SOP Pending & Done -->
+        <div onclick="filterSetups('SOP')" id="card-SOP" class="stat-card p-3 rounded-xl flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <span class="text-[11px] font-bold text-indigo-400 uppercase leading-tight">8. SOP Status</span>
+            <i class="fas fa-clipboard-check text-indigo-400 text-sm"></i>
+          </div>
+          <div class="mt-1 flex justify-between items-center text-[11px]">
+            <span class="text-yellow-400 font-bold">Pend: <span id="cnt-sop-pending">0</span></span>
+            <span class="text-emerald-400 font-bold">Done: <span id="cnt-sop-done">0</span></span>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Excel View Table for Active Setups with Sample Cutting Stages -->
-      <div class="bg-white p-6 rounded-xl shadow border">
-        <h3 class="text-md font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-table text-green-600 mr-2"></i> Active Setups Layout (Excel View)</h3>
+      <!-- EXCEL STYLE LIVE DASHBOARD TABLE -->
+      <div class="bg-slate-900 rounded-xl border border-slate-800 shadow-2xl overflow-hidden">
+        
+        <!-- Table Toolbar -->
+        <div class="px-4 py-3 bg-slate-800/60 border-b border-slate-800 flex flex-wrap justify-between items-center gap-2">
+          <div class="flex items-center space-x-2">
+            <i class="fas fa-table-cells text-blue-400"></i>
+            <h3 class="text-sm font-bold text-slate-200">SETTER MASTER PRODUCTION SHEET</h3>
+            <span id="activeFilterLabel" class="text-xs bg-blue-600/30 text-blue-300 px-2 py-0.5 rounded font-mono border border-blue-500/30">Showing: ALL</span>
+          </div>
+          
+          <button onclick="openSetupFormModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition">
+            <i class="fas fa-plus text-xs"></i> New Setup Entry
+          </button>
+        </div>
+
+        <!-- Excel Table Body -->
         <div class="overflow-x-auto">
-          <table class="excel-table">
+          <table class="excel-dashboard-table">
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Machine</th>
                 <th>Part Details</th>
-                <th>Pallet / Fixture</th>
-                <th>Priority</th>
-                <th>Tooling / Setup</th>
-                <th>Sample Cutting Action (1st to 4th Stage)</th>
-                <th>Quality Status</th>
+                <th>Date / Shift</th>
+                <th>Type</th>
+                <th>Prio</th>
+                <th>Pallet</th>
+                <th>Fixture Serial / Remark</th>
+                <th>Tooling Status</th>
+                <th>Setup Status</th>
+                <th>Correction Details</th>
+                <th>SOP Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="setterExcelTable">
-              <!-- Dynamic Rows -->
+              <!-- Dynamic Rows Rendered Here -->
             </tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- TOOL ROOM TAB -->
-    <div id="tab-toolroom" class="tab-content hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow border">
-        <h2 class="text-lg font-bold mb-4 border-b pb-2">Tool Room Dashboard (Excel Sheet View)</h2>
-        <div class="overflow-x-auto">
-          <table class="excel-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Part Details</th>
-                <th>Fixture No.</th>
-                <th>Priority</th>
-                <th>Tooling</th>
-                <th>Fixture</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="toolroomTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- STD ROOM TAB (Sample Cutting Verification) -->
-    <div id="tab-stdroom" class="tab-content hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow border">
-        <h2 class="text-lg font-bold mb-4 border-b pb-2">CMM / STD Room (Sample Inspection)</h2>
-        <div class="overflow-x-auto">
-          <table class="excel-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Part Details</th>
-                <th>Current Sample Stage</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="stdroomTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- QUALITY TAB -->
-    <div id="tab-quality" class="tab-content hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow border">
-        <h2 class="text-lg font-bold mb-4 border-b pb-2">Quality Dashboard</h2>
-        <div class="overflow-x-auto">
-          <table class="excel-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Part Info</th>
-                <th>Sample Stage</th>
-                <th>Quality Decision</th>
-                <th>Correction Requirement</th>
-              </tr>
-            </thead>
-            <tbody id="qualityTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- SUPERVISOR TAB -->
-    <div id="tab-supervisor" class="tab-content hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow border">
-        <h2 class="text-lg font-bold border-b pb-2">Supervisor Dashboard</h2>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-green-50 p-6 rounded-xl border border-green-200">
-          <h3 class="font-bold text-green-800">SOP Approved</h3>
-          <p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p>
-        </div>
-        <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
-          <h3 class="font-bold text-yellow-800">Pending Setups</h3>
-          <p id="supPendingCount" class="text-4xl font-extrabold text-yellow-600 mt-2">0</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- HOD TAB -->
-    <div id="tab-hod" class="tab-content hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow border">
-        <h2 class="text-lg font-bold mb-4 border-b pb-2">HOD Live View (Excel Grid Layout)</h2>
-        <div class="overflow-x-auto">
-          <table class="excel-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Part Info</th>
-                <th>Pallet</th>
-                <th>Tooling</th>
-                <th>Fixture</th>
-                <th>Cutting Stage</th>
-                <th>Quality Status</th>
-              </tr>
-            </thead>
-            <tbody id="hodTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<!-- ALERT MODAL -->
-<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
-  <div class="bg-white rounded-xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active">
-    <h3 id="alertTitle" class="text-xl font-extrabold text-red-600">NEW ALERT!</h3>
-    <p id="alertMessage" class="text-sm my-4 font-semibold text-slate-800">Alert Message</p>
-    <button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow">OK</button>
+    </main>
   </div>
-</div>
+
+  <!-- REGISTER NEW SETUP MODAL -->
+  <div id="setupModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl my-8">
+      
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+        <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+          <i class="fas fa-file-pen text-blue-400"></i> Register New Setup Form
+        </h3>
+        <button onclick="closeSetupFormModal()" class="text-slate-400 hover:text-white text-lg"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Machine Selection Dropdown -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Select Machine Name *</label>
+            <select id="machineName" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+              <option value="">-- Choose Machine --</option>
+              <optgroup label="M Series (M1 - M15)">
+                <!-- Generated dynamically -->
+              </optgroup>
+              <optgroup label="EN Series (EN1 - EN35)">
+                <!-- Generated dynamically -->
+              </optgroup>
+              <optgroup label="MK Series">
+                <option value="MK3">MK3</option>
+                <option value="MK8">MK8</option>
+                <option value="MK11">MK11</option>
+                <option value="MK13">MK13</option>
+                <option value="MK15">MK15</option>
+                <option value="MK25">MK25</option>
+                <option value="MK27">MK27</option>
+                <option value="MK28">MK28</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Part Name -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Part Name *</label>
+            <input type="text" id="partName" placeholder="e.g. Housing Gear" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+          </div>
+
+          <!-- Part Number -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Part Number *</label>
+            <input type="text" id="partNo" placeholder="e.g. PN-9902" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+          </div>
+
+          <!-- Date & Shift Auto Live -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Date & Shift (Auto Live)</label>
+            <input type="text" id="shiftDate" readonly class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-400 font-mono">
+          </div>
+
+          <!-- Setup Type -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Setup Type *</label>
+            <select id="setupType" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+              <option value="LONG">LONG SETUP</option>
+              <option value="SHORT">SHORT SETUP</option>
+            </select>
+          </div>
+
+          <!-- Priority 1 to 10 -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Priority (1 to 10) *</label>
+            <select id="priority" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+              <option value="1">1 (Highest)</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5" selected>5 (Normal)</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10 (Lowest)</option>
+            </select>
+          </div>
+
+          <!-- Pallet Selection -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Pallet Select *</label>
+            <select id="pallet" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+              <option value="Pallet A">Pallet A</option>
+              <option value="Pallet B">Pallet B</option>
+            </select>
+          </div>
+
+          <!-- Fixture Serial No Input -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Fixture Serial No. / Remark *</label>
+            <input type="text" id="fixtureNo" placeholder="Enter Serial No. or Availability Remark" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+          </div>
+
+        </div>
+
+        <div class="pt-4 flex justify-end space-x-3 border-t border-slate-800">
+          <button type="button" onclick="closeSetupFormModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold shadow-lg shadow-blue-600/30 flex items-center gap-2">
+            <i class="fas fa-paper-plane text-xs"></i> Submit & Notify Tool Room & CMM
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION & ALERT MODAL -->
+  <div id="alertModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-slate-900 border-2 border-red-500 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl alert-pulse">
+      <div class="w-12 h-12 bg-red-600/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-bell text-xl"></i>
+      </div>
+      <h3 id="alertTitle" class="text-lg font-bold text-red-400">NOTIFICATION SENT</h3>
+      <p id="alertMessage" class="text-xs text-slate-300 my-3 font-semibold">Notification broadcasted to Tool Room and CMM Room successfully.</p>
+      <button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-6 py-2.5 rounded-lg shadow-lg">ACKNOWLEDGE</button>
+    </div>
+  </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-// SUPABASE CONFIGURATION
 const SUPABASE_URL = 'https://umtjqgyeqcudtckanbhp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kcvEFWRlaNam_bS43NtB4Q_rSog55hV';
 window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Multiple Setup Array Management
 window.setupsList = [];
+window.activeFilter = 'ALL';
 
-// CONNECTION STATUS FUNCTION
-window.updateConnectionUI = function(isOnline, message="") {
+// Connection Monitoring
+window.updateConnectionUI = function(isOnline, msg="") {
   const btn = document.getElementById("connectionStatusBtn");
   const icon = document.getElementById("connectionIcon");
   const text = document.getElementById("connectionText");
 
   if(isOnline) {
-    btn.className = "px-3 py-1.5 rounded font-bold flex items-center gap-1.5 transition-all shadow bg-emerald-600 text-white hover:bg-emerald-700";
-    icon.className = "fas fa-wifi";
-    text.textContent = "ONLINE" + (message ? " ("+message+")" : "");
+    btn.className = "px-3 py-1.5 rounded-md font-bold flex items-center gap-1.5 transition-all bg-emerald-600/20 text-emerald-400 border border-emerald-500/30";
+    icon.className = "fas fa-wifi text-xs";
+    text.textContent = "ONLINE" + (msg ? " ("+msg+")" : "");
   } else {
-    btn.className = "px-3 py-1.5 rounded font-bold flex items-center gap-1.5 transition-all shadow bg-rose-600 text-white hover:bg-rose-700";
-    icon.className = "fas fa-exclamation-triangle";
+    btn.className = "px-3 py-1.5 rounded-md font-bold flex items-center gap-1.5 transition-all bg-red-600/20 text-red-400 border border-red-500/30";
+    icon.className = "fas fa-triangle-exclamation text-xs";
     text.textContent = "OFFLINE";
   }
 };
@@ -327,13 +469,12 @@ window.checkConnectionManual = async function() {
   try {
     const { data, error } = await window.supabase.from('sutom_setups').select('id').limit(1);
     if(error) throw error;
-    window.updateConnectionUI(true, "Checked");
+    window.updateConnectionUI(true, "Synced");
   } catch(e) {
     window.updateConnectionUI(false);
   }
 };
 
-// SYNC DATA TO SUPABASE
 window.syncToSupabase = async function() {
   try {
     const payload = { id: 100, data_list: window.setupsList, updated_at: new Date().toISOString() };
@@ -342,13 +483,12 @@ window.syncToSupabase = async function() {
     window.updateConnectionUI(true);
     return true;
   } catch(e) {
-    console.error("Supabase Sync Error:", e);
+    console.error("Supabase Error:", e);
     window.updateConnectionUI(false);
     return false;
   }
 };
 
-// FETCH DATA & SUBSCRIBE TO REALTIME
 async function initSupabase() {
   try {
     const { data, error } = await window.supabase.from('sutom_setups').select('data_list').eq('id', 100).single();
@@ -359,14 +499,12 @@ async function initSupabase() {
     }
     window.updateConnectionUI(true);
   } catch(e) {
-    console.warn("Initial load offline or empty", e);
     window.updateConnectionUI(false);
   }
   
   window.renderAllViews();
 
-  // REALTIME SUBSCRIPTION
-  window.supabase.channel('sutom-excel-channel')
+  window.supabase.channel('sutom-setter-channel')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'sutom_setups', filter: 'id=eq.100' }, payload => {
       if(payload.new && payload.new.data_list) {
         window.setupsList = payload.new.data_list;
@@ -375,84 +513,167 @@ async function initSupabase() {
       }
     }).subscribe((status) => {
       if(status === "SUBSCRIBED") window.updateConnectionUI(true);
-      else if(status === "CLOSED" || status === "CHANNEL_ERROR") window.updateConnectionUI(false);
     });
 }
 
 initSupabase();
 
-// RENDER ALL VIEWS (Excel Layout)
+// Filter Management
+window.filterSetups = function(type) {
+  window.activeFilter = type;
+  document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter'));
+  const targetCard = document.getElementById('card-' + type);
+  if(targetCard) targetCard.classList.add('active-filter');
+
+  const label = document.getElementById('activeFilterLabel');
+  if(label) label.textContent = 'Showing: ' + type.replace('_', ' ');
+
+  window.renderAllViews();
+};
+
 window.renderAllViews = function() {
   const list = window.setupsList || [];
 
-  // Metrics
-  document.getElementById("metric-total").textContent = list.length;
-  document.getElementById("metric-tool-ready").textContent = list.filter(s => s.toolingReady).length;
-  document.getElementById("metric-pending").textContent = list.filter(s => !s.setupReady).length;
-  document.getElementById("metric-tool-notready").textContent = list.filter(s => !s.toolingReady).length;
+  // Update 8 Icon Card Counters
+  document.getElementById("cnt-total").textContent = list.length;
+  document.getElementById("cnt-tool-ready").textContent = list.filter(s => s.toolingReady).length;
+  document.getElementById("cnt-tool-notready").textContent = list.filter(s => !s.toolingReady).length;
+  document.getElementById("cnt-fixture-ready").textContent = list.filter(s => s.fixtureReady).length;
+  document.getElementById("cnt-correction").textContent = list.filter(s => s.correctionRequired).length;
+  document.getElementById("cnt-start").textContent = list.filter(s => s.setupStarted).length;
+  document.getElementById("cnt-sop-pending").textContent = list.filter(s => s.sopStatus === 'PENDING').length;
+  document.getElementById("cnt-sop-done").textContent = list.filter(s => s.sopStatus === 'DONE').length;
 
-  // 1. SETTER EXCEL TABLE
-  const setterBody = document.getElementById("setterExcelTable");
-  if(setterBody) {
-    setterBody.innerHTML = list.length === 0 ? `<tr><td colspan="7" class="text-center p-4 text-slate-400">No Setups Registered Yet</td></tr>` :
-    list.map(s => `
-      <tr>
-        <td class="font-bold text-slate-600">#${s.id}</td>
-        <td><strong>${s.partName}</strong><br><span class="text-xs text-slate-500">${s.partNo}</span></td>
-        <td>${s.pallet} / ${s.fixtureNo}</td>
-        <td><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded text-xs">P-${s.priority}</span></td>
-        <td>
-          Tooling: <span class="${s.toolingReady?'text-green-600 font-bold':'text-red-500'}">${s.toolingReady?'READY':'PENDING'}</span><br>
-          Setup: <span class="${s.setupReady?'text-green-600 font-bold':'text-yellow-600'}">${s.setupReady?'READY':'IN PROGRESS'}</span>
-        </td>
-        <td>
-          <div class="flex flex-wrap gap-1">
-            <button onclick="updateCuttingStage(${s.id}, '1st Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='1st Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">1st Cut</button>
-            <button onclick="updateCuttingStage(${s.id}, '2nd Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='2nd Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">2nd Cut</button>
-            <button onclick="updateCuttingStage(${s.id}, '3rd Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='3rd Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">3rd Cut</button>
-            <button onclick="updateCuttingStage(${s.id}, '4th Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='4th Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">4th Cut</button>
-          </div>
-          <div class="text-[11px] mt-1 text-slate-500">Active: <strong>${s.cuttingStage || 'None'}</strong></div>
-        </td>
-        <td><span class="font-bold ${s.qualityStatus==='SOP APPROVED'?'text-green-600':'text-amber-600'}">${s.qualityStatus}</span></td>
-      </tr>
-    `).join('');
+  // Filter List for Excel Grid Rendering
+  let filtered = list;
+  if(window.activeFilter === 'TOOL_READY') filtered = list.filter(s => s.toolingReady);
+  else if(window.activeFilter === 'TOOL_NOT_READY') filtered = list.filter(s => !s.toolingReady);
+  else if(window.activeFilter === 'FIXTURE_READY') filtered = list.filter(s => s.fixtureReady);
+  else if(window.activeFilter === 'CORRECTION') filtered = list.filter(s => s.correctionRequired);
+  else if(window.activeFilter === 'START') filtered = list.filter(s => s.setupStarted);
+  else if(window.activeFilter === 'SOP') filtered = list.filter(s => s.sopStatus === 'PENDING' || s.sopStatus === 'DONE');
+
+  // Render Dark Excel Table
+  const tbody = document.getElementById("setterExcelTable");
+  if(!tbody) return;
+
+  if(filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="13" class="text-center py-6 text-slate-500 font-medium">No records matching selected criteria.</td></tr>`;
+    return;
   }
 
-  if(window.currentUser) {
-    if(window.currentUser.dept === "toolroom") window.renderToolroom();
-    if(window.currentUser.dept === "stdroom") window.renderStdRoom();
-    if(window.currentUser.dept === "quality") window.renderQuality();
-    if(window.currentUser.dept === "supervisor") window.renderSupervisor();
-    if(window.currentUser.dept === "hod") window.renderHOD();
-  }
+  tbody.innerHTML = filtered.map(s => `
+    <tr>
+      <td class="font-mono text-xs font-bold text-blue-400">#${s.id}</td>
+      <td class="font-bold text-slate-200">${s.machineName || 'N/A'}</td>
+      <td>
+        <div class="font-semibold text-slate-100">${s.partName}</div>
+        <div class="text-[11px] text-slate-400 font-mono">${s.partNo}</div>
+      </td>
+      <td class="text-xs font-mono text-slate-300">${s.shiftDate}</td>
+      <td>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${s.setupType==='LONG'?'bg-purple-950/40 border-purple-500/30 text-purple-300':'bg-cyan-950/40 border-cyan-500/30 text-cyan-300'}">
+          ${s.setupType}
+        </span>
+      </td>
+      <td>
+        <span class="text-xs font-bold font-mono px-2 py-0.5 rounded ${s.priority<=3?'bg-red-900/40 text-red-300 border border-red-500/30':'bg-slate-800 text-slate-300'}">
+          P-${s.priority}
+        </span>
+      </td>
+      <td class="text-xs font-semibold text-slate-300">${s.pallet}</td>
+      <td class="text-xs text-slate-300">${s.fixtureNo}</td>
+      <td>
+        <span class="text-xs font-bold ${s.toolingReady?'text-emerald-400':'text-red-400'}">
+          <i class="fas ${s.toolingReady?'fa-check-circle':'fa-clock'} mr-1"></i>
+          ${s.toolingReady?'READY':'NOT READY'}
+        </span>
+      </td>
+      <td>
+        <span class="text-xs font-bold ${s.setupStarted?'text-cyan-400':'text-slate-500'}">
+          ${s.setupStarted?'STARTED':'NOT STARTED'}
+        </span>
+      </td>
+      <td>
+        ${s.correctionRequired ? 
+          `<span class="text-xs font-semibold text-amber-400 bg-amber-950/40 border border-amber-500/30 px-2 py-0.5 rounded">
+            <i class="fas fa-exclamation-triangle mr-1"></i>${s.correctionRemark || 'Correction Req.'}
+          </span>` : 
+          `<span class="text-xs text-slate-500">None</span>`
+        }
+      </td>
+      <td>
+        <span class="text-xs font-bold ${s.sopStatus==='DONE'?'text-emerald-400':(s.sopStatus==='PENDING'?'text-yellow-400':'text-slate-500')}">
+          ${s.sopStatus || 'PENDING'}
+        </span>
+      </td>
+      <td>
+        <div class="flex items-center space-x-1">
+          <button onclick="toggleSetupStart('${s.id}')" class="px-2 py-1 text-[11px] font-bold rounded ${s.setupStarted?'bg-slate-800 text-slate-400 hover:bg-slate-700':'bg-cyan-600 hover:bg-cyan-500 text-white'} transition">
+            ${s.setupStarted?'Stop':'Start'}
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
 };
 </script>
 
 <script>
 window.currentUser = null;
 
+// Populate Machine Selection Dropdown
+function populateMachineDropdown() {
+  const mGroup = document.querySelector("#machineName optgroup[label='M Series (M1 - M15)']");
+  const enGroup = document.querySelector("#machineName optgroup[label='EN Series (EN1 - EN35)']");
+
+  if(mGroup) {
+    let mOptions = "";
+    for(let i=1; i<=15; i++) {
+      mOptions += `<option value="M${i}">M${i}</option>`;
+    }
+    mGroup.innerHTML = mOptions;
+  }
+
+  if(enGroup) {
+    let enOptions = "";
+    for(let i=1; i<=35; i++) {
+      enOptions += `<option value="EN${i}">EN${i}</option>`;
+    }
+    enGroup.innerHTML = enOptions;
+  }
+}
+
 function updateLiveTime() {
   const now = new Date();
-  const t = document.getElementById("topLiveTime"), sh = document.getElementById("topLiveShift"), d = document.getElementById("shiftDate");
+  const t = document.getElementById("topLiveTime");
+  const sh = document.getElementById("topLiveShift");
+  const d = document.getElementById("shiftDate");
+  
   if(t) t.textContent = now.toLocaleTimeString();
-  const m = now.getHours()*60 + now.getMinutes();
-  let sn = "Shift C";
-  if(m >= 465 && m < 975) sn = "Shift A";
-  else if(m >= 975 && m < 1440) sn = "Shift B";
-  if(sh) sh.textContent = "Shift: " + sn;
-  if(d) d.value = now.toLocaleDateString() + " - " + sn;
+  
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  let shiftName = "Shift C";
+  if(minutes >= 465 && minutes < 975) shiftName = "Shift A";
+  else if(minutes >= 975 && minutes < 1440) shiftName = "Shift B";
+  
+  if(sh) sh.textContent = "Shift: " + shiftName;
+  if(d) d.value = now.toLocaleDateString() + " | " + shiftName;
 }
 setInterval(updateLiveTime, 1000);
-updateLiveTime();
 
 window.addEventListener("DOMContentLoaded", () => {
-  const u = localStorage.getItem("sutom_user");
-  if(u) {
+  populateMachineDropdown();
+  updateLiveTime();
+  
+  const storedUser = localStorage.getItem("sutom_setter_user");
+  if(storedUser) {
     try {
-      window.currentUser = JSON.parse(u);
-      loadDashboard(window.currentUser);
-    } catch { localStorage.removeItem("sutom_user"); }
+      window.currentUser = JSON.parse(storedUser);
+      loadDashboard();
+    } catch { 
+      localStorage.removeItem("sutom_setter_user"); 
+    }
   }
 });
 
@@ -461,216 +682,86 @@ function handleLogin(e) {
   window.currentUser = {
     name: document.getElementById("loginName").value.trim(),
     id: document.getElementById("loginId").value.trim(),
-    dept: document.getElementById("loginDept").value
+    dept: "setter"
   };
-  localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
-  loadDashboard(window.currentUser);
+  localStorage.setItem("sutom_setter_user", JSON.stringify(window.currentUser));
+  loadDashboard();
 }
 
-function loadDashboard(user) {
+function loadDashboard() {
   document.getElementById("authSection").classList.add("hidden");
   document.getElementById("dashboardSection").classList.remove("hidden");
   document.getElementById("dashboardSection").classList.add("flex");
-  document.getElementById("userInfo").classList.remove("hidden");
-  document.getElementById("userInfo").classList.add("flex");
-  document.getElementById("userBadge").textContent = `${user.name} (${user.dept.toUpperCase()})`;
-  showDepartmentTab(user.dept);
+  document.getElementById("userBadge").textContent = `${window.currentUser.name} (SETTER)`;
 }
 
 function handleLogout() {
-  localStorage.removeItem("sutom_user");
+  localStorage.removeItem("sutom_setter_user");
   window.currentUser = null;
   document.getElementById("authSection").classList.remove("hidden");
   document.getElementById("dashboardSection").classList.add("hidden");
-  document.getElementById("userInfo").classList.add("hidden");
 }
 
-function showDepartmentTab(deptId) {
-  document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
-  const tab = document.getElementById("tab-" + deptId);
-  if(tab) tab.classList.remove("hidden");
-  if(window.renderAllViews) window.renderAllViews();
+function openSetupFormModal() {
+  updateLiveTime();
+  document.getElementById("setupModal").classList.remove("hidden");
 }
 
-// REGISTER MULTIPLE SETUPS
+function closeSetupFormModal() {
+  document.getElementById("setupModal").classList.add("hidden");
+}
+
 async function handleSetterSubmit(e) {
   e.preventDefault();
+  
   const newSetup = {
-    id: Date.now().toString().slice(-4),
+    id: Date.now().toString().slice(-5),
+    machineName: document.getElementById("machineName").value,
     partName: document.getElementById("partName").value.trim(),
     partNo: document.getElementById("partNo").value.trim(),
+    shiftDate: document.getElementById("shiftDate").value,
     setupType: document.getElementById("setupType").value,
-    fixtureNo: document.getElementById("fixtureNo").value.trim(),
     priority: Number(document.getElementById("priority").value),
     pallet: document.getElementById("pallet").value,
-    shiftDate: document.getElementById("shiftDate").value,
+    fixtureNo: document.getElementById("fixtureNo").value.trim(),
     toolingReady: false,
-    fixtureReady: false,
-    setupReady: false,
-    cuttingStage: 'None',
-    inspectionDone: false,
-    qualityStatus: "Pending SOP",
-    correctionRequirement: "None"
+    fixtureReady: true,
+    setupStarted: false,
+    correctionRequired: false,
+    correctionRemark: "",
+    sopStatus: "PENDING",
+    sopPendingReason: "Tooling & Final Approval Pending",
+    timestamp: new Date().toISOString()
   };
 
-  window.setupsList.push(newSetup);
+  window.setupsList.unshift(newSetup);
+  
   if(await window.syncToSupabase()) {
-    triggerAlert("SETUP REGISTERED", `New Setup #${newSetup.id} (${newSetup.partName}) Added Successfully!`);
+    closeSetupFormModal();
     document.getElementById("setterForm").reset();
-    updateLiveTime();
-    window.renderAllViews();
+    triggerAlert("SETUP REGISTERED & NOTIFICATION BROADCAST", `Setup #${newSetup.id} registered on ${newSetup.machineName}. Notification sent to Tool Room and CMM Room!`);
+    if(window.renderAllViews) window.renderAllViews();
   }
 }
 
-// UPDATE CUTTING STAGE (1st, 2nd, 3rd, 4th Sample)
-async function updateCuttingStage(setupId, stage) {
-  const item = window.setupsList.find(s => s.id == setupId);
-  if(item) {
-    item.cuttingStage = stage;
-    if(await window.syncToSupabase()) {
-      triggerAlert("CUTTING STAGE UPDATED", `Setup #${setupId} moved to ${stage} Cutting!`);
-      window.renderAllViews();
-    }
-  }
-}
-
-// RENDER TOOLROOM
-window.renderToolroom = function() {
-  const tbody = document.getElementById("toolroomTable");
-  const list = window.setupsList || [];
-  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="7" class="text-center p-4">No Setups</td></tr>` :
-  list.map(s => `
-    <tr>
-      <td>#${s.id}</td>
-      <td><strong>${s.partName}</strong> (${s.partNo})</td>
-      <td>${s.fixtureNo}</td>
-      <td><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-0.5 rounded">${s.priority}</span></td>
-      <td class="font-bold ${s.toolingReady?'text-green-600':'text-red-500'}">${s.toolingReady?'READY':'PENDING'}</td>
-      <td class="font-bold ${s.fixtureReady?'text-green-600':'text-red-500'}">${s.fixtureReady?'READY':'PENDING'}</td>
-      <td class="space-x-1">
-        <button onclick="toggleTooling(${s.id})" class="bg-blue-600 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button>
-        <button onclick="toggleFixture(${s.id})" class="bg-purple-600 text-white text-xs px-2 py-1 rounded">Fixture Toggle</button>
-        <button onclick="markSetupReady(${s.id})" class="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">READY</button>
-      </td>
-    </tr>
-  `).join('');
-};
-
-async function toggleTooling(id) {
-  const s = window.setupsList.find(x => x.id == id);
-  if(s) { s.toolingReady = !s.toolingReady; await window.syncToSupabase(); window.renderAllViews(); }
-}
-async function toggleFixture(id) {
-  const s = window.setupsList.find(x => x.id == id);
-  if(s) { s.fixtureReady = !s.fixtureReady; await window.syncToSupabase(); window.renderAllViews(); }
-}
-async function markSetupReady(id) {
-  const s = window.setupsList.find(x => x.id == id);
-  if(s && s.toolingReady && s.fixtureReady) {
-    s.setupReady = true;
+async function toggleSetupStart(id) {
+  const setup = window.setupsList.find(s => s.id == id);
+  if(setup) {
+    setup.setupStarted = !setup.setupStarted;
     await window.syncToSupabase();
-    triggerAlert("SETTER ALERT", `Setup #${id} Tooling & Fixture Ready!`);
-    window.renderAllViews();
-  } else {
-    alert("Please mark both Tooling and Fixture READY first!");
+    if(window.renderAllViews) window.renderAllViews();
   }
 }
-
-// RENDER STD ROOM
-window.renderStdRoom = function() {
-  const tbody = document.getElementById("stdroomTable");
-  const list = window.setupsList || [];
-  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="5" class="text-center p-4">No Setups</td></tr>` :
-  list.map(s => `
-    <tr>
-      <td>#${s.id}</td>
-      <td><strong>${s.partName}</strong> (${s.partNo})</td>
-      <td><span class="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded text-xs">${s.cuttingStage || 'None'}</span></td>
-      <td><span class="font-bold ${s.inspectionDone?'text-green-600':'text-amber-600'}">${s.inspectionDone?'Inspection Done':'Pending'}</span></td>
-      <td>
-        <button onclick="markInspectionDone(${s.id})" class="bg-green-600 text-white px-3 py-1 rounded text-xs font-bold">Inspection Done</button>
-      </td>
-    </tr>
-  `).join('');
-};
-
-async function markInspectionDone(id) {
-  const s = window.setupsList.find(x => x.id == id);
-  if(s) {
-    s.inspectionDone = true;
-    if(await window.syncToSupabase()) {
-      triggerAlert("QUALITY ALERT", `Setup #${id} Sample Inspection Completed!`);
-      window.renderAllViews();
-    }
-  }
-}
-
-// RENDER QUALITY
-window.renderQuality = function() {
-  const tbody = document.getElementById("qualityTable");
-  const list = window.setupsList || [];
-  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="5" class="text-center p-4">No Setups</td></tr>` :
-  list.map(s => `
-    <tr>
-      <td>#${s.id}</td>
-      <td><strong>${s.partName}</strong> (${s.partNo})</td>
-      <td><span class="bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded text-xs">${s.cuttingStage || 'None'}</span></td>
-      <td>
-        <button onclick="setQualityAction(${s.id}, 'SOP APPROVED', 'None')" class="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold mr-1">SOP APPROVE</button>
-        <button onclick="setQualityAction(${s.id}, 'CORRECTION REQUIRED', 'Correction Needed')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">CORRECTION</button>
-      </td>
-      <td><span class="font-bold text-red-600">${s.correctionRequirement || 'None'}</span></td>
-    </tr>
-  `).join('');
-};
-
-async function setQualityAction(id, status, req) {
-  const s = window.setupsList.find(x => x.id == id);
-  if(s) {
-    s.qualityStatus = status;
-    s.correctionRequirement = req;
-    if(await window.syncToSupabase()) {
-      triggerAlert("SETTER ALERT", `Setup #${id} Quality Status: ${status}`);
-      window.renderAllViews();
-    }
-  }
-}
-
-// RENDER SUPERVISOR
-window.renderSupervisor = function() {
-  const list = window.setupsList || [];
-  document.getElementById("supApprovedCount").textContent = list.filter(s => s.qualityStatus === 'SOP APPROVED').length;
-  document.getElementById("supPendingCount").textContent = list.filter(s => s.qualityStatus !== 'SOP APPROVED').length;
-};
-
-// RENDER HOD
-window.renderHOD = function() {
-  const tbody = document.getElementById("hodTable");
-  const list = window.setupsList || [];
-  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="7" class="text-center p-4">No Data</td></tr>` :
-  list.map(s => `
-    <tr>
-      <td>#${s.id}</td>
-      <td><strong>${s.partName}</strong> (${s.partNo})</td>
-      <td>${s.pallet}</td>
-      <td>${s.toolingReady?'✅ Ready':'❌ Pending'}</td>
-      <td>${s.fixtureReady?'✅ Ready':'❌ Pending'}</td>
-      <td><span class="bg-slate-100 font-bold px-2 py-0.5 rounded text-xs">${s.cuttingStage || 'None'}</span></td>
-      <td class="font-bold ${s.qualityStatus==='SOP APPROVED'?'text-green-600':'text-amber-600'}">${s.qualityStatus}</td>
-    </tr>
-  `).join('');
-};
 
 function triggerAlert(title, msg) {
   document.getElementById("alertTitle").textContent = title;
   document.getElementById("alertMessage").textContent = msg;
   document.getElementById("alertModal").classList.remove("hidden");
-  if("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
+  if("vibrate" in navigator) navigator.vibrate([300, 100, 300]);
 }
 
 function acknowledgeAlert() {
   document.getElementById("alertModal").classList.add("hidden");
-  if("vibrate" in navigator) navigator.vibrate(0);
 }
 </script>
 </body>

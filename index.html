@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUTOM - Setup Time Monitor</title>
-<link rel="manifest" href="manifest.json?v=20260909">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>SUTOM - Setup Time Monitor & Workflow</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 @keyframes pulse-red { 0%,100% { background:#fee2e2; border-color:#ef4444; } 50% { background:#fca5a5; border-color:#dc2626; } }
 .alert-active { animation:pulse-red.8s infinite; }
@@ -16,7 +14,6 @@
 .firebase-live-bar.offline { background:#450a0a; color:#f87171; }
 .firebase-live-bar.connecting { background:#451a03; color:#facc15; }
 
-/* Excel Grid Custom Styling */
 .excel-table-container { border: 2px solid #047857; border-radius: 8px; overflow: hidden; background: #ffffff; }
 .excel-table { border-collapse: collapse; width: 100%; font-size: 13px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 .excel-table th { background-color: #065f46; color: white; border: 1px solid #047857; padding: 8px 10px; font-weight: 700; text-align: center; }
@@ -31,11 +28,10 @@
 <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
   <div class="p-3 px-4 md:px-6 flex flex-wrap justify-between items-center gap-2">
     <div class="flex items-center space-x-3">
-      <!-- SUTOM Logo Fixed across all views and headers -->
       <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400">S</div>
       <div>
         <h1 class="text-xl font-bold tracking-wide text-emerald-400">SUTOM</h1>
-        <p class="text-xs text-slate-400">Setup Time Monitor • Supabase Live System</p>
+        <p class="text-xs text-slate-400">Setup Time & Workflow Monitor • Supabase Live</p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -74,10 +70,6 @@
         <input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
       </div>
       <div>
-        <label class="block text-xs font-bold mb-1">Password</label>
-        <input type="password" id="loginPass" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
-      </div>
-      <div>
         <label class="block text-xs font-bold mb-1">Select Department</label>
         <select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-500">
           <option value="">-- Choose Department --</option>
@@ -85,8 +77,7 @@
           <option value="toolroom">2. TOOL ROOM</option>
           <option value="stdroom">3. CMM / STD ROOM</option>
           <option value="quality">4. QUALITY</option>
-          <option value="supervisor">5. SUPERVISOR</option>
-          <option value="hod">6. HOD VIEW</option>
+          <option value="supervisor">5. SUPERVISOR / HOD</option>
         </select>
       </div>
       <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition">Access Dashboard</button>
@@ -104,98 +95,80 @@
     <div class="bg-slate-900 text-white p-4 rounded-xl shadow-lg border border-slate-800 flex justify-between items-center flex-wrap gap-2">
       <div>
         <h2 class="text-xl font-black text-emerald-400 flex items-center gap-2">
-          <i class="fas fa-sliders-h"></i> SETTER CONTROL DASHBOARD
+          <i class="fas fa-sliders-h"></i> SETTER CONTROL WORKFLOW DASHBOARD
         </h2>
-        <p class="text-xs text-slate-400">क्लिक करून तपशील किंवा एक्सेल शीट लेआउट पहा</p>
+        <p class="text-xs text-slate-400">फॉर्म भरणे, टूल/फिक्स्चर स्टेटस, स्टार्ट सेटअप आणि सॅम्पल सबमिशनचा अचूक पाथ</p>
       </div>
-      
-      <!-- RESET ALL BUTTON ADDED HERE -->
       <div class="flex items-center gap-2">
         <button onclick="handleResetAllData()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
-          <i class="fas fa-trash-alt"></i> RESET ALL DATA
+          <i class="fas fa-trash-alt"></i> RESET ALL
         </button>
-        <div class="text-xs bg-emerald-950 border border-emerald-600 text-emerald-300 font-bold px-3 py-2 rounded-lg">
-          <i class="fas fa-rss mr-1 animate-pulse text-green-400"></i> Auto Live Active
-        </div>
       </div>
     </div>
 
-    <!-- 8 ACTION CARDS GRID -->
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+    <!-- WORKFLOW CARDS GRID -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
       
-      <!-- 1) REGISTER NEW SETUP -->
-      <div onclick="openSetterModule('register')" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl shadow border border-blue-800 cursor-pointer transition flex flex-col justify-between">
+      <!-- 1) REGISTER FORM -->
+      <div onclick="openSetterModule('register')" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl shadow cursor-pointer transition flex flex-col justify-between">
         <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-plus-circle text-lg"></i>
-          <span class="text-[10px] bg-blue-800 px-1.5 py-0.5 rounded font-black">FORM</span>
+          <i class="fas fa-file-pen text-lg"></i>
+          <span class="text-[10px] bg-blue-800 px-1.5 py-0.5 rounded font-black">STEP 1</span>
         </div>
         <div>
           <p class="text-[11px] font-bold leading-tight">1) Register New Setup</p>
-          <p class="text-[9px] text-blue-200 mt-0.5">नवीन फॉर्म भरा</p>
+          <p class="text-[9px] text-blue-200 mt-0.5">फॉर्म भरा (Tool & CMM Notification)</p>
         </div>
       </div>
 
-      <!-- 2) TOTAL REGISTER SETUP -->
-      <div onclick="openSetterModule('total')" class="bg-white hover:bg-emerald-50 p-3 rounded-xl shadow border border-emerald-200 cursor-pointer transition border-l-4 border-l-emerald-600">
+      <!-- 2) READY FOR SETUP -->
+      <div onclick="openSetterModule('ready')" class="bg-white hover:bg-green-50 p-3 rounded-xl shadow border border-green-200 cursor-pointer transition border-l-4 border-l-green-600">
         <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-list-check text-emerald-600"></i>
-          <span id="metric-total" class="text-lg font-black text-emerald-700">0</span>
+          <i class="fas fa-check-circle text-green-600 text-lg"></i>
+          <span id="metric-ready" class="text-lg font-black text-green-700">0</span>
         </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">2) Total Register Setup</p>
+        <p class="text-[11px] font-bold text-slate-800 leading-tight">2) Ready For Setup</p>
+        <p class="text-[9px] text-slate-500">Tool & Fixture OK</p>
       </div>
 
-      <!-- 3) TOOLING READY -->
-      <div onclick="openSetterModule('tool-ready')" class="bg-white hover:bg-green-50 p-3 rounded-xl shadow border border-green-200 cursor-pointer transition border-l-4 border-l-green-500">
+      <!-- 3) SETUP PENDING -->
+      <div onclick="openSetterModule('pending')" class="bg-white hover:bg-yellow-50 p-3 rounded-xl shadow border border-yellow-200 cursor-pointer transition border-l-4 border-l-yellow-500">
         <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-tools text-green-600"></i>
-          <span id="metric-tool-ready" class="text-lg font-black text-green-700">0</span>
+          <i class="fas fa-clock text-yellow-600 text-lg"></i>
+          <span id="metric-pending" class="text-lg font-black text-yellow-700">0</span>
         </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">3) Tooling Ready</p>
+        <p class="text-[11px] font-bold text-slate-800 leading-tight">3) Setup Pending</p>
+        <p class="text-[9px] text-slate-500">Tool/Fixture Pending</p>
       </div>
 
-      <!-- 4) TOOLING NOT READY -->
-      <div onclick="openSetterModule('tool-notready')" class="bg-white hover:bg-red-50 p-3 rounded-xl shadow border border-red-200 cursor-pointer transition border-l-4 border-l-red-500">
+      <!-- 4) START SETUP & 1ST SAMPLE -->
+      <div onclick="openSetterModule('start')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl shadow border border-indigo-200 cursor-pointer transition border-l-4 border-l-indigo-500">
         <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-exclamation-triangle text-red-500"></i>
-          <span id="metric-tool-notready" class="text-lg font-black text-red-700">0</span>
+          <i class="fas fa-play-circle text-indigo-600 text-lg"></i>
+          <span id="metric-start" class="text-lg font-black text-indigo-700">0</span>
         </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">4) Tooling Not Ready</p>
+        <p class="text-[11px] font-bold text-slate-800 leading-tight">4) Start Setup & Samples</p>
+        <p class="text-[9px] text-slate-500">1st to 4th Sample Loop</p>
       </div>
 
-      <!-- 5) FIXTURE READY -->
-      <div onclick="openSetterModule('fixture-ready')" class="bg-white hover:bg-teal-50 p-3 rounded-xl shadow border border-teal-200 cursor-pointer transition border-l-4 border-l-teal-500">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-cubes text-teal-600"></i>
-          <span id="metric-fixture-avail" class="text-xs font-bold text-teal-800">Check</span>
-        </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">5) Fixture Ready</p>
-      </div>
-
-      <!-- 6) CORRECTION REQUIRED SETUP -->
+      <!-- 5) CORRECTION REQUIRED -->
       <div onclick="openSetterModule('correction')" class="bg-white hover:bg-orange-50 p-3 rounded-xl shadow border border-orange-200 cursor-pointer transition border-l-4 border-l-orange-500">
         <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-wrench text-orange-500"></i>
-          <span id="metric-correction-req" class="text-lg font-black text-orange-700">0</span>
+          <i class="fas fa-wrench text-orange-500 text-lg"></i>
+          <span id="metric-correction" class="text-lg font-black text-orange-700">0</span>
         </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">6) Correction Required</p>
+        <p class="text-[11px] font-bold text-slate-800 leading-tight">5) Correction Required</p>
+        <p class="text-[9px] text-slate-500">Back to Setter</p>
       </div>
 
-      <!-- 7) SETUP START -->
-      <div onclick="openSetterModule('setup-start')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl shadow border border-indigo-200 cursor-pointer transition border-l-4 border-l-indigo-500">
+      <!-- 6) SOP APPROVED (DONE) -->
+      <div onclick="openSetterModule('approved')" class="bg-white hover:bg-purple-50 p-3 rounded-xl shadow border border-purple-200 cursor-pointer transition border-l-4 border-l-purple-500">
         <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-play-circle text-indigo-600"></i>
-          <span id="metric-setup-start" class="text-lg font-black text-indigo-700">0</span>
+          <i class="fas fa-certificate text-purple-600 text-lg"></i>
+          <span id="metric-approved" class="text-lg font-black text-purple-700">0</span>
         </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">7) Setup Start</p>
-      </div>
-
-      <!-- 8) SOP PENDING & SOP DONE -->
-      <div onclick="openSetterModule('sop-status')" class="bg-white hover:bg-purple-50 p-3 rounded-xl shadow border border-purple-200 cursor-pointer transition border-l-4 border-l-purple-500">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-file-signature text-purple-600"></i>
-          <span id="metric-sop-pending" class="text-xs font-bold text-purple-800">SOP</span>
-        </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">8) SOP Pending / Done</p>
+        <p class="text-[11px] font-bold text-slate-800 leading-tight">6) SOP Approved (Done)</p>
+        <p class="text-[9px] text-slate-500">Final Success</p>
       </div>
 
     </div>
@@ -204,135 +177,66 @@
     <div id="setupFormCard" class="bg-white p-6 rounded-xl shadow border border-blue-200 transition-all hidden">
       <div class="flex justify-between items-center border-b pb-3 mb-4">
         <h3 class="text-md font-bold text-blue-800 flex items-center gap-2">
-          <i class="fas fa-edit text-blue-600"></i> REGISTER NEW SETUP FORM
+          <i class="fas fa-edit text-blue-600"></i> REGISTER NEW SETUP FORM (Notification to Tool Room & CMM Room)
         </h3>
-        <button onclick="toggleSetupForm()" class="text-xs text-slate-500 hover:text-slate-800 font-bold bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded">
-          <i class="fas fa-times mr-1"></i> Close Form
-        </button>
+        <button onclick="toggleSetupForm()" class="text-xs text-slate-500 hover:text-slate-800 font-bold bg-slate-100 px-2.5 py-1 rounded">Close</button>
       </div>
-
       <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        
         <div>
           <label class="block text-xs font-bold mb-1 text-slate-700">MACHINE NAME</label>
-          <select id="machineName" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold text-slate-800 border-slate-300 focus:ring-2 focus:ring-blue-500">
+          <select id="machineName" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
             <option value="">-- SELECT MACHINE --</option>
-            <optgroup label="M Series">
-              <script>
-                for(let i=1;i<=15;i++) document.write(`<option value="M${i}">M${i}</option>`);
-              </script>
-            </optgroup>
-            <optgroup label="EN Series">
-              <script>
-                for(let i=1;i<=35;i++) document.write(`<option value="EN${i}">EN${i}</option>`);
-              </script>
-            </optgroup>
-            <optgroup label="MK Series">
-              <option value="MK3">MK3</option>
-              <option value="MK8">MK8</option>
-              <option value="MK11">MK11</option>
-              <option value="MK13">MK13</option>
-              <option value="MK15">MK15</option>
-              <option value="MK25">MK25</option>
-              <option value="MK27">MK27</option>
-              <option value="MK28">MK28</option>
-            </optgroup>
+            <option value="M1">M1</option><option value="M2">M2</option><option value="M3">M3</option>
+            <option value="EN1">EN1</option><option value="EN2">EN2</option>
+            <option value="MK3">MK3</option><option value="MK8">MK8</option>
           </select>
         </div>
-
         <div>
           <label class="block text-xs font-bold mb-1 text-slate-700">PART NAME</label>
-          <input type="text" id="partName" placeholder="Enter Part Name" required class="w-full p-2 border rounded-lg text-sm border-slate-300 focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="partName" placeholder="Enter Part Name" required class="w-full p-2 border rounded-lg text-sm">
         </div>
-
         <div>
           <label class="block text-xs font-bold mb-1 text-slate-700">PART NUMBER</label>
-          <input type="text" id="partNo" placeholder="Enter Part No." required class="w-full p-2 border rounded-lg text-sm border-slate-300 focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="partNo" placeholder="Enter Part No." required class="w-full p-2 border rounded-lg text-sm">
         </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">DATE & SHIFT (AUTO LIVE)</label>
-          <input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded-lg text-sm font-semibold text-slate-600 border-slate-300">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">SETUP TYPE</label>
-          <select id="setupType" class="w-full p-2 border rounded-lg text-sm bg-white border-slate-300 focus:ring-2 focus:ring-blue-500 font-semibold">
-            <option value="LONG">LONG SETUP</option>
-            <option value="SHORT">SHORT SETUP</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">PRIORITY (1 TO 10)</label>
-          <select id="priority" class="w-full p-2 border rounded-lg text-sm bg-white border-slate-300 focus:ring-2 focus:ring-blue-500 font-bold">
-            <script>
-              for(let p=1;p<=10;p++) document.write(`<option value="${p}">${p} ${p===1?'(Highest)':''}</option>`);
-            </script>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">PALLET</label>
-          <select id="pallet" class="w-full p-2 border rounded-lg text-sm bg-white border-slate-300 focus:ring-2 focus:ring-blue-500 font-semibold">
-            <option value="A">PALLET A</option>
-            <option value="B">PALLET B</option>
-          </select>
-        </div>
-
         <div>
           <label class="block text-xs font-bold mb-1 text-slate-700">FIXTURE SERIAL NO.</label>
-          <input type="text" id="fixtureNo" placeholder="e.g. FIX-9901" required class="w-full p-2 border rounded-lg text-sm border-slate-300 focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="fixtureNo" placeholder="e.g. FIX-9901" required class="w-full p-2 border rounded-lg text-sm">
         </div>
-
         <div class="lg:col-span-4 flex justify-end gap-2 border-t pt-3 mt-2">
           <button type="button" onclick="toggleSetupForm()" class="bg-slate-200 text-slate-800 font-bold px-5 py-2.5 rounded-lg text-sm">Cancel</button>
-          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2.5 rounded-lg text-sm shadow-md transition flex items-center gap-2">
-            <i class="fas fa-paper-plane"></i> SUBMIT & NOTIFY TOOL ROOM / CMM ROOM
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2.5 rounded-lg text-sm shadow-md flex items-center gap-2">
+            <i class="fas fa-paper-plane"></i> SUBMIT & NOTIFY TOOL & CMM ROOM
           </button>
         </div>
-
       </form>
     </div>
 
     <!-- EXCEL DATA TABLE CONTAINER -->
     <div class="excel-table-container shadow-xl">
-      <div class="bg-emerald-800 text-white p-3 px-4 flex flex-wrap justify-between items-center border-b border-emerald-900 gap-2">
+      <div class="bg-emerald-800 text-white p-3 px-4 flex flex-wrap justify-between items-center border-b gap-2">
         <h3 id="excelTableTitle" class="font-bold text-sm tracking-wide flex items-center gap-2">
-          <i class="fas fa-file-excel text-green-300 text-lg"></i> EXCEL LAYOUT: TOTAL REGISTER SETUPS
+          <i class="fas fa-file-excel text-green-300 text-lg"></i> WORKFLOW EXCEL VIEW: ALL SETUPS
         </h3>
-        <div class="flex items-center gap-2">
-          <span class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200" id="excelRowCount">Rows: 0</span>
-          <button onclick="renderSetterExcelTable('total')" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-1 rounded font-bold">
-            <i class="fas fa-sync-alt mr-1"></i> Refresh Sheet
-          </button>
-        </div>
+        <span class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200" id="excelRowCount">Rows: 0</span>
       </div>
-
       <div class="overflow-x-auto max-h-[500px]">
         <table class="excel-table">
           <thead>
             <tr>
               <th>#</th>
               <th>MACHINE</th>
-              <th>PART NAME</th>
-              <th>PART NUMBER</th>
-              <th>DATE & SHIFT</th>
-              <th>SETUP TYPE</th>
-              <th>PRIORITY</th>
-              <th>PALLET</th>
+              <th>PART INFO</th>
               <th>FIXTURE NO</th>
-              <th>TOOLING STATUS</th>
-              <th>FIXTURE STATUS</th>
-              <th>SETUP STATUS</th>
-              <th>CORRECTION</th>
-              <th>SOP STATUS</th>
-              <th>REMARK / AVAILABLE SERIAL NO</th>
-              <th>ACTIONS</th>
+              <th>TOOL ROOM STATUS</th>
+              <th>CMM OPERATOR STATUS</th>
+              <th>CURRENT WORKFLOW STAGE</th>
+              <th>QUALITY INSPECTION & SOP</th>
+              <th>ACTION / BUTTONS</th>
             </tr>
           </thead>
           <tbody id="setterExcelTableBody">
-            <tr><td colspan="16" class="p-6 text-slate-400 font-semibold">Loading Live Data...</td></tr>
+            <tr><td colspan="9" class="p-6 text-slate-400 font-semibold">Loading Live Data...</td></tr>
           </tbody>
         </table>
       </div>
@@ -343,21 +247,18 @@
   <!-- TOOL ROOM DASHBOARD -->
   <div id="tab-toolroom" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center justify-between">
-        <span><i class="fas fa-wrench text-blue-600 mr-2"></i> Tool Room Dashboard & Fixture Availability Manager</span>
-        <span class="text-xs font-normal text-slate-500">जर मूळ Fixture उपलब्ध नसेल, तर उपलब्ध असलेला Serial No. व Remark प्रविष्ट करा</span>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
+        <i class="fas fa-tools text-blue-600"></i> Tool Room Dashboard (Tooling & Fixture Ready/Pending Manager)
       </h2>
       <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left border border-slate-200">
+        <table class="w-full text-sm text-left border">
           <thead class="bg-slate-100 border-b">
             <tr>
-              <th class="p-3">Machine</th>
-              <th class="p-3">Part Details</th>
-              <th class="p-3">Requested Fixture No</th>
-              <th class="p-3">Priority</th>
+              <th class="p-3">Machine & Part</th>
+              <th class="p-3">Fixture No</th>
               <th class="p-3">Tooling Status</th>
-              <th class="p-3">Fixture Availability / Serial No</th>
-              <th class="p-3">Action / Update</th>
+              <th class="p-3">Fixture Status</th>
+              <th class="p-3">Action (Update Status)</th>
             </tr>
           </thead>
           <tbody id="toolroomTable"></tbody>
@@ -369,14 +270,17 @@
   <!-- CMM / STD ROOM DASHBOARD -->
   <div id="tab-stdroom" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-microscope text-purple-600 mr-2"></i> CMM / STD Room Dashboard</h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
+        <i class="fas fa-microscope text-purple-600"></i> CMM Room Dashboard (Operator Setup & Inspection)
+      </h2>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left border">
           <thead class="bg-slate-100 border-b">
             <tr>
               <th class="p-3">Machine & Part</th>
-              <th class="p-3">Sample Status</th>
-              <th class="p-3">Actions</th>
+              <th class="p-3">Setup Condition</th>
+              <th class="p-3">Sample Stage</th>
+              <th class="p-3">Action (Inspection Done & Notify Quality)</th>
             </tr>
           </thead>
           <tbody id="stdroomTable"></tbody>
@@ -388,43 +292,28 @@
   <!-- QUALITY DASHBOARD -->
   <div id="tab-quality" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-check-double text-green-600 mr-2"></i> Quality SOP & Inspection Dashboard</h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
+        <i class="fas fa-clipboard-check text-green-600"></i> Quality SOP Approval & Sample Correction Dashboard
+      </h2>
       <div id="qualityTableArea" class="overflow-x-auto"></div>
     </div>
   </div>
 
-  <!-- SUPERVISOR DASHBOARD -->
+  <!-- SUPERVISOR / HOD DASHBOARD -->
   <div id="tab-supervisor" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold border-b pb-2 text-slate-800">Supervisor Dashboard Overview</h2>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-green-50 p-6 rounded-xl border border-green-200">
-        <h3 class="font-bold text-slate-700">Total SOP Approved</h3>
-        <p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p>
-      </div>
-      <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
-        <h3 class="font-bold text-slate-700">Pending SOP Setups</h3>
-        <p id="supPendingCount" class="text-4xl font-extrabold text-yellow-600 mt-2">0</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- HOD LIVE VIEW -->
-  <div id="tab-hod" class="tab-content hidden space-y-6">
-    <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">HOD Master Live View</h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-emerald-600 mr-2"></i> Supervisor & HOD Workflow Time Report</h2>
       <div class="overflow-x-auto">
         <table class="w-full text-xs text-left border">
           <thead class="bg-slate-200">
             <tr>
               <th class="p-2 border">Machine</th>
               <th class="p-2 border">Part Info</th>
-              <th class="p-2 border">Pallet</th>
               <th class="p-2 border">Tooling</th>
-              <th class="p-2 border">Fixture & Serial No</th>
-              <th class="p-2 border">Setup</th>
-              <th class="p-2 border">Quality Status</th>
+              <th class="p-2 border">Fixture</th>
+              <th class="p-2 border">Current Stage</th>
+              <th class="p-2 border">Sample Count</th>
+              <th class="p-2 border">Final Quality Status</th>
             </tr>
           </thead>
           <tbody id="hodTable"></tbody>
@@ -436,33 +325,19 @@
 </main>
 </div>
 
-<!-- FIXTURE REMARK & AVAILABLE SERIAL NUMBER MODAL -->
-<div id="fixtureRemarkModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
-  <div class="bg-white rounded-xl max-w-md w-full p-6 border shadow-2xl">
-    <h3 class="font-bold text-slate-800 text-base mb-2">Fixture / Serial No Remark Input</h3>
-    <p class="text-xs text-slate-500 mb-4">जर मूळ Fixture उपलब्ध नसेल, तर उपलब्ध असलेला Serial No. किंवा शेरा (Remark) येथे प्रविष्ट करा:</p>
-    <input type="hidden" id="fixtureRemarkSetupId">
-    <textarea id="fixtureRemarkInput" rows="3" class="w-full p-2.5 border rounded-lg text-sm border-slate-300 mb-4" placeholder="उदा. मूल Fixture नाही, उपलब्ध Serial No: FIX-8821 वापरत आहे..."></textarea>
-    <div class="flex justify-end gap-2">
-      <button onclick="closeFixtureRemarkModal()" class="px-4 py-2 bg-slate-200 text-xs font-bold rounded-lg">रद्द करा</button>
-      <button onclick="saveFixtureRemark()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg shadow">सेव्ह करा</button>
-    </div>
-  </div>
-</div>
-
-<!-- ALERT NOTIFICATION MODAL -->
+<!-- ALERT MODAL -->
 <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
   <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active shadow-2xl">
     <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-black">
       <i class="fas fa-bell"></i>
     </div>
-    <h3 id="alertTitle" class="text-xl font-black text-red-600">NEW NOTIFICATION</h3>
-    <p id="alertMessage" class="text-sm my-4 font-bold text-slate-700">Alert Notification Details</p>
+    <h3 id="alertTitle" class="text-xl font-black text-red-600">WORKFLOW NOTIFICATION</h3>
+    <p id="alertMessage" class="text-sm my-4 font-bold text-slate-700">Details</p>
     <button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">स्वीकारा (OK)</button>
   </div>
 </div>
 
-<!-- SUPABASE INTEGRATION SCRIPT -->
+<!-- SUPABASE & APP LOGIC SCRIPT -->
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
@@ -476,26 +351,18 @@ window.allSetups = [
     machineName: "M1",
     partName: "Gear Shaft",
     partNo: "PN-9988",
-    shiftDate: "11/09/2026 - Shift A",
-    setupType: "LONG",
-    priority: 1,
-    pallet: "A",
     fixtureNo: "FIX-102",
-    fixtureAvailable: "YES",
-    fixtureRemark: "",
     toolingReady: false,
     fixtureReady: false,
+    cmmReadyForSetup: false,
     setupStarted: false,
-    sampleCutting: false,
-    inspectionDone: false,
+    sampleCount: 1, // 1st to 4th sample
     qualityStatus: "SOP PENDING",
-    sopPendingReason: "First sample CMM measurement pending",
-    correctionRequirement: "None",
-    updatedAt: Date.now()
+    stage: "PENDING (Tool/Fixture)"
   }
 ];
 
-window.currentExcelFilter = 'total';
+window.currentExcelFilter = 'all';
 
 function setStatus(status, msg="") {
   const bar = document.getElementById("firebaseStatus");
@@ -507,21 +374,19 @@ function setStatus(status, msg="") {
   else if(status==="offline"){ icon.className="fas fa-circle mr-2"; text.textContent="🔴 SUPABASE OFFLINE"; }
   else { icon.className="fas fa-circle-notch fa-spin mr-2"; text.textContent="🟡 SUPABASE CONNECTING..."; }
 }
-setStatus("connecting");
 
 window.syncToSupabase = async function() {
   try {
-    const { error } = await window.supabase.from('sutom_setups').upsert({
+    const { error } = await window.supabase.from('sutom_workflow').upsert({
       id: 1,
       data: window.allSetups,
       updated_at: new Date().toISOString()
     }, { onConflict: 'id' });
     if(error) throw error;
-    setStatus("live", "DATA SAVED");
+    setStatus("live", "SAVED");
     setTimeout(()=>setStatus("live"), 1500);
     return true;
   } catch(e){
-    console.error(e);
     setStatus("offline", e.message);
     return false;
   }
@@ -529,8 +394,8 @@ window.syncToSupabase = async function() {
 
 async function initSupabase() {
   try {
-    const { data } = await window.supabase.from('sutom_setups').select('data').eq('id',1).single();
-    if(data && data.data && Array.isArray(data.data) && data.data.length > 0){
+    const { data } = await window.supabase.from('sutom_workflow').select('data').eq('id',1).single();
+    if(data && data.data && Array.isArray(data.data)){
       window.allSetups = data.data;
     } else {
       await window.syncToSupabase();
@@ -538,13 +403,12 @@ async function initSupabase() {
     setStatus("live");
     window.renderAllViews();
   } catch(e) {
-    console.log("Database table init check:", e.message);
     setStatus("live");
     window.renderAllViews();
   }
 
-  window.supabase.channel('sutom-live-channel')
-   .on('postgres_changes', { event: '*', schema: 'public', table: 'sutom_setups', filter: 'id=eq.1' }, payload => {
+  window.supabase.channel('workflow-live')
+   .on('postgres_changes', { event: '*', schema: 'public', table: 'sutom_workflow', filter: 'id=eq.1' }, payload => {
       if(payload.new && payload.new.data){
         window.allSetups = payload.new.data;
         window.renderAllViews();
@@ -560,13 +424,11 @@ window.renderAllViews = function() {
     if(window.currentUser.dept==="toolroom") window.renderToolroom();
     if(window.currentUser.dept==="stdroom") window.renderSTDRoom();
     if(window.currentUser.dept==="quality") window.renderQuality();
-    if(window.currentUser.dept==="hod") window.renderHOD();
     if(window.currentUser.dept==="supervisor") window.renderSupervisor();
   }
 };
 </script>
 
-<!-- APP LOGIC SCRIPT -->
 <script>
 window.currentUser = null;
 
@@ -574,14 +436,10 @@ function updateLiveTime() {
   const now = new Date();
   const t = document.getElementById("topLiveTime");
   const sh = document.getElementById("topLiveShift");
-  const d = document.getElementById("shiftDate");
   if(t) t.textContent = now.toLocaleTimeString();
   const m = now.getHours()*60 + now.getMinutes();
-  let sn = "Shift C";
-  if(m >= 465 && m < 975) sn = "Shift A";
-  else if(m >= 975 && m < 1440) sn = "Shift B";
+  let sn = (m >= 465 && m < 975)? "Shift A" : ((m >= 975 && m < 1440)? "Shift B" : "Shift C");
   if(sh) sh.textContent = "Shift: " + sn;
-  if(d) d.value = now.toLocaleDateString() + " " + now.toLocaleTimeString() + " (" + sn + ")";
 }
 setInterval(updateLiveTime, 1000);
 updateLiveTime();
@@ -589,10 +447,7 @@ updateLiveTime();
 window.addEventListener("DOMContentLoaded", ()=>{
   const u = localStorage.getItem("sutom_user");
   if(u){
-    try {
-      window.currentUser = JSON.parse(u);
-      loadDashboard(window.currentUser);
-    } catch { localStorage.removeItem("sutom_user"); }
+    try { window.currentUser = JSON.parse(u); loadDashboard(window.currentUser); } catch { localStorage.removeItem("sutom_user"); }
   }
 });
 
@@ -627,94 +482,83 @@ function handleLogout(){
 
 function showDepartmentTab(deptId){
   document.querySelectorAll(".tab-content").forEach(el=>el.classList.add("hidden"));
-  const tab = document.getElementById("tab-" + deptId);
+  let tabId = deptId;
+  if(deptId === 'supervisor') tabId = 'supervisor';
+  const tab = document.getElementById("tab-" + tabId);
   if(tab) tab.classList.remove("hidden");
   if(window.renderAllViews) window.renderAllViews();
 }
 
-/* RESET ALL DATA FUNCTION */
 async function handleResetAllData() {
-  if(confirm("तुम्हाला खात्री आहे का? सर्व सेटअप डेटा पूर्णपणे रीसेट/क्लियर (Reset All) करायचा आहे का?")) {
+  if(confirm("सर्व डेटा रीसेट करायचा आहे का?")) {
     window.allSetups = [];
     if(await window.syncToSupabase()) {
-      alert("सर्व डेटा यशस्वीपणे रीसेट करण्यात आला आहे!");
+      alert("डेटा यशस्वीपणे रीसेट केला!");
       window.renderAllViews();
     }
   }
 }
 
-/* SETTER DASHBOARD FUNCTIONS */
-function toggleSetupForm(forceState = null) {
-  const formCard = document.getElementById("setupFormCard");
-  if(!formCard) return;
-  if(forceState === true) {
-    formCard.classList.remove("hidden");
-  } else if(forceState === false) {
-    formCard.classList.add("hidden");
-  } else {
-    formCard.classList.toggle("hidden");
-  }
+function toggleSetupForm(state = null) {
+  const card = document.getElementById("setupFormCard");
+  if(!card) return;
+  if(state === true) card.classList.remove("hidden");
+  else if(state === false) card.classList.add("hidden");
+  else card.classList.toggle("hidden");
 }
 
-function openSetterModule(moduleKey) {
-  if(moduleKey === 'register') {
-    toggleSetupForm();
-    if(!document.getElementById("setupFormCard").classList.contains("hidden")) {
-      document.getElementById("setupFormCard").scrollIntoView({ behavior: "smooth" });
-    }
+function openSetterModule(key) {
+  if(key === 'register') {
+    toggleSetupForm(true);
+    document.getElementById("setupFormCard").scrollIntoView({ behavior: "smooth" });
   } else {
-    window.currentExcelFilter = moduleKey;
-    window.renderSetterExcelTable(moduleKey);
+    window.currentExcelFilter = key;
+    window.renderSetterExcelTable(key);
     document.querySelector(".excel-table-container").scrollIntoView({ behavior: "smooth" });
   }
 }
 
 async function handleSetterSubmit(e) {
   e.preventDefault();
-  const newSetup = {
+  const newItem = {
     id: "ST-" + Math.floor(1000 + Math.random() * 9000),
     machineName: document.getElementById("machineName").value,
     partName: document.getElementById("partName").value.trim(),
     partNo: document.getElementById("partNo").value.trim(),
-    shiftDate: document.getElementById("shiftDate").value,
-    setupType: document.getElementById("setupType").value,
-    priority: parseInt(document.getElementById("priority").value),
-    pallet: document.getElementById("pallet").value,
     fixtureNo: document.getElementById("fixtureNo").value.trim(),
-    fixtureAvailable: "YES",
-    fixtureRemark: "",
     toolingReady: false,
     fixtureReady: false,
+    cmmReadyForSetup: false,
     setupStarted: false,
-    sampleCutting: false,
-    inspectionDone: false,
+    sampleCount: 1,
     qualityStatus: "SOP PENDING",
-    sopPendingReason: "New setup registered, tooling pending",
-    correctionRequirement: "None",
-    updatedAt: Date.now()
+    stage: "SETUP PENDING"
   };
 
-  if(!window.allSetups) window.allSetups = [];
-  window.allSetups.unshift(newSetup);
-
+  window.allSetups.unshift(newItem);
   if(await window.syncToSupabase()) {
-    triggerAlert("TOOL ROOM & CMM ROOM NOTIFICATION", `New Setup Registered!\nMachine: ${newSetup.machineName}\nPart: ${newSetup.partName} (${newSetup.partNo})\nPriority: ${newSetup.priority}`);
+    triggerAlert("NOTIFICATION SENT", `New Setup Registered for Machine ${newItem.machineName}!\nNotification sent to Tool Room & CMM Room.`);
     document.getElementById("setterForm").reset();
     toggleSetupForm(false);
-    updateLiveTime();
     window.renderAllViews();
   }
 }
 
 window.updateMetrics = function() {
   const list = window.allSetups || [];
-  const el = (id, val)=>{ const e=document.getElementById(id); if(e) e.textContent=val; };
+  const el = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
   
-  el("metric-total", list.length);
-  el("metric-tool-ready", list.filter(s=>s.toolingReady).length);
-  el("metric-tool-notready", list.filter(s=>!s.toolingReady).length);
-  el("metric-correction-req", list.filter(s=>s.qualityStatus === "CORRECTION REQUIRED").length);
-  el("metric-setup-start", list.filter(s=>s.setupStarted).length);
+  const readyList = list.filter(s => s.toolingReady && s.fixtureReady && s.cmmReadyForSetup);
+  const pendingList = list.filter(s => !s.toolingReady || !s.fixtureReady || !s.cmmReadyForSetup);
+  const startList = list.filter(s => s.setupStarted && s.qualityStatus !== 'SOP DONE');
+  const corrList = list.filter(s => s.qualityStatus.includes('CORRECTION'));
+  const appList = list.filter(s => s.qualityStatus === 'SOP DONE');
+
+  el("metric-ready", readyList.length);
+  el("metric-pending", pendingList.length);
+  el("metric-start", startList.length);
+  el("metric-correction", corrList.length);
+  el("metric-approved", appList.length);
 };
 
 window.renderSetterExcelTable = function(filterKey) {
@@ -724,147 +568,110 @@ window.renderSetterExcelTable = function(filterKey) {
   if(!tbody) return;
 
   let list = window.allSetups || [];
-  let titleText = "EXCEL LAYOUT: TOTAL REGISTER SETUPS";
+  let titleText = "WORKFLOW EXCEL VIEW: ALL SETUPS";
 
-  if(filterKey === 'tool-ready') {
-    list = list.filter(s=>s.toolingReady);
-    titleText = "EXCEL LAYOUT: TOOLING READY SETUPS";
-  } else if(filterKey === 'tool-notready') {
-    list = list.filter(s=>!s.toolingReady);
-    titleText = "EXCEL LAYOUT: TOOLING NOT READY SETUPS";
-  } else if(filterKey === 'fixture-ready') {
-    list = list.filter(s=>s.fixtureReady || s.fixtureAvailable === 'YES');
-    titleText = "EXCEL LAYOUT: FIXTURE READY / SERIAL NO AVAILABILITY";
+  if(filterKey === 'ready') {
+    list = list.filter(s => s.toolingReady && s.fixtureReady && s.cmmReadyForSetup);
+    titleText = "WORKFLOW EXCEL VIEW: READY FOR SETUP (Tooling, Fixture & CMM OK)";
+  } else if(filterKey === 'pending') {
+    list = list.filter(s => !s.toolingReady || !s.fixtureReady || !s.cmmReadyForSetup);
+    titleText = "WORKFLOW EXCEL VIEW: SETUP PENDING (Tool/Fixture/CMM Pending)";
+  } else if(filterKey === 'start') {
+    list = list.filter(s => s.setupStarted && s.qualityStatus !== 'SOP DONE');
+    titleText = "WORKFLOW EXCEL VIEW: START SETUP & SAMPLE SUBMISSION";
   } else if(filterKey === 'correction') {
-    list = list.filter(s=>s.qualityStatus === 'CORRECTION REQUIRED');
-    titleText = "EXCEL LAYOUT: CORRECTION REQUIRED SETUPS";
-  } else if(filterKey === 'setup-start') {
-    list = list.filter(s=>s.setupStarted);
-    titleText = "EXCEL LAYOUT: SETUP START IN PROGRESS";
-  } else if(filterKey === 'sop-status') {
-    titleText = "EXCEL LAYOUT: SOP PENDING / SOP DONE STATUS";
+    list = list.filter(s => s.qualityStatus.includes('CORRECTION'));
+    titleText = "WORKFLOW EXCEL VIEW: CORRECTION REQUIRED (Back to Setter)";
+  } else if(filterKey === 'approved') {
+    list = list.filter(s => s.qualityStatus === 'SOP DONE');
+    titleText = "WORKFLOW EXCEL VIEW: SOP APPROVED (SUCCESS)";
   }
 
   title.innerHTML = `<i class="fas fa-file-excel text-green-300 text-lg"></i> ${titleText}`;
   rowCount.textContent = `Rows: ${list.length}`;
 
   if(list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="16" class="p-6 text-slate-400 font-semibold text-center">No setup records found for this filter.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-slate-400 font-semibold text-center">No records found for this filter.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = list.map((s, idx) => `
-    <tr>
-      <td class="font-bold text-slate-500">${idx+1}</td>
-      <td class="font-black text-blue-700 bg-blue-50">${s.machineName || '-'}</td>
-      <td class="font-bold text-slate-800">${s.partName}</td>
-      <td class="font-mono text-slate-600">${s.partNo}</td>
-      <td class="text-xs text-slate-600">${s.shiftDate}</td>
-      <td><span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.setupType==='LONG'?'bg-orange-100 text-orange-800':'bg-blue-100 text-blue-800'}">${s.setupType}</span></td>
-      <td><span class="font-black text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">P-${s.priority}</span></td>
-      <td class="font-bold text-purple-700">Pallet ${s.pallet}</td>
-      <td class="font-mono font-bold text-slate-700">
-        ${s.fixtureNo}
-        ${s.fixtureRemark ? `<div class="text-[10px] text-emerald-700 font-bold mt-0.5">Avail S/N: ${s.fixtureRemark}</div>`:''}
-      </td>
-      <td><span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.toolingReady?'bg-green-100 text-green-800':'bg-red-100 text-red-800'}">${s.toolingReady?'READY':'NOT READY'}</span></td>
-      <td>
-        <span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.fixtureReady?'bg-teal-100 text-teal-800':'bg-yellow-100 text-yellow-800'}">
-          ${s.fixtureReady?'READY':'PENDING'}
-        </span>
-      </td>
-      <td>
-        ${s.setupStarted ? 
-          `<span class="bg-indigo-600 text-white text-[11px] font-bold px-2 py-0.5 rounded">STARTED</span>` : 
-          `<button onclick="startSetup('${s.id}')" class="bg-indigo-100 hover:bg-indigo-600 hover:text-white text-indigo-800 text-xs font-bold px-2 py-1 rounded transition">START SETUP</button>`
-        }
-      </td>
-      <td>
-        <span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.qualityStatus==='CORRECTION REQUIRED'?'bg-red-600 text-white animate-pulse':'bg-slate-100 text-slate-600'}">
-          ${s.qualityStatus==='CORRECTION REQUIRED'? (s.correctionRequirement || 'REQUIRED') : 'NONE'}
-        </span>
-      </td>
-      <td>
-        <span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.qualityStatus==='SOP DONE'?'bg-green-600 text-white':'bg-yellow-500 text-white'}">
-          ${s.qualityStatus==='SOP DONE'?'SOP DONE':'SOP PENDING'}
-        </span>
-      </td>
-      <td class="text-xs text-slate-600 italic max-w-xs text-left">
-        ${s.fixtureRemark ? `<div class="text-xs text-emerald-700 font-bold">Serial/Remark: ${s.fixtureRemark}</div>`:''}
-        ${s.sopPendingReason || '-'}
-      </td>
-      <td>
-        <button onclick="openFixtureRemarkModal('${s.id}')" class="bg-slate-700 text-white text-[10px] font-bold px-2 py-1 rounded hover:bg-slate-900">
-          Remark / S/N
-        </button>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = list.map((s, idx) => {
+    const isReadyForSetup = s.toolingReady && s.fixtureReady && s.cmmReadyForSetup;
+    return `
+      <tr>
+        <td class="font-bold text-slate-500">${idx+1}</td>
+        <td class="font-black text-blue-700 bg-blue-50">${s.machineName}</td>
+        <td class="text-left"><span class="font-bold">${s.partName}</span><br><span class="text-xs text-slate-500">${s.partNo}</span></td>
+        <td class="font-mono font-bold">${s.fixtureNo}</td>
+        <td>
+          <span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.toolingReady && s.fixtureReady ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+            Tool: ${s.toolingReady?'READY':'PENDING'} | Fix: ${s.fixtureReady?'READY':'PENDING'}
+          </span>
+        </td>
+        <td>
+          <span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.cmmReadyForSetup?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">
+            ${s.cmmReadyForSetup ? 'READY FOR SETUP' : 'CMM PENDING'}
+          </span>
+        </td>
+        <td>
+          <span class="px-2 py-0.5 text-[11px] font-bold rounded ${isReadyForSetup ? 'bg-emerald-600 text-white font-black' : 'bg-amber-100 text-amber-800'}">
+            ${isReadyForSetup ? 'READY FOR SETUP' : 'SETUP PENDING'}
+          </span>
+        </td>
+        <td class="font-bold text-xs">
+          <span class="px-2 py-1 rounded ${s.qualityStatus==='SOP DONE'?'bg-green-600 text-white':(s.qualityStatus.includes('CORRECTION')?'bg-red-600 text-white animate-pulse':'bg-yellow-500 text-white')}">
+            ${s.qualityStatus} (Sample #${s.sampleCount})
+          </span>
+        </td>
+        <td>
+          ${isReadyForSetup && !s.setupStarted ? 
+            `<button onclick="setterStartSetup('${s.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">START SETUP</button>` :
+            (s.setupStarted && s.qualityStatus !== 'SOP DONE' ? 
+              `<button onclick="setterSubmitSample('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Submit Sample #${s.sampleCount} to CMM</button>` :
+              `<span class="text-xs text-slate-400 font-semibold">${s.qualityStatus==='SOP DONE'?'Completed':'Waiting'}</span>`
+            )
+          }
+        </td>
+      </tr>
+    `;
+  }).join('');
 };
 
-async function startSetup(setupId) {
-  const item = (window.allSetups || []).find(s => s.id === setupId);
-  if(item) {
-    if(!item.toolingReady) {
-      alert("Tooling is NOT ready yet!");
-      return;
-    }
-    item.setupStarted = true;
-    item.sopPendingReason = "Setup started, awaiting sample cutting and CMM inspection";
+async function setterStartSetup(id) {
+  const s = window.allSetups.find(x => x.id === id);
+  if(s) {
+    s.setupStarted = true;
+    s.stage = "SETUP STARTED";
     if(await window.syncToSupabase()) {
       window.renderAllViews();
     }
   }
 }
 
-/* FIXTURE REMARK & SERIAL NO MODAL */
-function openFixtureRemarkModal(setupId) {
-  document.getElementById("fixtureRemarkSetupId").value = setupId;
-  const item = (window.allSetups || []).find(s => s.id === setupId);
-  document.getElementById("fixtureRemarkInput").value = item ? (item.fixtureRemark || "") : "";
-  document.getElementById("fixtureRemarkModal").classList.remove("hidden");
-}
-function closeFixtureRemarkModal() {
-  document.getElementById("fixtureRemarkModal").classList.add("hidden");
-}
-async function saveFixtureRemark() {
-  const setupId = document.getElementById("fixtureRemarkSetupId").value;
-  const remark = document.getElementById("fixtureRemarkInput").value.trim();
-  const item = (window.allSetups || []).find(s => s.id === setupId);
-  if(item) {
-    item.fixtureRemark = remark;
-    if(remark) item.fixtureAvailable = "REMARK: " + remark;
+async function setterSubmitSample(id) {
+  const s = window.allSetups.find(x => x.id === id);
+  if(s) {
+    s.stage = `Sample #${s.sampleCount} Submitted to CMM`;
     if(await window.syncToSupabase()) {
-      closeFixtureRemarkModal();
+      triggerAlert("CMM ROOM NOTIFICATION", `Sample #${s.sampleCount} submitted for Machine ${s.machineName} inspection!`);
       window.renderAllViews();
     }
   }
 }
 
-/* TOOL ROOM VIEW WITH AVAILABLE SERIAL NO INPUT */
+/* TOOL ROOM VIEW */
 window.renderToolroom = function() {
   const tbody = document.getElementById("toolroomTable");
   if(!tbody) return;
-  const list = window.allSetups || [];
-  tbody.innerHTML = list.map(s => `
+  tbody.innerHTML = (window.allSetups || []).map(s => `
     <tr class="border-b">
-      <td class="p-3 font-bold text-blue-700">${s.machineName}</td>
-      <td class="p-3 font-semibold">${s.partName} (${s.partNo})</td>
-      <td class="p-3 font-mono font-bold">${s.fixtureNo}</td>
-      <td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">P-${s.priority}</span></td>
-      <td class="p-3 font-bold ${s.toolingReady?"text-green-600":"text-red-500"}">${s.toolingReady?"READY":"PENDING"}</td>
-      <td class="p-3">
-        <div class="space-y-1">
-          <span class="font-bold ${s.fixtureReady?"text-green-600":"text-red-500"} text-xs">${s.fixtureReady?"FIXTURE READY":"PENDING"}</span>
-          <div class="text-xs text-slate-700 font-semibold">
-            ${s.fixtureRemark ? `<span class="text-emerald-700">Available S/N: ${s.fixtureRemark}</span>` : `<span class="text-slate-400 italic">No alternative S/N assigned</span>`}
-          </div>
-        </div>
-      </td>
-      <td class="p-3 space-x-1 space-y-1">
-        <button onclick="toggleTooling('${s.id}')" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded font-bold">Toggle Tooling</button>
-        <button onclick="toggleFixture('${s.id}')" class="bg-purple-600 text-white text-xs px-2.5 py-1 rounded font-bold">Toggle Fixture</button>
-        <button onclick="openFixtureRemarkModal('${s.id}')" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-2.5 py-1 rounded font-bold">Add Available S/N</button>
+      <td class="p-3 font-bold">${s.machineName} - ${s.partName} (${s.partNo})</td>
+      <td class="p-3 font-mono">${s.fixtureNo}</td>
+      <td class="p-3 font-bold ${s.toolingReady?'text-green-600':'text-red-500'}">${s.toolingReady?'READY':'PENDING'}</td>
+      <td class="p-3 font-bold ${s.fixtureReady?'text-green-600':'text-red-500'}">${s.fixtureReady?'READY':'PENDING'}</td>
+      <td class="p-3 space-x-2">
+        <button onclick="toggleTooling('${s.id}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold">Toggle Tooling</button>
+        <button onclick="toggleFixture('${s.id}')" class="bg-purple-600 text-white text-xs px-3 py-1.5 rounded font-bold">Toggle Fixture</button>
       </td>
     </tr>
   `).join('');
@@ -874,38 +681,55 @@ async function toggleTooling(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     s.toolingReady = !s.toolingReady;
-    if(await window.syncToSupabase()) triggerAlert("SETTER NOTIFICATION", `Tooling marked ${s.toolingReady?'READY':'PENDING'} for Machine ${s.machineName}`);
+    if(await window.syncToSupabase()) window.renderAllViews();
   }
 }
 async function toggleFixture(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     s.fixtureReady = !s.fixtureReady;
-    if(await window.syncToSupabase()) triggerAlert("SETTER NOTIFICATION", `Fixture marked ${s.fixtureReady?'READY':'PENDING'} for Machine ${s.machineName}`);
+    if(await window.syncToSupabase()) window.renderAllViews();
   }
 }
 
-/* STD / CMM ROOM VIEW */
+/* CMM / STD ROOM VIEW */
 window.renderSTDRoom = function() {
   const tbody = document.getElementById("stdroomTable");
   if(!tbody) return;
   tbody.innerHTML = (window.allSetups || []).map(s => `
     <tr class="border-b">
       <td class="p-3 font-bold">${s.machineName} - ${s.partName} (${s.partNo})</td>
-      <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${s.sampleCutting?'bg-blue-100 text-blue-800':'bg-yellow-100 text-yellow-800'}">${s.sampleCutting?'1st Sample Received':'Sample Awaiting'}</span></td>
       <td class="p-3">
-        <button onclick="markSampleInspection('${s.id}')" class="bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded">Inspection Completed</button>
+        <button onclick="toggleCMMReady('${s.id}')" class="text-xs px-3 py-1 rounded font-bold ${s.cmmReadyForSetup?'bg-green-600 text-white':'bg-yellow-500 text-white'}">
+          ${s.cmmReadyForSetup ? 'Operator: Ready for Setup (OK)' : 'Click to Set Ready for Setup'}
+        </button>
+      </td>
+      <td class="p-3 font-bold">Sample #${s.sampleCount}</td>
+      <td class="p-3">
+        <button onclick="cmmInspectionDone('${s.id}')" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded font-bold">
+          Inspection Done (Notify Quality)
+        </button>
       </td>
     </tr>
   `).join('');
 };
 
-async function markSampleInspection(id) {
+async function toggleCMMReady(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
-    s.inspectionDone = true;
-    s.sopPendingReason = "CMM Inspection done, waiting Quality SOP approval";
-    if(await window.syncToSupabase()) triggerAlert("QUALITY NOTIFICATION", `CMM Inspection Done for ${s.machineName}`);
+    s.cmmReadyForSetup = !s.cmmReadyForSetup;
+    if(await window.syncToSupabase()) window.renderAllViews();
+  }
+}
+
+async function cmmInspectionDone(id) {
+  const s = window.allSetups.find(x => x.id === id);
+  if(s) {
+    s.qualityStatus = `Sample #${s.sampleCount} INSPECTION DONE`;
+    if(await window.syncToSupabase()) {
+      triggerAlert("QUALITY NOTIFICATION", `CMM Inspection done for Machine ${s.machineName} (Sample #${s.sampleCount}). Please check dimensions.`);
+      window.renderAllViews();
+    }
   }
 }
 
@@ -918,18 +742,25 @@ window.renderQuality = function() {
       <thead class="bg-slate-100">
         <tr>
           <th class="p-3">Machine & Part</th>
-          <th class="p-3">Current Status</th>
-          <th class="p-3">Actions</th>
+          <th class="p-3">Status / Sample</th>
+          <th class="p-3">Actions (Approve SOP or Correction Required up to 4th Sample)</th>
         </tr>
       </thead>
       <tbody>
         ${(window.allSetups || []).map(s => `
           <tr class="border-b">
             <td class="p-3 font-bold">${s.machineName} - ${s.partName}</td>
-            <td class="p-3 font-bold text-emerald-700">${s.qualityStatus}</td>
+            <td class="p-3 font-bold text-emerald-700">${s.qualityStatus} (Sample #${s.sampleCount})</td>
             <td class="p-3 space-x-2 flex">
-              <button onclick="approveSOP('${s.id}')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">APPROVE SOP</button>
-              <button onclick="requireCorrection('${s.id}')" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold">REJECT / CORRECTION</button>
+              <button onclick="qualityApproveSOP('${s.id}')" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded font-bold">
+                <i class="fas fa-check mr-1"></i> SOP Approve (OK)
+              </button>
+              ${s.sampleCount < 4 ? 
+                `<button onclick="qualityRejectCorrection('${s.id}')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-bold">
+                  <i class="fas fa-rotate-left mr-1"></i> Sample #${s.sampleCount} Correction Required
+                </button>` : 
+                `<span class="text-xs text-red-600 font-bold">Max 4th Sample Reached</span>`
+              }
             </td>
           </tr>
         `).join('')}
@@ -938,60 +769,48 @@ window.renderQuality = function() {
   `;
 };
 
-async function approveSOP(id) {
+async function qualityApproveSOP(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     s.qualityStatus = "SOP DONE";
-    s.sopPendingReason = "SOP Approved by Quality";
-    if(await window.syncToSupabase()) triggerAlert("SETTER NOTIFICATION", `SOP Approved for Machine ${s.machineName}`);
+    s.stage = "SOP APPROVED";
+    if(await window.syncToSupabase()) {
+      triggerAlert("SUCCESS", `SOP Approved successfully for Machine ${s.machineName}!`);
+      window.renderAllViews();
+    }
   }
 }
 
-async function requireCorrection(id) {
-  const reason = prompt("Enter Correction Reason (e.g. 1st Sample Correction Required):", "1st Sample Correction Required");
-  if(reason) {
-    const s = window.allSetups.find(x => x.id === id);
-    if(s) {
-      s.qualityStatus = "CORRECTION REQUIRED";
-      s.correctionRequirement = reason;
-      s.sopPendingReason = "Correction Needed: " + reason;
-      if(await window.syncToSupabase()) triggerAlert("CRITICAL SETTER ALERT", `Correction Needed on ${s.machineName}: ${reason}`);
+async function qualityRejectCorrection(id) {
+  const s = window.allSetups.find(x => x.id === id);
+  if(s && s.sampleCount < 4) {
+    s.sampleCount += 1;
+    s.qualityStatus = `${s.sampleCount}th Sample CORRECTION REQUIRED`;
+    s.stage = `Correction for Sample #${s.sampleCount}`;
+    if(await window.syncToSupabase()) {
+      triggerAlert("SETTER NOTIFICATION", `Correction required for Machine ${s.machineName}. Please correct and submit Sample #${s.sampleCount} to CMM.`);
+      window.renderAllViews();
     }
   }
 }
 
 /* SUPERVISOR VIEW */
 window.renderSupervisor = function() {
-  const list = window.allSetups || [];
-  const approved = list.filter(s => s.qualityStatus === 'SOP DONE').length;
-  const pending = list.filter(s => s.qualityStatus !== 'SOP DONE').length;
-  const aEl = document.getElementById("supApprovedCount");
-  const pEl = document.getElementById("supPendingCount");
-  if(aEl) aEl.textContent = approved;
-  if(pEl) pEl.textContent = pending;
-};
-
-/* HOD VIEW */
-window.renderHOD = function() {
   const tbody = document.getElementById("hodTable");
   if(!tbody) return;
   tbody.innerHTML = (window.allSetups || []).map(s => `
     <tr class="border-b">
       <td class="p-2 border font-bold text-blue-700">${s.machineName}</td>
-      <td class="p-2 border font-semibold">${s.partName} - ${s.partNo}</td>
-      <td class="p-2 border">Pallet ${s.pallet}</td>
-      <td class="p-2 border font-bold ${s.toolingReady?'text-green-600':'text-red-500'}">${s.toolingReady?'✅ Ready':'❌ Pending'}</td>
-      <td class="p-2 border font-bold ${s.fixtureReady?'text-green-600':'text-red-500'}">
-        ${s.fixtureReady?'✅ Ready':'❌ Pending'}
-        ${s.fixtureRemark ? `<div class="text-[10px] text-emerald-700 font-bold">S/N: ${s.fixtureRemark}</div>`:''}
-      </td>
-      <td class="p-2 border font-bold ${s.setupStarted?'text-indigo-600':'text-slate-500'}">${s.setupStarted?'▶ Started':'⏳ Waiting'}</td>
+      <td class="p-2 border font-semibold">${s.partName} (${s.partNo})</td>
+      <td class="p-2 border font-bold ${s.toolingReady?'text-green-600':'text-red-500'}">${s.toolingReady?'Ready':'Pending'}</td>
+      <td class="p-2 border font-bold ${s.fixtureReady?'text-green-600':'text-red-500'}">${s.fixtureReady?'Ready':'Pending'}</td>
+      <td class="p-2 border font-bold">${s.stage}</td>
+      <td class="p-2 border font-black">Sample #${s.sampleCount}</td>
       <td class="p-2 border font-black text-slate-800">${s.qualityStatus}</td>
     </tr>
   `).join('');
 };
 
-/* ALERT SYSTEM */
 function triggerAlert(title, msg) {
   document.getElementById("alertTitle").textContent = title;
   document.getElementById("alertMessage").textContent = msg;
@@ -1000,7 +819,6 @@ function triggerAlert(title, msg) {
 }
 function acknowledgeAlert() {
   document.getElementById("alertModal").classList.add("hidden");
-  if("vibrate" in navigator) navigator.vibrate(0);
 }
 </script>
 </body>

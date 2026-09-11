@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUTOM - Setup Time Monitor & Workflow</title>
+<title>SUTOM - Setup Time Monitor & Workflow (Multi-Sample Tracker)</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
@@ -12,9 +12,9 @@
 .firebase-live-bar { min-height: 32px; display:flex; align-items:center; justify-content:center; width:100%; font-size:12px; font-weight:800; }
 .firebase-live-bar.live { background:#052e16; color:#4ade80; border-top:1px solid #166534; border-bottom:1px solid #166534; }
 .excel-table-container { border: 2px solid #047857; border-radius: 8px; overflow: hidden; background: #ffffff; }
-.excel-table { border-collapse: collapse; width: 100%; font-size: 13px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.excel-table { border-collapse: collapse; width: 100%; font-size: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 .excel-table th { background-color: #065f46; color: white; border: 1px solid #047857; padding: 8px 10px; font-weight: 700; text-align: center; }
-.excel-table td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: center; }
+.excel-table td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; }
 .excel-table tr:nth-child(even) { background-color: #f0fdf4; }
 .excel-table tr:hover { background-color: #dcfce7; }
 </style>
@@ -28,7 +28,7 @@
       <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400">S</div>
       <div>
         <h1 class="text-xl font-bold tracking-wide text-emerald-400">SUTOM</h1>
-        <p class="text-xs text-slate-400">Setup Time & Workflow Monitor • Realtime Active</p>
+        <p class="text-xs text-slate-400">Multi-Sample & Department-wise Setup Monitor</p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -44,9 +44,9 @@
       </div>
     </div>
   </div>
-  <div id="firebaseStatus" class="firebase-live-bar live">
+  <div class="firebase-live-bar live">
     <i class="fas fa-circle text-green-400 mr-2"></i>
-    <span id="firebaseStatusText">SYSTEM ACTIVE & SYNCHRONIZED (SAMPLE-WISE TIME TRACKER ENABLED)</span>
+    <span>SYSTEM ACTIVE • 1st, 2nd, 3rd, 4th SAMPLE & CORRECTION TIME TRACKER ENABLED</span>
   </div>
 </header>
 
@@ -60,17 +60,17 @@
     <form onsubmit="handleLogin(event)" class="space-y-4">
       <div>
         <label class="block text-xs font-bold mb-1">Employee Name</label>
-        <input type="text" id="loginName" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500" placeholder="Enter your name">
+        <input type="text" id="loginName" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="Enter name">
       </div>
       <div>
         <label class="block text-xs font-bold mb-1">Employee ID</label>
-        <input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500" placeholder="Enter ID">
+        <input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="Enter ID">
       </div>
       <div>
         <label class="block text-xs font-bold mb-1">Select Department</label>
-        <select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-500">
+        <select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm bg-white">
           <option value="">-- Choose Department --</option>
-          <option value="setter">1. SETTER DEPARTMENT</option>
+          <option value="setter">1. SETTER / HMC</option>
           <option value="toolroom">2. TOOL ROOM</option>
           <option value="stdroom">3. CMM / STD ROOM</option>
           <option value="quality">4. QUALITY</option>
@@ -88,168 +88,112 @@
 
   <!-- ================= SETTER DASHBOARD ================= -->
   <div id="tab-setter" class="tab-content space-y-6 hidden">
-    
     <div class="bg-slate-900 text-white p-4 rounded-xl shadow-lg border border-slate-800 flex justify-between items-center flex-wrap gap-2">
       <div>
-        <h2 class="text-xl font-black text-emerald-400 flex items-center gap-2">
-          <i class="fas fa-sliders-h"></i> SETTER CONTROL WORKFLOW & SAMPLE-WISE TIME TRACKER
-        </h2>
-        <p class="text-xs text-slate-400">सॅम्पल कटिंग, इन्स्पेक्शन आणि CMM रिपोर्टनुसार अचूक वेळ मोजणारी प्रणाली</p>
+        <h2 class="text-xl font-black text-emerald-400">SETTER CONTROL & MULTI-SAMPLE WORKFLOW</h2>
+        <p class="text-xs text-slate-400">ट्रायल 1 ते ट्रायल 4 (SOP Approval पर्यंतचा सर्व डिपार्टमेन्ट वाईस वेळ)</p>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="handleResetAllData()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
-          <i class="fas fa-trash-alt"></i> RESET ALL
+        <button onclick="openSetterModule('register')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition">
+          <i class="fas fa-plus mr-1"></i> Register New Setup
+        </button>
+        <button onclick="handleResetAllData()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2.5 rounded-lg shadow transition">
+          <i class="fas fa-trash-alt"></i> Reset All
         </button>
       </div>
     </div>
 
-    <!-- WORKFLOW CARDS GRID -->
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-      <div onclick="openSetterModule('register')" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl shadow cursor-pointer transition flex flex-col justify-between">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-file-pen text-lg"></i>
-          <span class="text-[10px] bg-blue-800 px-1.5 py-0.5 rounded font-black">STEP 1</span>
-        </div>
-        <div>
-          <p class="text-[11px] font-bold leading-tight">1) Register New Setup</p>
-          <p class="text-[9px] text-blue-200 mt-0.5">फॉर्म भरा (Start Timer)</p>
-        </div>
+    <!-- METRIC CARDS -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div onclick="openSetterModule('all')" class="bg-white p-3 rounded-xl shadow border cursor-pointer hover:bg-slate-50 border-l-4 border-l-blue-600">
+        <p class="text-[10px] text-slate-500 font-bold uppercase">Total Setups</p>
+        <h3 id="metric-all" class="text-xl font-black text-blue-700">0</h3>
       </div>
-
-      <div onclick="openSetterModule('ready')" class="bg-white hover:bg-green-50 p-3 rounded-xl shadow border border-green-200 cursor-pointer transition border-l-4 border-l-green-600">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-check-circle text-green-600 text-lg"></i>
-          <span id="metric-ready" class="text-lg font-black text-green-700">0</span>
-        </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">2) Ready For Setup</p>
-        <p class="text-[9px] text-slate-500">Tool & Fixture OK</p>
+      <div onclick="openSetterModule('ready')" class="bg-white p-3 rounded-xl shadow border cursor-pointer hover:bg-green-50 border-l-4 border-l-green-600">
+        <p class="text-[10px] text-slate-500 font-bold uppercase">Ready For Setup</p>
+        <h3 id="metric-ready" class="text-xl font-black text-green-700">0</h3>
       </div>
-
-      <div onclick="openSetterModule('pending')" class="bg-white hover:bg-yellow-50 p-3 rounded-xl shadow border border-yellow-200 cursor-pointer transition border-l-4 border-l-yellow-500">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-clock text-yellow-600 text-lg"></i>
-          <span id="metric-pending" class="text-lg font-black text-yellow-700">0</span>
-        </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">3) Setup Pending</p>
-        <p class="text-[9px] text-slate-500">Tool/Fixture Pending</p>
+      <div onclick="openSetterModule('running')" class="bg-white p-3 rounded-xl shadow border cursor-pointer hover:bg-indigo-50 border-l-4 border-l-indigo-600">
+        <p class="text-[10px] text-slate-500 font-bold uppercase">In Cutting / Trial</p>
+        <h3 id="metric-running" class="text-xl font-black text-indigo-700">0</h3>
       </div>
-
-      <div onclick="openSetterModule('start')" class="bg-white hover:bg-indigo-50 p-3 rounded-xl shadow border border-indigo-200 cursor-pointer transition border-l-4 border-l-indigo-500">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-play-circle text-indigo-600 text-lg"></i>
-          <span id="metric-start" class="text-lg font-black text-indigo-700">0</span>
-        </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">4) Start Setup & Samples</p>
-        <p class="text-[9px] text-slate-500">Sample Loop</p>
+      <div onclick="openSetterModule('correction')" class="bg-white p-3 rounded-xl shadow border cursor-pointer hover:bg-orange-50 border-l-4 border-l-orange-500">
+        <p class="text-[10px] text-slate-500 font-bold uppercase">Correction (2nd/3rd/4th)</p>
+        <h3 id="metric-correction" class="text-xl font-black text-orange-700">0</h3>
       </div>
-
-      <div onclick="openSetterModule('correction')" class="bg-white hover:bg-orange-50 p-3 rounded-xl shadow border border-orange-200 cursor-pointer transition border-l-4 border-l-orange-500">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-wrench text-orange-500 text-lg"></i>
-          <span id="metric-correction" class="text-lg font-black text-orange-700">0</span>
-        </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">5) Correction Required</p>
-        <p class="text-[9px] text-slate-500">Back to Setter</p>
-      </div>
-
-      <div onclick="openSetterModule('approved')" class="bg-white hover:bg-purple-50 p-3 rounded-xl shadow border border-purple-200 cursor-pointer transition border-l-4 border-l-purple-500">
-        <div class="flex items-center justify-between mb-1">
-          <i class="fas fa-certificate text-purple-600 text-lg"></i>
-          <span id="metric-approved" class="text-lg font-black text-purple-700">0</span>
-        </div>
-        <p class="text-[11px] font-bold text-slate-800 leading-tight">6) SOP Approved (Done)</p>
-        <p class="text-[9px] text-slate-500">Sample Times Saved</p>
+      <div onclick="openSetterModule('approved')" class="bg-white p-3 rounded-xl shadow border cursor-pointer hover:bg-purple-50 border-l-4 border-l-purple-600">
+        <p class="text-[10px] text-slate-500 font-bold uppercase">SOP Approved</p>
+        <h3 id="metric-approved" class="text-xl font-black text-purple-700">0</h3>
       </div>
     </div>
 
-    <!-- 1) REGISTER FORM SECTION -->
-    <div id="setupFormCard" class="bg-white p-6 rounded-xl shadow border border-blue-200 transition-all hidden">
+    <!-- REGISTER FORM -->
+    <div id="setupFormCard" class="bg-white p-6 rounded-xl shadow border border-blue-200 hidden">
       <div class="flex justify-between items-center border-b pb-3 mb-4">
-        <h3 class="text-md font-bold text-blue-800 flex items-center gap-2">
-          <i class="fas fa-edit text-blue-600"></i> REGISTER NEW SETUP FORM (Time Tracking Starts)
-        </h3>
-        <button onclick="toggleSetupForm()" class="text-xs text-slate-500 hover:text-slate-800 font-bold bg-slate-100 px-2.5 py-1 rounded">Close</button>
+        <h3 class="text-md font-bold text-blue-800">REGISTER NEW SETUP FORM</h3>
+        <button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Close</button>
       </div>
       <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">MACHINE NAME</label>
+          <label class="block text-xs font-bold mb-1">MACHINE NAME</label>
           <select id="machineName" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
-            <option value="">-- SELECT MACHINE --</option>
+            <option value="">-- SELECT --</option>
             <script>
-              for(let i=1; i<=15; i++) { document.write(`<option value="M${i}">M${i}</option>`); }
-              for(let i=1; i<=35; i++) { document.write(`<option value="En${i}">En${i}</option>`); }
+              for(let i=1; i<=10; i++) document.write(`<option value="M${i}">M${i}</option>`);
+              for(let i=1; i<=20; i++) document.write(`<option value="En${i}">En${i}</option>`);
             </script>
-            <option value="MK3">MK3</option><option value="MK8">MK8</option><option value="MK11">MK11</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">PART NAME</label>
-          <input type="text" id="partName" placeholder="Enter Part Name" required class="w-full p-2 border rounded-lg text-sm">
+          <label class="block text-xs font-bold mb-1">PART NAME</label>
+          <input type="text" id="partName" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part Name">
         </div>
         <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">PART NUMBER</label>
-          <input type="text" id="partNo" placeholder="Enter Part No." required class="w-full p-2 border rounded-lg text-sm">
+          <label class="block text-xs font-bold mb-1">PART NUMBER</label>
+          <input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No">
         </div>
         <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">FIXTURE SERIAL NO.</label>
-          <input type="text" id="fixtureNo" placeholder="e.g. FIX-9901" required class="w-full p-2 border rounded-lg text-sm">
+          <label class="block text-xs font-bold mb-1">FIXTURE SERIAL NO.</label>
+          <input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture No">
         </div>
         <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">PRIORITY (1 to 10)</label>
-          <select id="setupPriority" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
-            <option value="">-- SELECT PRIORITY --</option>
-            <script> for(let i=1; i<=10; i++) { document.write(`<option value="${i}">Priority ${i}</option>`); } </script>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">DATE</label>
+          <label class="block text-xs font-bold mb-1">DATE</label>
           <input type="date" id="setupDate" required class="w-full p-2 border rounded-lg text-sm">
         </div>
         <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">SHIFT</label>
+          <label class="block text-xs font-bold mb-1">SHIFT</label>
           <select id="setupShift" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
             <option value="Shift A">Shift A</option><option value="Shift B">Shift B</option><option value="Shift C">Shift C</option>
           </select>
         </div>
-        <div>
-          <label class="block text-xs font-bold mb-1 text-slate-700">PALLET</label>
-          <select id="setupPallet" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
-            <option value="Pallet A">Pallet A</option><option value="Pallet B">Pallet B</option>
-          </select>
-        </div>
-        <div class="lg:col-span-4 flex justify-end gap-2 border-t pt-3 mt-2">
-          <button type="button" onclick="toggleSetupForm()" class="bg-slate-200 text-slate-800 font-bold px-5 py-2.5 rounded-lg text-sm">Cancel</button>
-          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2.5 rounded-lg text-sm shadow-md flex items-center gap-2">
-            <i class="fas fa-paper-plane"></i> SUBMIT & START TIMER
-          </button>
+        <div class="lg:col-span-2 flex justify-end items-end gap-2">
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-sm shadow">Submit & Start Timer</button>
         </div>
       </form>
     </div>
 
-    <!-- EXCEL DATA TABLE CONTAINER -->
+    <!-- MAIN EXCEL TABLE -->
     <div class="excel-table-container shadow-xl">
-      <div class="bg-emerald-800 text-white p-3 px-4 flex flex-wrap justify-between items-center border-b gap-2">
-        <h3 id="excelTableTitle" class="font-bold text-sm tracking-wide flex items-center gap-2">
-          <i class="fas fa-file-excel text-green-300 text-lg"></i> WORKFLOW & SAMPLE-WISE TIME TRACKER VIEW
-        </h3>
+      <div class="bg-emerald-800 text-white p-3 px-4 flex justify-between items-center border-b">
+        <h3 id="excelTableTitle" class="font-bold text-sm">MULTI-SAMPLE WORKFLOW & DEPARTMENT TIMELINE TRACKER</h3>
         <span class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200" id="excelRowCount">Rows: 0</span>
       </div>
-      <div class="overflow-x-auto max-h-[500px]">
+      <div class="overflow-x-auto max-h-[550px]">
         <table class="excel-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>MACHINE</th>
-              <th>PART INFO</th>
-              <th>SAMPLE-WISE TIME LOGS</th>
-              <th>TOOL ROOM STATUS</th>
-              <th>CMM STATUS</th>
-              <th>CURRENT STAGE</th>
+              <th>MACHINE / PART</th>
+              <th>TOOL & FIXTURE ROOM TIME</th>
+              <th>SAMPLE #1 LOGS</th>
+              <th>SAMPLE #2 LOGS (IF CORRECTION)</th>
+              <th>SAMPLE #3 & #4 LOGS</th>
+              <th>CURRENT STAGE & SOP STATUS</th>
               <th>ACTION</th>
             </tr>
           </thead>
           <tbody id="setterExcelTableBody">
-            <tr><td colspan="8" class="p-6 text-slate-400 font-semibold">Loading Data...</td></tr>
+            <tr><td colspan="8" class="p-6 text-slate-400 font-semibold">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -259,18 +203,11 @@
   <!-- TOOL ROOM DASHBOARD -->
   <div id="tab-toolroom" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
-        <i class="fas fa-tools text-blue-600"></i> Tool Room Dashboard
-      </h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-tools text-blue-600 mr-2"></i> Tool Room Setup Prep</h2>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left border">
           <thead class="bg-slate-100 border-b">
-            <tr>
-              <th class="p-3">Machine & Part</th>
-              <th class="p-3">Fixture No</th>
-              <th class="p-3">Status</th>
-              <th class="p-3">Action</th>
-            </tr>
+            <tr><th class="p-3">Machine & Part</th><th class="p-3">Fixture No</th><th class="p-3">Status</th><th class="p-3">Action</th></tr>
           </thead>
           <tbody id="toolroomTable"></tbody>
         </table>
@@ -281,18 +218,11 @@
   <!-- CMM / STD ROOM DASHBOARD -->
   <div id="tab-stdroom" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
-        <i class="fas fa-microscope text-purple-600"></i> CMM Room Dashboard (Sample Cut, Inspection & Report Check Time)
-      </h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-microscope text-purple-600 mr-2"></i> CMM Room (Multi-Sample Inspection & Reports)</h2>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left border">
           <thead class="bg-slate-100 border-b">
-            <tr>
-              <th class="p-3">Machine & Part</th>
-              <th class="p-3">Setup Condition</th>
-              <th class="p-3">Current Sample</th>
-              <th class="p-3">Sample Action (CMM / Inspection)</th>
-            </tr>
+            <tr><th class="p-3">Machine & Part</th><th class="p-3">Active Trial</th><th class="p-3">CMM Action</th></tr>
           </thead>
           <tbody id="stdroomTable"></tbody>
         </table>
@@ -303,27 +233,25 @@
   <!-- QUALITY DASHBOARD -->
   <div id="tab-quality" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
-        <i class="fas fa-clipboard-check text-green-600"></i> Quality SOP Approval & Final Time Calculation
-      </h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-clipboard-check text-green-600 mr-2"></i> Quality SOP Approval & Correction Decision</h2>
       <div id="qualityTableArea" class="overflow-x-auto"></div>
     </div>
   </div>
 
-  <!-- SUPERVISOR / HOD DASHBOARD -->
+  <!-- SUPERVISOR DASHBOARD -->
   <div id="tab-supervisor" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-emerald-600 mr-2"></i> Supervisor & HOD Report (Sample-wise Breakdown)</h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-emerald-600 mr-2"></i> Supervisor Summary (Sample 1 to 4 Actual Time)</h2>
       <div class="overflow-x-auto">
         <table class="w-full text-xs text-left border">
           <thead class="bg-slate-200">
             <tr>
               <th class="p-2 border">Machine</th>
-              <th class="p-2 border">Part Info</th>
-              <th class="p-2 border">1st Sample Cut Time</th>
-              <th class="p-2 border">1st Sample Inspection Time</th>
-              <th class="p-2 border">1st Sample CMM Report Time</th>
-              <th class="p-2 border font-bold text-red-700">Total Time</th>
+              <th class="p-2 border">Part</th>
+              <th class="p-2 border">Trial Count</th>
+              <th class="p-2 border">Tool Room Time</th>
+              <th class="p-2 border">CMM Room Time</th>
+              <th class="p-2 border font-bold text-red-700">Total Actual Time</th>
             </tr>
           </thead>
           <tbody id="hodTable"></tbody>
@@ -343,47 +271,48 @@
     </div>
     <h3 id="alertTitle" class="text-xl font-black text-red-600">WORKFLOW NOTIFICATION</h3>
     <p id="alertMessage" class="text-sm my-4 font-bold text-slate-700">Details</p>
-    <button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">स्वीकारा (OK)</button>
+    <button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">OK</button>
   </div>
 </div>
 
-<!-- APPLICATION & STORAGE LOGIC -->
 <script>
 const DEFAULT_SETUPS = [
   {
-    id: "ST-101",
+    id: "ST-201",
     machineName: "M1",
-    partName: "Gear Shaft",
-    partNo: "PN-9988",
-    fixtureNo: "FIX-102",
-    priority: "1",
+    partName: "Cylinder Block",
+    partNo: "PN-4055",
+    fixtureNo: "FIX-881",
     setupDate: "2026-03-30",
     shift: "Shift A",
-    pallet: "Pallet A",
     toolingReady: false,
     fixtureReady: false,
-    cmmReadyForSetup: false,
     setupStarted: false,
-    sampleCount: 1,
+    sampleCount: 1, // सध्या सुरू असलेली ट्रायल (1, 2, 3 किंवा 4)
     qualityStatus: "SOP PENDING",
-    stage: "PENDING (Tool/Fixture)",
-    // नवीन सॅम्पल-वाईस टाईम ट्रॅकिंग फिल्ड्स
+    stage: "Tool Room Pending",
     timeRegistered: new Date().toLocaleTimeString(),
     timestampRegistered: Date.now(),
-    timeSampleCut: null,       // 1st sample cut केला त्याला लागलेला वेळ
-    timeSampleInspection: null, // 1st sample inspection लागलेला वेळ
-    timeSampleCmmReport: null,  // 1st sample cmm report check लागलेला वेळ
+    
+    // सॅम्पल 1 चे टाईम लॉग्स
+    s1_cut: null, s1_insp: null, s1_cmm: null, s1_result: null,
+    // सॅम्पल 2 चे टाईम लॉग्स (करेक्टिव्ह ट्रायल)
+    s2_cut: null, s2_insp: null, s2_cmm: null, s2_result: null,
+    // सॅम्पल 3 & 4 चे टाईम लॉग्स
+    s3_cut: null, s3_insp: null, s3_cmm: null, s3_result: null,
+    s4_cut: null, s4_insp: null, s4_cmm: null, s4_result: null,
+
     timeSopDone: null,
     totalTimeSpent: "Pending"
   }
 ];
 
-window.allSetups = JSON.parse(localStorage.getItem("sutom_all_setups")) || DEFAULT_SETUPS;
+window.allSetups = JSON.parse(localStorage.getItem("sutom_multisample_setups")) || DEFAULT_SETUPS;
 window.currentExcelFilter = 'all';
 window.currentUser = null;
 
 function saveLocalStorageData() {
-  localStorage.setItem("sutom_all_setups", JSON.stringify(window.allSetups));
+  localStorage.setItem("sutom_multisample_setups", JSON.stringify(window.allSetups));
   window.renderAllViews();
 }
 
@@ -446,30 +375,21 @@ function showDepartmentTab(deptId){
 }
 
 function handleResetAllData() {
-  if(confirm("सर्व डेटा रीसेट करायचा आहे का?")) {
+  if(confirm("सर्व डेटा रीसेट करायचा का?")) {
     window.allSetups = [];
     saveLocalStorageData();
-    alert("डेटा यशस्वीपणे रीसेट केला!");
+    alert("डेटा रीसेट केला!");
   }
 }
 
-function toggleSetupForm(state = null) {
+function toggleSetupForm(show) {
   const card = document.getElementById("setupFormCard");
-  if(!card) return;
-  if(state === true) card.classList.remove("hidden");
-  else if(state === false) card.classList.add("hidden");
-  else card.classList.toggle("hidden");
+  if(card) { if(show) card.classList.remove("hidden"); else card.classList.add("hidden"); }
 }
 
 function openSetterModule(key) {
-  if(key === 'register') {
-    toggleSetupForm(true);
-    document.getElementById("setupFormCard").scrollIntoView({ behavior: "smooth" });
-  } else {
-    window.currentExcelFilter = key;
-    window.renderSetterExcelTable(key);
-    document.querySelector(".excel-table-container").scrollIntoView({ behavior: "smooth" });
-  }
+  if(key === 'register') { toggleSetupForm(true); }
+  else { window.currentExcelFilter = key; window.renderSetterExcelTable(key); }
 }
 
 function handleSetterSubmit(e) {
@@ -481,41 +401,36 @@ function handleSetterSubmit(e) {
     partName: document.getElementById("partName").value.trim(),
     partNo: document.getElementById("partNo").value.trim(),
     fixtureNo: document.getElementById("fixtureNo").value.trim(),
-    priority: document.getElementById("setupPriority").value,
     setupDate: document.getElementById("setupDate").value,
     shift: document.getElementById("setupShift").value,
-    pallet: document.getElementById("setupPallet").value,
     toolingReady: false,
     fixtureReady: false,
-    cmmReadyForSetup: false,
     setupStarted: false,
     sampleCount: 1,
     qualityStatus: "SOP PENDING",
-    stage: "SETUP PENDING",
+    stage: "Tool Room Pending",
     timeRegistered: now.toLocaleTimeString(),
     timestampRegistered: now.getTime(),
-    timeSampleCut: null,
-    timeSampleInspection: null,
-    timeSampleCmmReport: null,
+    s1_cut: null, s1_insp: null, s1_cmm: null, s1_result: null,
+    s2_cut: null, s2_insp: null, s2_cmm: null, s2_result: null,
+    s3_cut: null, s3_insp: null, s3_cmm: null, s3_result: null,
+    s4_cut: null, s4_insp: null, s4_cmm: null, s4_result: null,
     timeSopDone: null,
     totalTimeSpent: "Pending"
   };
-
   window.allSetups.unshift(newItem);
   saveLocalStorageData();
-  triggerAlert("NOTIFICATION SENT", `New Setup Registered for Machine ${newItem.machineName} at ${newItem.timeRegistered}!`);
+  triggerAlert("SUCCESS", `New Setup Registered for Machine ${newItem.machineName}`);
   document.getElementById("setterForm").reset();
-  document.getElementById("setupDate").value = new Date().toISOString().split('T')[0];
   toggleSetupForm(false);
 }
 
 window.updateMetrics = function() {
   const list = window.allSetups || [];
   const el = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
-  
-  el("metric-ready", list.filter(s => s.toolingReady && s.fixtureReady && s.cmmReadyForSetup).length);
-  el("metric-pending", list.filter(s => !s.toolingReady || !s.fixtureReady || !s.cmmReadyForSetup).length);
-  el("metric-start", list.filter(s => s.setupStarted && s.qualityStatus !== 'SOP DONE').length);
+  el("metric-all", list.length);
+  el("metric-ready", list.filter(s => s.toolingReady && s.fixtureReady).length);
+  el("metric-running", list.filter(s => s.setupStarted && s.qualityStatus !== 'SOP DONE').length);
   el("metric-correction", list.filter(s => s.qualityStatus.includes('CORRECTION')).length);
   el("metric-approved", list.filter(s => s.qualityStatus === 'SOP DONE').length);
 };
@@ -527,182 +442,167 @@ window.renderSetterExcelTable = function(filterKey) {
   if(!tbody) return;
 
   let list = window.allSetups || [];
-  let titleText = "WORKFLOW & SAMPLE-WISE TIME TRACKER: ALL";
+  if(filterKey === 'ready') list = list.filter(s => s.toolingReady && s.fixtureReady);
+  else if(filterKey === 'running') list = list.filter(s => s.setupStarted && s.qualityStatus !== 'SOP DONE');
+  else if(filterKey === 'correction') list = list.filter(s => s.qualityStatus.includes('CORRECTION'));
+  else if(filterKey === 'approved') list = list.filter(s => s.qualityStatus === 'SOP DONE');
 
-  if(filterKey === 'ready') { list = list.filter(s => s.toolingReady && s.fixtureReady && s.cmmReadyForSetup); titleText = "READY FOR SETUP"; }
-  else if(filterKey === 'pending') { list = list.filter(s => !s.toolingReady || !s.fixtureReady || !s.cmmReadyForSetup); titleText = "SETUP PENDING"; }
-  else if(filterKey === 'start') { list = list.filter(s => s.setupStarted && s.qualityStatus !== 'SOP DONE'); titleText = "START SETUP"; }
-  else if(filterKey === 'correction') { list = list.filter(s => s.qualityStatus.includes('CORRECTION')); titleText = "CORRECTION REQUIRED"; }
-  else if(filterKey === 'approved') { list = list.filter(s => s.qualityStatus === 'SOP DONE'); titleText = "SOP APPROVED"; }
-
-  title.innerHTML = `<i class="fas fa-file-excel text-green-300 text-lg"></i> ${titleText}`;
   rowCount.textContent = `Rows: ${list.length}`;
-
   if(list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-slate-400 font-semibold text-center">No records found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-slate-400 font-semibold text-center">No records.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = list.map((s, idx) => {
-    const isReadyForSetup = s.toolingReady && s.fixtureReady && s.cmmReadyForSetup;
-    return `
-      <tr>
-        <td class="font-bold text-slate-500">${idx+1}</td>
-        <td class="font-black text-blue-700 bg-blue-50">${s.machineName}</td>
-        <td class="text-left"><span class="font-bold">${s.partName}</span><br><span class="text-xs text-slate-500">${s.partNo}</span></td>
-        <td class="text-xs text-left">
-          <span class="font-bold text-blue-600">Register:</span> ${s.timeRegistered || '-'}<br>
-          <span class="font-bold text-indigo-600">1st Sample Cut:</span> ${s.timeSampleCut || 'Pending'}<br>
-          <span class="font-bold text-purple-600">1st Sample Insp:</span> ${s.timeSampleInspection || 'Pending'}<br>
-          <span class="font-bold text-emerald-600">1st Sample CMM:</span> ${s.timeSampleCmmReport || 'Pending'}<br>
-          <span class="font-bold text-green-700">SOP Done:</span> ${s.timeSopDone || 'Pending'}
-        </td>
-        <td>
-          <span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.toolingReady && s.fixtureReady ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-            Tool: ${s.toolingReady?'READY':'PENDING'} | Fix: ${s.fixtureReady?'READY':'PENDING'}
-          </span>
-        </td>
-        <td>
-          <span class="px-2 py-0.5 text-[11px] font-bold rounded ${s.cmmReadyForSetup?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">
-            ${s.cmmReadyForSetup ? 'READY' : 'PENDING'}
-          </span>
-        </td>
-        <td>
-          <span class="px-2 py-0.5 text-[11px] font-bold rounded ${isReadyForSetup ? 'bg-emerald-600 text-white font-black' : 'bg-amber-100 text-amber-800'}">
-            ${isReadyForSetup ? 'READY FOR SETUP' : 'SETUP PENDING'}
-          </span>
-        </td>
-        <td>
-          ${isReadyForSetup && !s.setupStarted ? 
-            `<button onclick="setterStartSetup('${s.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">START SETUP</button>` :
-            (s.setupStarted && s.qualityStatus !== 'SOP DONE' ? 
-              `<button onclick="setterSubmitSampleCut('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Cut Sample #${s.sampleCount}</button>` :
-              `<span class="text-xs text-green-700 font-bold">${s.totalTimeSpent}</span>`
-            )
-          }
-        </td>
-      </tr>
-    `;
-  }).join('');
-};
-
-window.setterStartSetup = function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) { s.setupStarted = true; s.stage = "SETUP STARTED"; saveLocalStorageData(); }
-}
-
-window.setterSubmitSampleCut = function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    s.timeSampleCut = new Date().toLocaleTimeString();
-    s.stage = `Sample #${s.sampleCount} Cut Done`;
-    saveLocalStorageData();
-    triggerAlert("CMM ROOM", `Sample #${s.sampleCount} cut completed for Machine ${s.machineName}! Time recorded.`);
-  }
-}
-
-/* TOOL ROOM VIEW */
-window.renderToolroom = function() {
-  const tbody = document.getElementById("toolroomTable");
-  if(!tbody) return;
-  const activeSetups = (window.allSetups || []).filter(s => !(s.toolingReady && s.fixtureReady));
-
-  if(activeSetups.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500 font-bold">सर्व मशीन्सचे Tooling आणि Fixture Ready झाले आहेत!</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = activeSetups.map(s => `
-    <tr class="border-b">
-      <td class="p-3 font-bold">${s.machineName} - ${s.partName} (${s.partNo})</td>
-      <td class="p-3 font-mono">${s.fixtureNo}</td>
-      <td class="p-3 font-bold">
-        <span class="${s.toolingReady?'text-green-600':'text-red-500'}">Tool: ${s.toolingReady?'Ready':'Pending'}</span> | 
-        <span class="${s.fixtureReady?'text-green-600':'text-red-500'}">Fix: ${s.fixtureReady?'Ready':'Pending'}</span>
+  tbody.innerHTML = list.map((s, idx) => `
+    <tr>
+      <td class="font-bold text-slate-500">${idx+1}</td>
+      <td class="text-left font-bold text-blue-700 bg-blue-50">
+        Machine: ${s.machineName}<br><span class="text-xs text-slate-600">${s.partName} (${s.partNo})</span>
       </td>
-      <td class="p-3 space-x-2">
-        <button onclick="toggleTooling('${s.id}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold shadow">Tooling Ready</button>
-        <button onclick="toggleFixture('${s.id}')" class="bg-purple-600 text-white text-xs px-3 py-1.5 rounded font-bold shadow">Fixture Ready</button>
+      <td class="text-xs text-left">
+        <span class="font-bold">Tooling:</span> <span class="${s.toolingReady?'text-green-700 font-bold':'text-red-600'}">${s.toolingReady?'READY':'PENDING'}</span><br>
+        <span class="font-bold">Fixture:</span> <span class="${s.fixtureReady?'text-green-700 font-bold':'text-red-600'}">${s.fixtureReady?'READY':'PENDING'}</span><br>
+        <span class="text-[10px] text-slate-500">Reg: ${s.timeRegistered}</span>
+      </td>
+      <td class="text-xs text-left bg-slate-50">
+        <span class="font-bold text-indigo-700">Sample #1:</span><br>
+        - Cut: ${s.s1_cut || '-'}<br>
+        - Insp: ${s.s1_insp || '-'}<br>
+        - CMM: ${s.s1_cmm || '-'}<br>
+        - Status: <b>${s.s1_result || 'Pending'}</b>
+      </td>
+      <td class="text-xs text-left">
+        <span class="font-bold text-orange-700">Sample #2:</span><br>
+        - Cut: ${s.s2_cut || '-'}<br>
+        - Insp: ${s.s2_insp || '-'}<br>
+        - CMM: ${s.s2_cmm || '-'}<br>
+        - Status: <b>${s.s2_result || '-'}</b>
+      </td>
+      <td class="text-xs text-left bg-slate-50">
+        <span class="font-bold text-purple-700">Sample #3 & #4:</span><br>
+        S3: ${s.s3_result || '-'}<br>
+        S4: ${s.s4_result || '-'}<br>
+        <span class="text-[10px] text-green-700 font-bold">SOP Done: ${s.timeSopDone || 'Pending'}</span>
+      </td>
+      <td class="font-bold text-xs">
+        <span class="px-2 py-1 rounded ${s.qualityStatus==='SOP DONE'?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">
+          ${s.qualityStatus}
+        </span>
+      </td>
+      <td>
+        ${s.toolingReady && s.fixtureReady && !s.setupStarted ? 
+          `<button onclick="setterStartSetup('${s.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Start Setup</button>` :
+          (s.setupStarted && s.qualityStatus !== 'SOP DONE' ? 
+            `<button onclick="setterCutSample('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Cut Sample #${s.sampleCount}</button>` :
+            `<span class="text-xs text-green-700 font-bold">${s.totalTimeSpent}</span>`
+          )
+        }
       </td>
     </tr>
   `).join('');
 };
 
-window.toggleTooling = function(id) {
+window.setterStartSetup = function(id) {
   const s = window.allSetups.find(x => x.id === id);
-  if(s) { s.toolingReady = !s.toolingReady; saveLocalStorageData(); }
-}
-window.toggleFixture = function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) { s.fixtureReady = !s.fixtureReady; saveLocalStorageData(); }
+  if(s) { s.setupStarted = true; s.stage = "Sample #1 Cutting"; saveLocalStorageData(); }
 }
 
-/* CMM / STD ROOM VIEW (Sample Inspection & Report Check) */
+window.setterCutSample = function(id) {
+  const s = window.allSetups.find(x => x.id === id);
+  if(s) {
+    const timeNow = new Date().toLocaleTimeString();
+    if(s.sampleCount === 1) s.s1_cut = timeNow;
+    else if(s.sampleCount === 2) s.s2_cut = timeNow;
+    else if(s.sampleCount === 3) s.s3_cut = timeNow;
+    else if(s.sampleCount === 4) s.s4_cut = timeNow;
+    
+    saveLocalStorageData();
+    triggerAlert("CMM ROOM", `Sample #${s.sampleCount} cut completed for Machine ${s.machineName}. Send to CMM Room.`);
+  }
+}
+
+/* TOOL ROOM */
+window.renderToolroom = function() {
+  const tbody = document.getElementById("toolroomTable");
+  if(!tbody) return;
+  tbody.innerHTML = (window.allSetups || []).map(s => `
+    <tr class="border-b">
+      <td class="p-3 font-bold">${s.machineName} - ${s.partName}</td>
+      <td class="p-3 font-mono">${s.fixtureNo}</td>
+      <td class="p-3">
+        Tool: <span class="${s.toolingReady?'text-green-600 font-bold':'text-red-500'}">${s.toolingReady?'Ready':'Pending'}</span> | 
+        Fixture: <span class="${s.fixtureReady?'text-green-600 font-bold':'text-red-500'}">${s.fixtureReady?'Ready':'Pending'}</span>
+      </td>
+      <td class="p-3 space-x-2">
+        <button onclick="toggleTooling('${s.id}')" class="bg-blue-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">Tool Ready</button>
+        <button onclick="toggleFixture('${s.id}')" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">Fixture Ready</button>
+      </td>
+    </tr>
+  `).join('');
+};
+window.toggleTooling = function(id) { const s = window.allSetups.find(x => x.id === id); if(s) { s.toolingReady = !s.toolingReady; saveLocalStorageData(); } }
+window.toggleFixture = function(id) { const s = window.allSetups.find(x => x.id === id); if(s) { s.fixtureReady = !s.fixtureReady; saveLocalStorageData(); } }
+
+/* CMM / STD ROOM */
 window.renderSTDRoom = function() {
   const tbody = document.getElementById("stdroomTable");
   if(!tbody) return;
   tbody.innerHTML = (window.allSetups || []).map(s => `
     <tr class="border-b">
       <td class="p-3 font-bold">${s.machineName} - ${s.partName}</td>
-      <td class="p-3">
-        <button onclick="toggleCMMReady('${s.id}')" class="text-xs px-3 py-1.5 rounded font-bold ${s.cmmReadyForSetup?'bg-green-600 text-white':'bg-yellow-500 text-white'}">
-          ${s.cmmReadyForSetup ? 'CMM Ready (OK)' : 'Set Ready'}
-        </button>
-      </td>
-      <td class="p-3 font-bold">Sample #${s.sampleCount}</td>
+      <td class="p-3 font-bold text-indigo-700">Active: Sample #${s.sampleCount}</td>
       <td class="p-3 space-x-2 flex">
-        <button onclick="cmmSampleInspection('${s.id}')" class="bg-indigo-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">1. Inspection Done</button>
-        <button onclick="cmmReportCheck('${s.id}')" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">2. CMM Report Check</button>
+        <button onclick="cmmInsp('${s.id}')" class="bg-blue-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">1. Inspection Done</button>
+        <button onclick="cmmReport('${s.id}')" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">2. CMM Report Check</button>
       </td>
     </tr>
   `).join('');
 };
 
-window.toggleCMMReady = function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) { s.cmmReadyForSetup = !s.cmmReadyForSetup; saveLocalStorageData(); }
-}
-
-window.cmmSampleInspection = function(id) {
+window.cmmInsp = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
-    s.timeSampleInspection = new Date().toLocaleTimeString();
+    const t = new Date().toLocaleTimeString();
+    if(s.sampleCount === 1) s.s1_insp = t;
+    else if(s.sampleCount === 2) s.s2_insp = t;
+    else if(s.sampleCount === 3) s.s3_insp = t;
+    else if(s.sampleCount === 4) s.s4_insp = t;
     saveLocalStorageData();
-    triggerAlert("CMM ROOM", `1st sample inspection time recorded for Machine ${s.machineName}!`);
+    triggerAlert("CMM", `Sample #${s.sampleCount} inspection time recorded.`);
   }
 }
 
-window.cmmReportCheck = function(id) {
+window.cmmReport = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
-    s.timeSampleCmmReport = new Date().toLocaleTimeString();
-    s.qualityStatus = `Sample #${s.sampleCount} REPORT CHECKED`;
+    const t = new Date().toLocaleTimeString();
+    if(s.sampleCount === 1) { s.s1_cmm = t; s.s1_result = "Report Checked"; }
+    else if(s.sampleCount === 2) { s.s2_cmm = t; s.s2_result = "Report Checked"; }
+    else if(s.sampleCount === 3) { s.s3_cmm = t; s.s3_result = "Report Checked"; }
+    else if(s.sampleCount === 4) { s.s4_cmm = t; s.s4_result = "Report Checked"; }
+    s.qualityStatus = `Sample #${s.sampleCount} Report Checked`;
     saveLocalStorageData();
-    triggerAlert("QUALITY", `CMM report check completed for Machine ${s.machineName}. Ready for Quality Approval.`);
+    triggerAlert("QUALITY", `CMM report ready for Quality Approval for Sample #${s.sampleCount}.`);
   }
 }
 
-/* QUALITY VIEW */
+/* QUALITY */
 window.renderQuality = function() {
   const area = document.getElementById("qualityTableArea");
   if(!area) return;
   area.innerHTML = `
     <table class="w-full text-sm text-left border">
       <thead class="bg-slate-100">
-        <tr>
-          <th class="p-3">Machine & Part</th>
-          <th class="p-3">Status</th>
-          <th class="p-3">Actions</th>
-        </tr>
+        <tr><th class="p-3">Machine & Part</th><th class="p-3">Current Status</th><th class="p-3">Actions (Approve or Correction)</th></tr>
       </thead>
       <tbody>
         ${(window.allSetups || []).map(s => `
           <tr class="border-b">
             <td class="p-3 font-bold">${s.machineName} - ${s.partName}</td>
-            <td class="p-3 font-bold text-emerald-700">${s.qualityStatus}</td>
+            <td class="p-3 font-bold text-emerald-700">${s.qualityStatus} (Sample #${s.sampleCount})</td>
             <td class="p-3 space-x-2 flex">
-              <button onclick="qualityApproveSOP('${s.id}')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">SOP Approve</button>
-              ${s.sampleCount < 4 ? `<button onclick="qualityRejectCorrection('${s.id}')" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold">Correction</button>` : ''}
+              <button onclick="qualityApprove('${s.id}')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">SOP Approve</button>
+              ${s.sampleCount < 4 ? `<button onclick="qualityCorrection('${s.id}')" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold">Correction (Next Sample)</button>` : ''}
             </td>
           </tr>
         `).join('')}
@@ -711,33 +611,38 @@ window.renderQuality = function() {
   `;
 };
 
-window.qualityApproveSOP = function(id) {
+window.qualityApprove = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     const now = new Date();
     s.qualityStatus = "SOP DONE";
     s.stage = "SOP APPROVED";
     s.timeSopDone = now.toLocaleTimeString();
-    
-    if(s.timestampRegistered) {
-      let diffMs = now.getTime() - s.timestampRegistered;
-      let diffMins = Math.floor(diffMs / 60000);
-      let diffSecs = Math.floor((diffMs % 60000) / 1000);
-      s.totalTimeSpent = `${diffMins} मि. ${diffSecs} सेकंद`;
-    }
+    if(s.sampleCount === 1) s.s1_result = "SOP Approved";
+    else if(s.sampleCount === 2) s.s2_result = "SOP Approved";
+    else if(s.sampleCount === 3) s.s3_result = "SOP Approved";
+    else if(s.sampleCount === 4) s.s4_result = "SOP Approved";
+
+    let diffMs = now.getTime() - s.timestampRegistered;
+    let mins = Math.floor(diffMs / 60000);
+    s.totalTimeSpent = `${mins} मिनिटे`;
 
     saveLocalStorageData();
-    triggerAlert("SUCCESS", `SOP Approved for Machine ${s.machineName}! Total Time: ${s.totalTimeSpent}`);
+    triggerAlert("SUCCESS", `SOP Approved successfully! Total Time: ${s.totalTimeSpent}`);
   }
 }
 
-window.qualityRejectCorrection = function(id) {
+window.qualityCorrection = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s && s.sampleCount < 4) {
+    if(s.sampleCount === 1) s.s1_result = "Correction Req.";
+    if(s.sampleCount === 2) s.s2_result = "Correction Req.";
+    if(s.sampleCount === 3) s.s3_result = "Correction Req.";
+    
     s.sampleCount += 1;
-    s.qualityStatus = `${s.sampleCount}th Sample CORRECTION`;
+    s.qualityStatus = `Sample #${s.sampleCount} CORRECTION REQUIRED`;
     saveLocalStorageData();
-    triggerAlert("CORRECTION", `Correction required for Machine ${s.machineName}.`);
+    triggerAlert("CORRECTION", `Correction required. Shifted to Sample #${s.sampleCount} cutting cycle.`);
   }
 }
 
@@ -748,10 +653,10 @@ window.renderSupervisor = function() {
   tbody.innerHTML = (window.allSetups || []).map(s => `
     <tr class="border-b">
       <td class="p-2 border font-bold text-blue-700">${s.machineName}</td>
-      <td class="p-2 border font-semibold">${s.partName} (${s.partNo})</td>
-      <td class="p-2 border font-bold text-indigo-600">${s.timeSampleCut || 'Pending'}</td>
-      <td class="p-2 border font-bold text-purple-600">${s.timeSampleInspection || 'Pending'}</td>
-      <td class="p-2 border font-bold text-emerald-600">${s.timeSampleCmmReport || 'Pending'}</td>
+      <td class="p-2 border font-semibold">${s.partName}</td>
+      <td class="p-2 border font-bold text-indigo-700">Sample #${s.sampleCount}</td>
+      <td class="p-2 border">${s.toolingReady && s.fixtureReady ? 'Ready' : 'Pending'}</td>
+      <td class="p-2 border">${s.s1_cmm || s.s2_cmm || 'Pending'}</td>
       <td class="p-2 border font-black text-red-600 bg-red-50">${s.totalTimeSpent}</td>
     </tr>
   `).join('');
@@ -772,7 +677,7 @@ function triggerAlert(title, msg) {
   document.getElementById("alertTitle").textContent = title;
   document.getElementById("alertMessage").textContent = msg;
   document.getElementById("alertModal").classList.remove("hidden");
-  if("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
+  if("vibrate" in navigator) navigator.vibrate([300, 100, 300]);
 }
 function acknowledgeAlert() {
   document.getElementById("alertModal").classList.add("hidden");

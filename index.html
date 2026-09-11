@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUTOM - Setup Time Monitor & Workflow (Multi-Sample Tracker)</title>
+<title>SUTOM - Setup Time Monitor & Workflow (Multi-Sample Tracker with Supabase)</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- Supabase JS Client Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 @keyframes pulse-red { 0%,100% { background:#fee2e2; border-color:#ef4444; } 50% { background:#fca5a5; border-color:#dc2626; } }
 .alert-active { animation:pulse-red.8s infinite; }
@@ -28,7 +30,7 @@
       <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400">S</div>
       <div>
         <h1 class="text-xl font-bold tracking-wide text-emerald-400">SUTOM</h1>
-        <p class="text-xs text-slate-400">Multi-Sample & Department-wise Setup Monitor</p>
+        <p class="text-xs text-slate-400">Multi-Sample & Department-wise Setup Monitor (Supabase Connected)</p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -46,7 +48,7 @@
   </div>
   <div class="firebase-live-bar live">
     <i class="fas fa-circle text-green-400 mr-2"></i>
-    <span>SYSTEM ACTIVE • 1st, 2nd, 3rd, 4th SAMPLE & CORRECTION TIME TRACKER ENABLED</span>
+    <span>SUPABASE CLOUD ACTIVE • 1st, 2nd, 3rd, 4th SAMPLE & CORRECTION TIME TRACKER ENABLED</span>
   </div>
 </header>
 
@@ -175,7 +177,7 @@
     <!-- MAIN EXCEL TABLE -->
     <div class="excel-table-container shadow-xl">
       <div class="bg-emerald-800 text-white p-3 px-4 flex justify-between items-center border-b">
-        <h3 id="excelTableTitle" class="font-bold text-sm">MULTI-SAMPLE WORKFLOW & DEPARTMENT TIMELINE TRACKER</h3>
+        <h3 id="excelTableTitle" class="font-bold text-sm">MULTI-SAMPLE WORKFLOW & DEPARTMENT TIMELINE TRACKER (Supabase)</h3>
         <span class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200" id="excelRowCount">Rows: 0</span>
       </div>
       <div class="overflow-x-auto max-h-[550px]">
@@ -193,7 +195,7 @@
             </tr>
           </thead>
           <tbody id="setterExcelTableBody">
-            <tr><td colspan="8" class="p-6 text-slate-400 font-semibold">Loading...</td></tr>
+            <tr><td colspan="8" class="p-6 text-slate-400 font-semibold">Loading from Supabase...</td></tr>
           </tbody>
         </table>
       </div>
@@ -276,45 +278,14 @@
 </div>
 
 <script>
-const DEFAULT_SETUPS = [
-  {
-    id: "ST-201",
-    machineName: "M1",
-    partName: "Cylinder Block",
-    partNo: "PN-4055",
-    fixtureNo: "FIX-881",
-    setupDate: "2026-03-30",
-    shift: "Shift A",
-    toolingReady: false,
-    fixtureReady: false,
-    setupStarted: false,
-    sampleCount: 1, // सध्या सुरू असलेली ट्रायल (1, 2, 3 किंवा 4)
-    qualityStatus: "SOP PENDING",
-    stage: "Tool Room Pending",
-    timeRegistered: new Date().toLocaleTimeString(),
-    timestampRegistered: Date.now(),
-    
-    // सॅम्पल 1 चे टाईम लॉग्स
-    s1_cut: null, s1_insp: null, s1_cmm: null, s1_result: null,
-    // सॅम्पल 2 चे टाईम लॉग्स (करेक्टिव्ह ट्रायल)
-    s2_cut: null, s2_insp: null, s2_cmm: null, s2_result: null,
-    // सॅम्पल 3 & 4 चे टाईम लॉग्स
-    s3_cut: null, s3_insp: null, s3_cmm: null, s3_result: null,
-    s4_cut: null, s4_insp: null, s4_cmm: null, s4_result: null,
+// Supabase Configuration Integration
+const SUPABASE_URL = "https://umtjqgyeqcudtckanbhp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_kcvEFWRlaNam_bS43NtB4Q_rSog55hV";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    timeSopDone: null,
-    totalTimeSpent: "Pending"
-  }
-];
-
-window.allSetups = JSON.parse(localStorage.getItem("sutom_multisample_setups")) || DEFAULT_SETUPS;
+window.allSetups = [];
 window.currentExcelFilter = 'all';
 window.currentUser = null;
-
-function saveLocalStorageData() {
-  localStorage.setItem("sutom_multisample_setups", JSON.stringify(window.allSetups));
-  window.renderAllViews();
-}
 
 function updateLiveTime() {
   const now = new Date();
@@ -328,15 +299,68 @@ function updateLiveTime() {
 setInterval(updateLiveTime, 1000);
 updateLiveTime();
 
-window.addEventListener("DOMContentLoaded", ()=>{
+window.addEventListener("DOMContentLoaded", async ()=>{
   const u = localStorage.getItem("sutom_user");
   if(u){
     try { window.currentUser = JSON.parse(u); loadDashboard(window.currentUser); } catch { localStorage.removeItem("sutom_user"); }
   }
   const dateInput = document.getElementById("setupDate");
   if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
-  window.renderAllViews();
+  
+  await fetchSetupsFromSupabase();
 });
+
+// Fetch Data from Supabase table named 'setups'
+async function fetchSetupsFromSupabase() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('setups')
+      .select('*')
+      .order('timestampRegistered', { ascending: false });
+    
+    if (error) {
+      console.error('Supabase fetch error:', error);
+      // जर टेबल तयार नसेल किंवा एरर आला तर लोकल डमी डेटा वापरू शकता
+      window.allSetups = [];
+    } else {
+      window.allSetups = data || [];
+    }
+    window.renderAllViews();
+  } catch (err) {
+    console.error('Connection error:', err);
+  }
+}
+
+// Sync / Update record in Supabase
+async function updateSetupInSupabase(setupItem) {
+  try {
+    const { error } = await supabaseClient
+      .from('setups')
+      .upsert([setupItem]);
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      alert('Supabase update failed: ' + error.message);
+    } else {
+      await fetchSetupsFromSupabase();
+    }
+  } catch (err) {
+    console.error('Sync error:', err);
+  }
+}
+
+async function handleResetAllData() {
+  if(confirm("सर्व डेटा Supabase मधୁन डिलीट करायचा का?")) {
+    try {
+      const { error } = await supabaseClient.from('setups').delete().neq('id', '0');
+      window.allSetups = [];
+      window.renderAllViews();
+      alert("डेटा यशस्वीरित्या रिकामा केला!");
+    } catch(err) {
+      console.error(err);
+    }
+  }
+}
 
 function handleLogin(e){
   e.preventDefault();
@@ -374,14 +398,6 @@ function showDepartmentTab(deptId){
   window.renderAllViews();
 }
 
-function handleResetAllData() {
-  if(confirm("सर्व डेटा रीसेट करायचा का?")) {
-    window.allSetups = [];
-    saveLocalStorageData();
-    alert("डेटा रीसेट केला!");
-  }
-}
-
 function toggleSetupForm(show) {
   const card = document.getElementById("setupFormCard");
   if(card) { if(show) card.classList.remove("hidden"); else card.classList.add("hidden"); }
@@ -392,7 +408,7 @@ function openSetterModule(key) {
   else { window.currentExcelFilter = key; window.renderSetterExcelTable(key); }
 }
 
-function handleSetterSubmit(e) {
+async function handleSetterSubmit(e) {
   e.preventDefault();
   const now = new Date();
   const newItem = {
@@ -418,9 +434,9 @@ function handleSetterSubmit(e) {
     timeSopDone: null,
     totalTimeSpent: "Pending"
   };
-  window.allSetups.unshift(newItem);
-  saveLocalStorageData();
-  triggerAlert("SUCCESS", `New Setup Registered for Machine ${newItem.machineName}`);
+
+  await updateSetupInSupabase(newItem);
+  triggerAlert("SUCCESS", `New Setup Registered & Saved to Supabase for Machine ${newItem.machineName}`);
   document.getElementById("setterForm").reset();
   toggleSetupForm(false);
 }
@@ -437,7 +453,6 @@ window.updateMetrics = function() {
 
 window.renderSetterExcelTable = function(filterKey) {
   const tbody = document.getElementById("setterExcelTableBody");
-  const title = document.getElementById("excelTableTitle");
   const rowCount = document.getElementById("excelRowCount");
   if(!tbody) return;
 
@@ -449,7 +464,7 @@ window.renderSetterExcelTable = function(filterKey) {
 
   rowCount.textContent = `Rows: ${list.length}`;
   if(list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-slate-400 font-semibold text-center">No records.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-slate-400 font-semibold text-center">No records found.</td></tr>`;
     return;
   }
 
@@ -502,12 +517,16 @@ window.renderSetterExcelTable = function(filterKey) {
   `).join('');
 };
 
-window.setterStartSetup = function(id) {
+window.setterStartSetup = async function(id) {
   const s = window.allSetups.find(x => x.id === id);
-  if(s) { s.setupStarted = true; s.stage = "Sample #1 Cutting"; saveLocalStorageData(); }
+  if(s) { 
+    s.setupStarted = true; 
+    s.stage = "Sample #1 Cutting"; 
+    await updateSetupInSupabase(s); 
+  }
 }
 
-window.setterCutSample = function(id) {
+window.setterCutSample = async function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     const timeNow = new Date().toLocaleTimeString();
@@ -516,7 +535,7 @@ window.setterCutSample = function(id) {
     else if(s.sampleCount === 3) s.s3_cut = timeNow;
     else if(s.sampleCount === 4) s.s4_cut = timeNow;
     
-    saveLocalStorageData();
+    await updateSetupInSupabase(s);
     triggerAlert("CMM ROOM", `Sample #${s.sampleCount} cut completed for Machine ${s.machineName}. Send to CMM Room.`);
   }
 }
@@ -540,8 +559,22 @@ window.renderToolroom = function() {
     </tr>
   `).join('');
 };
-window.toggleTooling = function(id) { const s = window.allSetups.find(x => x.id === id); if(s) { s.toolingReady = !s.toolingReady; saveLocalStorageData(); } }
-window.toggleFixture = function(id) { const s = window.allSetups.find(x => x.id === id); if(s) { s.fixtureReady = !s.fixtureReady; saveLocalStorageData(); } }
+
+window.toggleTooling = async function(id) { 
+  const s = window.allSetups.find(x => x.id === id); 
+  if(s) { 
+    s.toolingReady = !s.toolingReady; 
+    await updateSetupInSupabase(s); 
+  } 
+}
+
+window.toggleFixture = async function(id) { 
+  const s = window.allSetups.find(x => x.id === id); 
+  if(s) { 
+    s.fixtureReady = !s.fixtureReady; 
+    await updateSetupInSupabase(s); 
+  } 
+}
 
 /* CMM / STD ROOM */
 window.renderSTDRoom = function() {
@@ -559,7 +592,7 @@ window.renderSTDRoom = function() {
   `).join('');
 };
 
-window.cmmInsp = function(id) {
+window.cmmInsp = async function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     const t = new Date().toLocaleTimeString();
@@ -567,12 +600,12 @@ window.cmmInsp = function(id) {
     else if(s.sampleCount === 2) s.s2_insp = t;
     else if(s.sampleCount === 3) s.s3_insp = t;
     else if(s.sampleCount === 4) s.s4_insp = t;
-    saveLocalStorageData();
+    await updateSetupInSupabase(s);
     triggerAlert("CMM", `Sample #${s.sampleCount} inspection time recorded.`);
   }
 }
 
-window.cmmReport = function(id) {
+window.cmmReport = async function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     const t = new Date().toLocaleTimeString();
@@ -581,7 +614,7 @@ window.cmmReport = function(id) {
     else if(s.sampleCount === 3) { s.s3_cmm = t; s.s3_result = "Report Checked"; }
     else if(s.sampleCount === 4) { s.s4_cmm = t; s.s4_result = "Report Checked"; }
     s.qualityStatus = `Sample #${s.sampleCount} Report Checked`;
-    saveLocalStorageData();
+    await updateSetupInSupabase(s);
     triggerAlert("QUALITY", `CMM report ready for Quality Approval for Sample #${s.sampleCount}.`);
   }
 }
@@ -611,7 +644,7 @@ window.renderQuality = function() {
   `;
 };
 
-window.qualityApprove = function(id) {
+window.qualityApprove = async function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     const now = new Date();
@@ -627,12 +660,12 @@ window.qualityApprove = function(id) {
     let mins = Math.floor(diffMs / 60000);
     s.totalTimeSpent = `${mins} मिनिटे`;
 
-    saveLocalStorageData();
+    await updateSetupInSupabase(s);
     triggerAlert("SUCCESS", `SOP Approved successfully! Total Time: ${s.totalTimeSpent}`);
   }
 }
 
-window.qualityCorrection = function(id) {
+window.qualityCorrection = async function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s && s.sampleCount < 4) {
     if(s.sampleCount === 1) s.s1_result = "Correction Req.";
@@ -641,7 +674,7 @@ window.qualityCorrection = function(id) {
     
     s.sampleCount += 1;
     s.qualityStatus = `Sample #${s.sampleCount} CORRECTION REQUIRED`;
-    saveLocalStorageData();
+    await updateSetupInSupabase(s);
     triggerAlert("CORRECTION", `Correction required. Shifted to Sample #${s.sampleCount} cutting cycle.`);
   }
 }

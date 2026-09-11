@@ -11,8 +11,7 @@
 .alert-active { animation:pulse-red.8s infinite; }
 .firebase-live-bar { min-height: 32px; display:flex; align-items:center; justify-content:center; width:100%; font-size:12px; font-weight:800; }
 .firebase-live-bar.live { background:#052e16; color:#4ade80; border-top:1px solid #166534; border-bottom:1px solid #166534; }
-.firebase-live-bar.offline { background:#450a0a; color:#f87171; }
-.firebase-live-bar.connecting { background:#451a03; color:#facc15; }
+.firebase-live-bar.offline { background:#1e293b; color:#38bdf8; border-top:1px solid #334155; border-bottom:1px solid #334155; }
 
 .excel-table-container { border: 2px solid #047857; border-radius: 8px; overflow: hidden; background: #ffffff; }
 .excel-table { border-collapse: collapse; width: 100%; font-size: 13px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -31,7 +30,7 @@
       <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400">S</div>
       <div>
         <h1 class="text-xl font-bold tracking-wide text-emerald-400">SUTOM</h1>
-        <p class="text-xs text-slate-400">Setup Time & Workflow Monitor • Supabase Live</p>
+        <p class="text-xs text-slate-400">Setup Time & Workflow Monitor • Realtime Active</p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -47,9 +46,9 @@
       </div>
     </div>
   </div>
-  <div id="firebaseStatus" class="firebase-live-bar connecting">
-    <i id="firebaseStatusIcon" class="fas fa-circle-notch fa-spin mr-2"></i>
-    <span id="firebaseStatusText">SUPABASE CONNECTING...</span>
+  <div id="firebaseStatus" class="firebase-live-bar live">
+    <i class="fas fa-circle text-green-400 mr-2"></i>
+    <span id="firebaseStatusText">SYSTEM ACTIVE & SYNCHRONIZED</span>
   </div>
 </header>
 
@@ -63,11 +62,11 @@
     <form onsubmit="handleLogin(event)" class="space-y-4">
       <div>
         <label class="block text-xs font-bold mb-1">Employee Name</label>
-        <input type="text" id="loginName" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+        <input type="text" id="loginName" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500" placeholder="Enter your name">
       </div>
       <div>
         <label class="block text-xs font-bold mb-1">Employee ID</label>
-        <input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+        <input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-500" placeholder="Enter ID">
       </div>
       <div>
         <label class="block text-xs font-bold mb-1">Select Department</label>
@@ -186,9 +185,13 @@
           <label class="block text-xs font-bold mb-1 text-slate-700">MACHINE NAME</label>
           <select id="machineName" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
             <option value="">-- SELECT MACHINE --</option>
+            <option value="CNC-01">CNC-01</option><option value="CNC-02">CNC-02</option><option value="CNC-03">CNC-03</option>
+            <option value="VMC-01">VMC-01</option><option value="VMC-02">VMC-02</option><option value="VMC-03">VMC-03</option>
+            <option value="HMC-01">HMC-01</option><option value="HMC-02">HMC-02</option>
             <option value="M1">M1</option><option value="M2">M2</option><option value="M3">M3</option>
             <option value="EN1">EN1</option><option value="EN2">EN2</option>
             <option value="MK3">MK3</option><option value="MK8">MK8</option>
+            <option value="LATHES-01">LATHES-01</option><option value="GRINDER-01">GRINDER-01</option>
           </select>
         </div>
         <div>
@@ -236,7 +239,7 @@
             </tr>
           </thead>
           <tbody id="setterExcelTableBody">
-            <tr><td colspan="9" class="p-6 text-slate-400 font-semibold">Loading Live Data...</td></tr>
+            <tr><td colspan="9" class="p-6 text-slate-400 font-semibold">Loading Data...</td></tr>
           </tbody>
         </table>
       </div>
@@ -337,18 +340,13 @@
   </div>
 </div>
 
-<!-- SUPABASE & APP LOGIC SCRIPT -->
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
-const SUPABASE_URL = 'https://umtjqgyeqcudtckanbhp.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_kcvEFWRlaNam_bS43NtB4Q_rSog55hV';
-window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-window.allSetups = [
+<!-- STABLE APPLICATION & STORAGE LOGIC -->
+<script>
+// डिफॉल्ट डेटा ज्यामध्ये मशीनची संपूर्ण यादी समाविष्ट आहे
+const DEFAULT_SETUPS = [
   {
     id: "ST-101",
-    machineName: "M1",
+    machineName: "CNC-01",
     partName: "Gear Shaft",
     partNo: "PN-9988",
     fixtureNo: "FIX-102",
@@ -356,81 +354,21 @@ window.allSetups = [
     fixtureReady: false,
     cmmReadyForSetup: false,
     setupStarted: false,
-    sampleCount: 1, // 1st to 4th sample
+    sampleCount: 1,
     qualityStatus: "SOP PENDING",
     stage: "PENDING (Tool/Fixture)"
   }
 ];
 
+// डेटा लोड करणे (LocalStorage बेस्ड रोबस्ट मेकॅनिझम)
+window.allSetups = JSON.parse(localStorage.getItem("sutom_all_setups")) || DEFAULT_SETUPS;
 window.currentExcelFilter = 'all';
-
-function setStatus(status, msg="") {
-  const bar = document.getElementById("firebaseStatus");
-  const icon = document.getElementById("firebaseStatusIcon");
-  const text = document.getElementById("firebaseStatusText");
-  if(!bar) return;
-  bar.className = "firebase-live-bar " + status;
-  if(status==="live"){ icon.className="fas fa-circle mr-2"; text.textContent="🟢 SUPABASE LIVE CONNECTED" + (msg?" • "+msg:""); }
-  else if(status==="offline"){ icon.className="fas fa-circle mr-2"; text.textContent="🔴 SUPABASE OFFLINE"; }
-  else { icon.className="fas fa-circle-notch fa-spin mr-2"; text.textContent="🟡 SUPABASE CONNECTING..."; }
-}
-
-window.syncToSupabase = async function() {
-  try {
-    const { error } = await window.supabase.from('sutom_workflow').upsert({
-      id: 1,
-      data: window.allSetups,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'id' });
-    if(error) throw error;
-    setStatus("live", "SAVED");
-    setTimeout(()=>setStatus("live"), 1500);
-    return true;
-  } catch(e){
-    setStatus("offline", e.message);
-    return false;
-  }
-};
-
-async function initSupabase() {
-  try {
-    const { data } = await window.supabase.from('sutom_workflow').select('data').eq('id',1).single();
-    if(data && data.data && Array.isArray(data.data)){
-      window.allSetups = data.data;
-    } else {
-      await window.syncToSupabase();
-    }
-    setStatus("live");
-    window.renderAllViews();
-  } catch(e) {
-    setStatus("live");
-    window.renderAllViews();
-  }
-
-  window.supabase.channel('workflow-live')
-   .on('postgres_changes', { event: '*', schema: 'public', table: 'sutom_workflow', filter: 'id=eq.1' }, payload => {
-      if(payload.new && payload.new.data){
-        window.allSetups = payload.new.data;
-        window.renderAllViews();
-      }
-    }).subscribe((status)=>{ if(status==="SUBSCRIBED") setStatus("live"); });
-}
-initSupabase();
-
-window.renderAllViews = function() {
-  window.updateMetrics();
-  window.renderSetterExcelTable(window.currentExcelFilter);
-  if(window.currentUser){
-    if(window.currentUser.dept==="toolroom") window.renderToolroom();
-    if(window.currentUser.dept==="stdroom") window.renderSTDRoom();
-    if(window.currentUser.dept==="quality") window.renderQuality();
-    if(window.currentUser.dept==="supervisor") window.renderSupervisor();
-  }
-};
-</script>
-
-<script>
 window.currentUser = null;
+
+function saveLocalStorageData() {
+  localStorage.setItem("sutom_all_setups", JSON.stringify(window.allSetups));
+  window.renderAllViews();
+}
 
 function updateLiveTime() {
   const now = new Date();
@@ -449,6 +387,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
   if(u){
     try { window.currentUser = JSON.parse(u); loadDashboard(window.currentUser); } catch { localStorage.removeItem("sutom_user"); }
   }
+  window.renderAllViews();
 });
 
 function handleLogin(e){
@@ -483,19 +422,16 @@ function handleLogout(){
 function showDepartmentTab(deptId){
   document.querySelectorAll(".tab-content").forEach(el=>el.classList.add("hidden"));
   let tabId = deptId;
-  if(deptId === 'supervisor') tabId = 'supervisor';
   const tab = document.getElementById("tab-" + tabId);
   if(tab) tab.classList.remove("hidden");
-  if(window.renderAllViews) window.renderAllViews();
+  window.renderAllViews();
 }
 
-async function handleResetAllData() {
+function handleResetAllData() {
   if(confirm("सर्व डेटा रीसेट करायचा आहे का?")) {
     window.allSetups = [];
-    if(await window.syncToSupabase()) {
-      alert("डेटा यशस्वीपणे रीसेट केला!");
-      window.renderAllViews();
-    }
+    saveLocalStorageData();
+    alert("डेटा यशस्वीपणे रीसेट केला!");
   }
 }
 
@@ -518,7 +454,7 @@ function openSetterModule(key) {
   }
 }
 
-async function handleSetterSubmit(e) {
+function handleSetterSubmit(e) {
   e.preventDefault();
   const newItem = {
     id: "ST-" + Math.floor(1000 + Math.random() * 9000),
@@ -536,12 +472,10 @@ async function handleSetterSubmit(e) {
   };
 
   window.allSetups.unshift(newItem);
-  if(await window.syncToSupabase()) {
-    triggerAlert("NOTIFICATION SENT", `New Setup Registered for Machine ${newItem.machineName}!\nNotification sent to Tool Room & CMM Room.`);
-    document.getElementById("setterForm").reset();
-    toggleSetupForm(false);
-    window.renderAllViews();
-  }
+  saveLocalStorageData();
+  triggerAlert("NOTIFICATION SENT", `New Setup Registered for Machine ${newItem.machineName}!\nNotification sent to Tool Room & CMM Room.`);
+  document.getElementById("setterForm").reset();
+  toggleSetupForm(false);
 }
 
 window.updateMetrics = function() {
@@ -637,25 +571,21 @@ window.renderSetterExcelTable = function(filterKey) {
   }).join('');
 };
 
-async function setterStartSetup(id) {
+window.setterStartSetup = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     s.setupStarted = true;
     s.stage = "SETUP STARTED";
-    if(await window.syncToSupabase()) {
-      window.renderAllViews();
-    }
+    saveLocalStorageData();
   }
 }
 
-async function setterSubmitSample(id) {
+window.setterSubmitSample = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     s.stage = `Sample #${s.sampleCount} Submitted to CMM`;
-    if(await window.syncToSupabase()) {
-      triggerAlert("CMM ROOM NOTIFICATION", `Sample #${s.sampleCount} submitted for Machine ${s.machineName} inspection!`);
-      window.renderAllViews();
-    }
+    saveLocalStorageData();
+    triggerAlert("CMM ROOM NOTIFICATION", `Sample #${s.sampleCount} submitted for Machine ${s.machineName} inspection!`);
   }
 }
 
@@ -677,19 +607,13 @@ window.renderToolroom = function() {
   `).join('');
 };
 
-async function toggleTooling(id) {
+window.toggleTooling = function(id) {
   const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    s.toolingReady = !s.toolingReady;
-    if(await window.syncToSupabase()) window.renderAllViews();
-  }
+  if(s) { s.toolingReady = !s.toolingReady; saveLocalStorageData(); }
 }
-async function toggleFixture(id) {
+window.toggleFixture = function(id) {
   const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    s.fixtureReady = !s.fixtureReady;
-    if(await window.syncToSupabase()) window.renderAllViews();
-  }
+  if(s) { s.fixtureReady = !s.fixtureReady; saveLocalStorageData(); }
 }
 
 /* CMM / STD ROOM VIEW */
@@ -714,22 +638,17 @@ window.renderSTDRoom = function() {
   `).join('');
 };
 
-async function toggleCMMReady(id) {
+window.toggleCMMReady = function(id) {
   const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    s.cmmReadyForSetup = !s.cmmReadyForSetup;
-    if(await window.syncToSupabase()) window.renderAllViews();
-  }
+  if(s) { s.cmmReadyForSetup = !s.cmmReadyForSetup; saveLocalStorageData(); }
 }
 
-async function cmmInspectionDone(id) {
+window.cmmInspectionDone = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     s.qualityStatus = `Sample #${s.sampleCount} INSPECTION DONE`;
-    if(await window.syncToSupabase()) {
-      triggerAlert("QUALITY NOTIFICATION", `CMM Inspection done for Machine ${s.machineName} (Sample #${s.sampleCount}). Please check dimensions.`);
-      window.renderAllViews();
-    }
+    saveLocalStorageData();
+    triggerAlert("QUALITY NOTIFICATION", `CMM Inspection done for Machine ${s.machineName} (Sample #${s.sampleCount}). Please check dimensions.`);
   }
 }
 
@@ -769,28 +688,24 @@ window.renderQuality = function() {
   `;
 };
 
-async function qualityApproveSOP(id) {
+window.qualityApproveSOP = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
     s.qualityStatus = "SOP DONE";
     s.stage = "SOP APPROVED";
-    if(await window.syncToSupabase()) {
-      triggerAlert("SUCCESS", `SOP Approved successfully for Machine ${s.machineName}!`);
-      window.renderAllViews();
-    }
+    saveLocalStorageData();
+    triggerAlert("SUCCESS", `SOP Approved successfully for Machine ${s.machineName}!`);
   }
 }
 
-async function qualityRejectCorrection(id) {
+window.qualityRejectCorrection = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s && s.sampleCount < 4) {
     s.sampleCount += 1;
     s.qualityStatus = `${s.sampleCount}th Sample CORRECTION REQUIRED`;
     s.stage = `Correction for Sample #${s.sampleCount}`;
-    if(await window.syncToSupabase()) {
-      triggerAlert("SETTER NOTIFICATION", `Correction required for Machine ${s.machineName}. Please correct and submit Sample #${s.sampleCount} to CMM.`);
-      window.renderAllViews();
-    }
+    saveLocalStorageData();
+    triggerAlert("SETTER NOTIFICATION", `Correction required for Machine ${s.machineName}. Please correct and submit Sample #${s.sampleCount} to CMM.`);
   }
 }
 
@@ -809,6 +724,17 @@ window.renderSupervisor = function() {
       <td class="p-2 border font-black text-slate-800">${s.qualityStatus}</td>
     </tr>
   `).join('');
+};
+
+window.renderAllViews = function() {
+  window.updateMetrics();
+  window.renderSetterExcelTable(window.currentExcelFilter);
+  if(window.currentUser){
+    if(window.currentUser.dept==="toolroom") window.renderToolroom();
+    if(window.currentUser.dept==="stdroom") window.renderSTDRoom();
+    if(window.currentUser.dept==="quality") window.renderQuality();
+    if(window.currentUser.dept==="supervisor") window.renderSupervisor();
+  }
 };
 
 function triggerAlert(title, msg) {

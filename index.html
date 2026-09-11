@@ -10,189 +10,668 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
 @keyframes pulse-red { 0%,100% { background:#fee2e2; border-color:#ef4444; } 50% { background:#fca5a5; border-color:#dc2626; } }
-.alert-active { animation:pulse-red.8s infinite; }
-.firebase-live-bar { min-height: 34px; display:flex; align-items:center; justify-content:center; width:100%; font-size:13px; font-weight:800; }
-.firebase-live-bar.live { background:#052e16; color:#4ade80; border-top:1px solid #166534; border-bottom:1px solid #166534; }
-.firebase-live-bar.offline { background:#450a0a; color:#f87171; }
-.firebase-live-bar.connecting { background:#451a03; color:#facc15; }
+.alert-active { animation:pulse-red .8s infinite; }
+
+/* Excel Sheet Style UI */
+.excel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1px;
+  background-color: #cbd5e1;
+  border: 1px solid #94a3b8;
+}
+.excel-cell-header {
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.excel-cell {
+  background-color: #ffffff;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+.excel-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.excel-table th {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #475569;
+  padding: 8px;
+  font-size: 12px;
+  text-align: left;
+}
+.excel-table td {
+  border: 1px solid #cbd5e1;
+  padding: 8px;
+  font-size: 12px;
+  background-color: #ffffff;
+}
+.excel-table tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
 </style>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen">
 <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
   <div class="p-3 px-4 md:px-6 flex flex-wrap justify-between items-center gap-2">
-    <div class="flex items-center space-x-3"><img src="icon-192.png" alt="SUTOM Logo" class="w-10 h-10 rounded-lg border border-slate-700"><div><h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1><p class="text-xs text-slate-400">Supabase Live System</p></div></div>
-    <div class="flex flex-wrap items-center gap-2 text-xs"><div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700"><i class="fas fa-calendar-alt text-blue-400 mr-1"></i><span id="topLiveShift">Shift: A</span></div><div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700"><i class="fas fa-clock text-green-400 mr-1"></i><span id="topLiveTime">00:00:00</span></div><div id="userInfo" class="hidden items-center space-x-2"><span id="userBadge" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span><button onclick="handleLogout()" class="bg-red-600 text-white px-3 py-1.5 rounded font-bold">Logout</button></div></div>
+    <div class="flex items-center space-x-3">
+      <img src="icon-192.png" alt="SUTOM Logo" class="w-10 h-10 rounded-lg border border-slate-700">
+      <div>
+        <h1 class="text-xl font-bold tracking-wide text-blue-400">SUTOM</h1>
+        <p class="text-xs text-slate-400">Setup Time Monitor System</p>
+      </div>
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-2 text-xs">
+      <!-- SUPABASE CONNECTION STATUS BUTTON -->
+      <button id="connectionStatusBtn" onclick="checkConnectionManual()" class="px-3 py-1.5 rounded font-bold flex items-center gap-1.5 transition-all shadow bg-amber-600 text-white">
+        <i id="connectionIcon" class="fas fa-circle-notch fa-spin"></i>
+        <span id="connectionText">CONNECTING...</span>
+      </button>
+
+      <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
+        <i class="fas fa-calendar-alt text-blue-400 mr-1"></i><span id="topLiveShift">Shift: A</span>
+      </div>
+      <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
+        <i class="fas fa-clock text-green-400 mr-1"></i><span id="topLiveTime">00:00:00</span>
+      </div>
+      <div id="userInfo" class="hidden items-center space-x-2">
+        <span id="userBadge" class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span>
+        <button onclick="handleLogout()" class="bg-red-600 text-white px-3 py-1.5 rounded font-bold">Logout</button>
+      </div>
+    </div>
   </div>
-  <div id="firebaseStatus" class="firebase-live-bar connecting"><i id="firebaseStatusIcon" class="fas fa-circle-notch fa-spin mr-2"></i><span id="firebaseStatusText">SUPABASE CONNECTING...</span></div>
 </header>
 
+<!-- LOGIN SECTION -->
 <div id="authSection" class="flex justify-center items-center py-10 px-4">
   <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
-    <div class="flex flex-col items-center mb-4"><img src="icon-192.png" class="w-16 h-16 rounded-xl shadow mb-2"><h2 class="text-2xl font-bold text-slate-800">Department Login</h2></div>
+    <div class="flex flex-col items-center mb-4">
+      <img src="icon-192.png" class="w-16 h-16 rounded-xl shadow mb-2">
+      <h2 class="text-2xl font-bold text-slate-800">Department Login</h2>
+    </div>
     <form onsubmit="handleLogin(event)" class="space-y-4">
       <div><label class="block text-xs font-bold mb-1">Employee Name</label><input type="text" id="loginName" required class="w-full p-2.5 border rounded-lg text-sm"></div>
       <div><label class="block text-xs font-bold mb-1">Employee ID</label><input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm"></div>
       <div><label class="block text-xs font-bold mb-1">Password</label><input type="password" id="loginPass" required class="w-full p-2.5 border rounded-lg text-sm"></div>
-      <div><label class="block text-xs font-bold mb-1">Select Department</label><select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm bg-white"><option value="">-- Choose --</option><option value="setter">1. SETTER</option><option value="toolroom">2. TOOL ROOM</option><option value="stdroom">3. CMM / STD ROOM</option><option value="quality">4. QUALITY</option><option value="supervisor">5. SUPERVISOR</option><option value="hod">6. HOD VIEW</option></select></div>
+      <div>
+        <label class="block text-xs font-bold mb-1">Select Department</label>
+        <select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm bg-white">
+          <option value="">-- Choose --</option>
+          <option value="setter">1. SETTER</option>
+          <option value="toolroom">2. TOOL ROOM</option>
+          <option value="stdroom">3. CMM / STD ROOM</option>
+          <option value="quality">4. QUALITY</option>
+          <option value="supervisor">5. SUPERVISOR</option>
+          <option value="hod">6. HOD VIEW</option>
+        </select>
+      </div>
       <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg">Access Dashboard</button>
     </form>
   </div>
 </div>
 
-<div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]"><main class="flex-1 p-4 md:p-6 overflow-y-auto">
-<div id="tab-setter" class="tab-content space-y-6 hidden">
-  <div class="bg-white p-4 rounded-xl shadow border"><h2 class="text-lg font-bold border-b pb-2 mb-4"><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-      <div onclick="openSetupForm()" class="bg-blue-50 p-3 rounded-xl border cursor-pointer"><p class="text-[11px] font-bold">Register New Setup</p><p id="metric-total" class="text-xl font-bold text-blue-700">1</p></div>
-      <div class="bg-green-50 p-3 rounded-xl border"><p class="text-[11px] font-bold">Tool Room Ready</p><p id="metric-tool-ready" class="text-xl font-bold text-green-700">0</p></div>
-      <div class="bg-yellow-50 p-3 rounded-xl border"><p class="text-[11px] font-bold">Pending Setup</p><p id="metric-pending" class="text-xl font-bold text-yellow-700">1</p></div>
-      <div class="bg-red-50 p-3 rounded-xl border"><p class="text-[11px] font-bold">Tooling Not Ready</p><p id="metric-tool-notready" class="text-xl font-bold text-red-700">1</p></div>
-      <div class="bg-emerald-50 p-3 rounded-xl border"><p class="text-[11px] font-bold">SOP Approve</p><p id="metric-sop-approve" class="text-sm font-bold mt-1">Pending</p></div>
-      <div onclick="openSetterCorrectionModal()" class="bg-orange-50 p-3 rounded-xl border cursor-pointer"><p class="text-[11px] font-bold">Correction Required</p><p id="metric-correction-req" class="text-xs font-bold mt-1">None</p></div>
-      <div class="bg-purple-50 p-3 rounded-xl border"><p class="text-[11px] font-bold">Fixture Serial No.</p><p id="metric-fixture-no" class="text-xs font-bold mt-1">FIX-102</p></div>
-      <div class="bg-teal-50 p-3 rounded-xl border"><p class="text-[11px] font-bold">Available Fixtures</p><p class="text-xl font-bold">5</p></div>
+<!-- DASHBOARD MAIN -->
+<div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]">
+  <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+
+    <!-- SETTER TAB -->
+    <div id="tab-setter" class="tab-content space-y-6 hidden">
+      <div class="bg-white p-4 rounded-xl shadow border">
+        <h2 class="text-lg font-bold border-b pb-2 mb-4 flex justify-between items-center">
+          <span><i class="fas fa-tools text-blue-600 mr-2"></i> Setter Control Center</span>
+          <span class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded">Multiple Setup Enabled</span>
+        </h2>
+        
+        <!-- Excel Grid Summary Layout -->
+        <div class="excel-grid rounded border overflow-hidden mb-4">
+          <div><div class="excel-cell-header">Total Setups</div><div id="metric-total" class="excel-cell text-lg font-bold text-blue-600">0</div></div>
+          <div><div class="excel-cell-header">Tooling Ready</div><div id="metric-tool-ready" class="excel-cell text-lg font-bold text-green-600">0</div></div>
+          <div><div class="excel-cell-header">Pending Setups</div><div id="metric-pending" class="excel-cell text-lg font-bold text-yellow-600">0</div></div>
+          <div><div class="excel-cell-header">Tooling Not Ready</div><div id="metric-tool-notready" class="excel-cell text-lg font-bold text-red-600">0</div></div>
+        </div>
+      </div>
+
+      <!-- Multiple Setup Registration Form -->
+      <div id="setupFormContainer" class="bg-white p-6 rounded-xl shadow border">
+        <h3 class="text-md font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup</h3>
+        <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div><label class="block text-xs font-semibold mb-1">Part Name</label><input type="text" id="partName" required class="w-full p-2 border rounded text-sm"></div>
+          <div><label class="block text-xs font-semibold mb-1">Part Number</label><input type="text" id="partNo" required class="w-full p-2 border rounded text-sm"></div>
+          <div><label class="block text-xs font-semibold mb-1">Date & Shift</label><input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm"></div>
+          <div><label class="block text-xs font-semibold mb-1">Setup Type</label><select id="setupType" class="w-full p-2 border rounded text-sm"><option>Long Setup</option><option>Short Setup</option></select></div>
+          <div><label class="block text-xs font-semibold mb-1">Fixture No.</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded text-sm"></div>
+          <div><label class="block text-xs font-semibold mb-1">Priority</label><input type="number" id="priority" min="1" max="10" value="1" required class="w-full p-2 border rounded text-sm"></div>
+          <div><label class="block text-xs font-semibold mb-1">Pallet</label><select id="pallet" class="w-full p-2 border rounded text-sm"><option>Pallet A</option><option>Pallet B</option></select></div>
+          <div class="flex items-end"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition">Add Setup</button></div>
+        </form>
+      </div>
+
+      <!-- Excel View Table for Active Setups with Sample Cutting Stages -->
+      <div class="bg-white p-6 rounded-xl shadow border">
+        <h3 class="text-md font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-table text-green-600 mr-2"></i> Active Setups Layout (Excel View)</h3>
+        <div class="overflow-x-auto">
+          <table class="excel-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Part Details</th>
+                <th>Pallet / Fixture</th>
+                <th>Priority</th>
+                <th>Tooling / Setup</th>
+                <th>Sample Cutting Action (1st to 4th Stage)</th>
+                <th>Quality Status</th>
+              </tr>
+            </thead>
+            <tbody id="setterExcelTable">
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-  <div id="setupFormContainer" class="bg-white p-6 rounded-xl shadow border"><h3 class="text-md font-bold mb-4 border-b pb-2"><i class="fas fa-plus-circle text-blue-600 mr-2"></i> Register New Setup</h3>
-    <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div><label class="block text-xs font-semibold mb-1">Part Name</label><input type="text" id="partName" required class="w-full p-2 border rounded text-sm"></div>
-      <div><label class="block text-xs font-semibold mb-1">Part Number</label><input type="text" id="partNo" required class="w-full p-2 border rounded text-sm"></div>
-      <div><label class="block text-xs font-semibold mb-1">Date & Shift</label><input type="text" id="shiftDate" readonly class="w-full p-2 bg-slate-100 border rounded text-sm"></div>
-      <div><label class="block text-xs font-semibold mb-1">Setup Type</label><select id="setupType" class="w-full p-2 border rounded text-sm"><option>Long Setup</option><option>Short Setup</option></select></div>
-      <div><label class="block text-xs font-semibold mb-1">Fixture No.</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded text-sm"></div>
-      <div><label class="block text-xs font-semibold mb-1">Priority</label><input type="number" id="priority" min="1" max="10" value="1" required class="w-full p-2 border rounded text-sm"></div>
-      <div><label class="block text-xs font-semibold mb-1">Pallet</label><select id="pallet" class="w-full p-2 border rounded text-sm"><option>Pallet A</option><option>Pallet B</option></select></div>
-      <div class="flex items-end"><button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded">Submit & Notify</button></div>
-    </form>
-  </div>
-  <div class="bg-indigo-50 border p-4 rounded-xl flex justify-between items-center"><div><h3 class="font-bold">1st Sample Cutting Completed?</h3><p class="text-xs">Trigger to STD Room.</p></div><button onclick="sendSampleCuttingAlert()" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm">Send to STD Room</button></div>
+
+    <!-- TOOL ROOM TAB -->
+    <div id="tab-toolroom" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl shadow border">
+        <h2 class="text-lg font-bold mb-4 border-b pb-2">Tool Room Dashboard (Excel Sheet View)</h2>
+        <div class="overflow-x-auto">
+          <table class="excel-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Part Details</th>
+                <th>Fixture No.</th>
+                <th>Priority</th>
+                <th>Tooling</th>
+                <th>Fixture</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="toolroomTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- STD ROOM TAB (Sample Cutting Verification) -->
+    <div id="tab-stdroom" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl shadow border">
+        <h2 class="text-lg font-bold mb-4 border-b pb-2">CMM / STD Room (Sample Inspection)</h2>
+        <div class="overflow-x-auto">
+          <table class="excel-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Part Details</th>
+                <th>Current Sample Stage</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="stdroomTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUALITY TAB -->
+    <div id="tab-quality" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl shadow border">
+        <h2 class="text-lg font-bold mb-4 border-b pb-2">Quality Dashboard</h2>
+        <div class="overflow-x-auto">
+          <table class="excel-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Part Info</th>
+                <th>Sample Stage</th>
+                <th>Quality Decision</th>
+                <th>Correction Requirement</th>
+              </tr>
+            </thead>
+            <tbody id="qualityTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPERVISOR TAB -->
+    <div id="tab-supervisor" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl shadow border">
+        <h2 class="text-lg font-bold border-b pb-2">Supervisor Dashboard</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+          <h3 class="font-bold text-green-800">SOP Approved</h3>
+          <p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p>
+        </div>
+        <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+          <h3 class="font-bold text-yellow-800">Pending Setups</h3>
+          <p id="supPendingCount" class="text-4xl font-extrabold text-yellow-600 mt-2">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOD TAB -->
+    <div id="tab-hod" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl shadow border">
+        <h2 class="text-lg font-bold mb-4 border-b pb-2">HOD Live View (Excel Grid Layout)</h2>
+        <div class="overflow-x-auto">
+          <table class="excel-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Part Info</th>
+                <th>Pallet</th>
+                <th>Tooling</th>
+                <th>Fixture</th>
+                <th>Cutting Stage</th>
+                <th>Quality Status</th>
+              </tr>
+            </thead>
+            <tbody id="hodTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
 
-<div id="tab-toolroom" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2">Tool Room Dashboard</h2><div class="bg-slate-50 p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="block text-xs font-bold mb-1">Fixture Available?</label><select id="toolroomFixtureAvail" class="w-full p-2 border rounded text-sm bg-white font-semibold"><option>YES</option><option>NO</option></select></div><div><label class="block text-xs font-bold mb-1">Fixture No.</label><input type="text" id="toolroomFixtureNo" value="FIX-102" class="w-full p-2 border rounded text-sm"></div><div class="flex items-end"><button onclick="updateToolroomFixture()" class="bg-blue-600 text-white text-xs px-4 py-2.5 rounded font-bold">Update</button></div></div><div class="overflow-x-auto"><table class="w-full text-sm text-left border"><thead class="bg-slate-100 border-b"><tr><th class="p-3">Part Details</th><th class="p-3">Fixture No.</th><th class="p-3">Priority</th><th class="p-3">Tooling</th><th class="p-3">Fixture</th><th class="p-3">Action</th></tr></thead><tbody id="toolroomTable"></tbody></table></div></div></div>
-<div id="tab-stdroom" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2">CMM / STD Room</h2><div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center"><div><span id="stdStatusBadge" class="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold">Inspection Pending</span><h3 class="font-bold mt-2" id="stdSampleText">Sample Pending</h3></div><button onclick="sendQualityAlert()" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Inspection Done</button></div></div></div>
-<div id="tab-quality" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2">Quality Dashboard</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border"><div class="space-y-3 border-r pr-6"><button onclick="handleQualityAction('SOP APPROVED','None')" class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-bold">SOP APPROVE</button></div><div class="space-y-3"><select id="sampleCorrectionSelect" class="w-full p-2.5 border rounded-lg text-sm bg-white"><option>1st Sample Correction Require</option><option>2nd Sample Correction Require</option><option>3rd Sample Correction Require</option><option>4th Sample Correction Require</option></select><button onclick="submitQualityCorrection()" class="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-bold">SEND CORRECTION ALERT</button></div></div></div></div>
-<div id="tab-supervisor" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold border-b pb-2">Supervisor Dashboard</h2></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-green-50 p-6 rounded-xl border"><h3 class="font-bold">SOP Approved</h3><p id="supApprovedCount" class="text-4xl font-extrabold text-green-600 mt-2">0</p></div><div class="bg-yellow-50 p-6 rounded-xl border"><h3 class="font-bold">Pending SOP</h3><p id="supPendingCount" class="text-4xl font-extrabold text-yellow-600 mt-2">1</p></div></div></div>
-<div id="tab-hod" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-xl shadow border"><h2 class="text-lg font-bold mb-4 border-b pb-2">HOD Live View</h2><div class="overflow-x-auto"><table class="w-full text-xs text-left border"><thead class="bg-slate-200"><tr><th class="p-3">Part Info</th><th class="p-3">Pallet</th><th class="p-3">Tooling</th><th class="p-3">Fixture</th><th class="p-3">Setup</th><th class="p-3">Quality</th></tr></thead><tbody id="hodTable"></tbody></table></div></div></div>
-</main></div>
-
-<div id="setterCorrectionModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4"><div class="bg-white rounded-xl max-w-md w-full p-6 border text-center"><h3 class="font-bold">Correction Required Status</h3><p id="setterCorrectionText" class="text-sm font-semibold text-red-600 bg-red-50 p-3 rounded my-3">None</p><div id="correctionActionArea" class="hidden"><button onclick="handleCorrectionDone()" class="bg-green-600 text-white font-bold px-6 py-2.5 rounded-lg text-sm w-full">CORRECTION DONE</button></div><button onclick="closeSetterCorrectionModal()" class="mt-3 text-xs underline">Close</button></div></div>
-<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4"><div class="bg-white rounded-xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active"><h3 id="alertTitle" class="text-xl font-extrabold text-red-600">NEW ALERT!</h3><p id="alertMessage" class="text-sm my-4 font-semibold">Alert</p><button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg">OK</button></div></div>
+<!-- ALERT MODAL -->
+<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+  <div class="bg-white rounded-xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active">
+    <h3 id="alertTitle" class="text-xl font-extrabold text-red-600">NEW ALERT!</h3>
+    <p id="alertMessage" class="text-sm my-4 font-semibold text-slate-800">Alert Message</p>
+    <button onclick="acknowledgeAlert()" class="bg-red-600 text-white font-bold px-8 py-3 rounded-lg shadow">OK</button>
+  </div>
+</div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-// SUPABASE CONFIG
+// SUPABASE CONFIGURATION
 const SUPABASE_URL = 'https://umtjqgyeqcudtckanbhp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kcvEFWRlaNam_bS43NtB4Q_rSog55hV';
 window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-window.activeSetup = {
-  id: 1, partName: "Gear Shaft", partNo: "PN-9988", shiftDate: "", setupType: "Long Setup",
-  fixtureNo: "FIX-102", fixtureAvailable: "YES", priority: 1, pallet: "Pallet A",
-  toolingReady: false, fixtureReady: false, setupReady: false,
-  sampleCutting: false, inspectionDone: false,
-  qualityStatus: "Pending SOP", correctionRequirement: "None", updatedAt: Date.now()
+// Multiple Setup Array Management
+window.setupsList = [];
+
+// CONNECTION STATUS FUNCTION
+window.updateConnectionUI = function(isOnline, message="") {
+  const btn = document.getElementById("connectionStatusBtn");
+  const icon = document.getElementById("connectionIcon");
+  const text = document.getElementById("connectionText");
+
+  if(isOnline) {
+    btn.className = "px-3 py-1.5 rounded font-bold flex items-center gap-1.5 transition-all shadow bg-emerald-600 text-white hover:bg-emerald-700";
+    icon.className = "fas fa-wifi";
+    text.textContent = "ONLINE" + (message ? " ("+message+")" : "");
+  } else {
+    btn.className = "px-3 py-1.5 rounded font-bold flex items-center gap-1.5 transition-all shadow bg-rose-600 text-white hover:bg-rose-700";
+    icon.className = "fas fa-exclamation-triangle";
+    text.textContent = "OFFLINE";
+  }
 };
 
-function setStatus(status, msg="") {
-  const bar = document.getElementById("firebaseStatus");
-  const icon = document.getElementById("firebaseStatusIcon");
-  const text = document.getElementById("firebaseStatusText");
-  bar.className = "firebase-live-bar " + status;
-  if(status==="live"){ icon.className="fas fa-circle mr-2"; text.textContent="🟢 SUPABASE LIVE" + (msg?" • "+msg:""); }
-  else if(status==="offline"){ icon.className="fas fa-circle mr-2"; text.textContent="🔴 SUPABASE OFFLINE"; }
-  else { icon.className="fas fa-circle-notch fa-spin mr-2"; text.textContent="🟡 SUPABASE CONNECTING..."; }
-}
-setStatus("connecting");
-
-// SYNC FUNCTION - ONLY SUPABASE
-window.syncToFirebase = window.syncToSupabase = async function() {
+window.checkConnectionManual = async function() {
   try {
-    window.activeSetup.updatedAt = Date.now();
-    const { error } = await window.supabase.from('sutom_setups').upsert({
-      id: 1, data: window.activeSetup, part_name: window.activeSetup.partName,
-      part_no: window.activeSetup.partNo, updated_at: new Date().toISOString()
-    }, { onConflict: 'id' });
+    const { data, error } = await window.supabase.from('sutom_setups').select('id').limit(1);
     if(error) throw error;
-    console.log("✅ SUPABASE WRITE SUCCESS");
-    setStatus("live", "DATA SAVED");
-    setTimeout(()=>setStatus("live"), 1500);
-    return true;
-  } catch(e){ console.error(e); setStatus("offline", e.message); alert("Supabase Error: "+e.message); return false; }
+    window.updateConnectionUI(true, "Checked");
+  } catch(e) {
+    window.updateConnectionUI(false);
+  }
 };
 
-// INITIAL LOAD + LIVE REALTIME SUBSCRIPTION
+// SYNC DATA TO SUPABASE
+window.syncToSupabase = async function() {
+  try {
+    const payload = { id: 100, data_list: window.setupsList, updated_at: new Date().toISOString() };
+    const { error } = await window.supabase.from('sutom_setups').upsert(payload, { onConflict: 'id' });
+    if(error) throw error;
+    window.updateConnectionUI(true);
+    return true;
+  } catch(e) {
+    console.error("Supabase Sync Error:", e);
+    window.updateConnectionUI(false);
+    return false;
+  }
+};
+
+// FETCH DATA & SUBSCRIBE TO REALTIME
 async function initSupabase() {
-  const { data } = await window.supabase.from('sutom_setups').select('data').eq('id',1).single();
-  if(data && data.data){ window.activeSetup = data.data; }
-  else { await window.syncToSupabase(); }
-  setStatus("live");
+  try {
+    const { data, error } = await window.supabase.from('sutom_setups').select('data_list').eq('id', 100).single();
+    if(data && data.data_list) {
+      window.setupsList = data.data_list;
+    } else {
+      window.setupsList = [];
+    }
+    window.updateConnectionUI(true);
+  } catch(e) {
+    console.warn("Initial load offline or empty", e);
+    window.updateConnectionUI(false);
+  }
+  
   window.renderAllViews();
 
-  // LIVE ALERT SUBSCRIPTION - This is the main LIVE feature
-  window.supabase.channel('sutom-live-channel')
-   .on('postgres_changes', { event: '*', schema: 'public', table: 'sutom_setups', filter: 'id=eq.1' }, payload => {
-      console.log("🔴 LIVE UPDATE FROM SUPABASE", payload);
-      if(payload.new && payload.new.data){
-        window.activeSetup = payload.new.data;
+  // REALTIME SUBSCRIPTION
+  window.supabase.channel('sutom-excel-channel')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'sutom_setups', filter: 'id=eq.100' }, payload => {
+      if(payload.new && payload.new.data_list) {
+        window.setupsList = payload.new.data_list;
         window.renderAllViews();
-        // Optional auto-alert when other user updates
-        // triggerAlert("LIVE UPDATE", `Data updated: ${window.activeSetup.partName}`);
+        window.updateConnectionUI(true);
       }
-    }).subscribe((status)=>{ console.log("Realtime status:", status); if(status==="SUBSCRIBED") setStatus("live"); });
+    }).subscribe((status) => {
+      if(status === "SUBSCRIBED") window.updateConnectionUI(true);
+      else if(status === "CLOSED" || status === "CHANNEL_ERROR") window.updateConnectionUI(false);
+    });
 }
+
 initSupabase();
 
+// RENDER ALL VIEWS (Excel Layout)
 window.renderAllViews = function() {
-  const s = window.activeSetup || {};
-  const el = (id, val)=>{ const e=document.getElementById(id); if(e) e.textContent=val; };
-  el("metric-fixture-no", s.fixtureNo||"-");
-  el("stdSampleText", `Sample: ${s.partName||"-"} (${s.partNo||"-"})`);
-  el("metric-sop-approve", s.qualityStatus==="SOP APPROVED"?"APPROVED":"Pending");
-  el("metric-correction-req", s.correctionRequirement||"None");
-  el("metric-tool-ready", s.toolingReady?"1":"0");
-  el("metric-tool-notready", s.toolingReady?"0":"1");
-  el("metric-pending", s.setupReady?"0":"1");
-  el("metric-total", "1");
-  const badge=document.getElementById("stdStatusBadge");
-  if(badge){ if(s.sampleCutting){ badge.className="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-bold"; badge.textContent="Sample Received"; } else { badge.className="bg-yellow-100 text-yellow-800 text-xs px-2.5 py-1 rounded font-bold"; badge.textContent="Inspection Pending"; } }
-  if(window.currentUser){
-    if(window.currentUser.dept==="toolroom") window.renderToolroom();
-    if(window.currentUser.dept==="hod") window.renderHOD();
-    if(window.currentUser.dept==="supervisor") window.renderSupervisor();
+  const list = window.setupsList || [];
+
+  // Metrics
+  document.getElementById("metric-total").textContent = list.length;
+  document.getElementById("metric-tool-ready").textContent = list.filter(s => s.toolingReady).length;
+  document.getElementById("metric-pending").textContent = list.filter(s => !s.setupReady).length;
+  document.getElementById("metric-tool-notready").textContent = list.filter(s => !s.toolingReady).length;
+
+  // 1. SETTER EXCEL TABLE
+  const setterBody = document.getElementById("setterExcelTable");
+  if(setterBody) {
+    setterBody.innerHTML = list.length === 0 ? `<tr><td colspan="7" class="text-center p-4 text-slate-400">No Setups Registered Yet</td></tr>` :
+    list.map(s => `
+      <tr>
+        <td class="font-bold text-slate-600">#${s.id}</td>
+        <td><strong>${s.partName}</strong><br><span class="text-xs text-slate-500">${s.partNo}</span></td>
+        <td>${s.pallet} / ${s.fixtureNo}</td>
+        <td><span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded text-xs">P-${s.priority}</span></td>
+        <td>
+          Tooling: <span class="${s.toolingReady?'text-green-600 font-bold':'text-red-500'}">${s.toolingReady?'READY':'PENDING'}</span><br>
+          Setup: <span class="${s.setupReady?'text-green-600 font-bold':'text-yellow-600'}">${s.setupReady?'READY':'IN PROGRESS'}</span>
+        </td>
+        <td>
+          <div class="flex flex-wrap gap-1">
+            <button onclick="updateCuttingStage(${s.id}, '1st Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='1st Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">1st Cut</button>
+            <button onclick="updateCuttingStage(${s.id}, '2nd Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='2nd Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">2nd Cut</button>
+            <button onclick="updateCuttingStage(${s.id}, '3rd Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='3rd Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">3rd Cut</button>
+            <button onclick="updateCuttingStage(${s.id}, '4th Sample')" class="px-2 py-1 text-xs ${s.cuttingStage==='4th Sample'?'bg-blue-600 text-white':'bg-slate-200 text-slate-800'} rounded font-semibold">4th Cut</button>
+          </div>
+          <div class="text-[11px] mt-1 text-slate-500">Active: <strong>${s.cuttingStage || 'None'}</strong></div>
+        </td>
+        <td><span class="font-bold ${s.qualityStatus==='SOP APPROVED'?'text-green-600':'text-amber-600'}">${s.qualityStatus}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  if(window.currentUser) {
+    if(window.currentUser.dept === "toolroom") window.renderToolroom();
+    if(window.currentUser.dept === "stdroom") window.renderStdRoom();
+    if(window.currentUser.dept === "quality") window.renderQuality();
+    if(window.currentUser.dept === "supervisor") window.renderSupervisor();
+    if(window.currentUser.dept === "hod") window.renderHOD();
   }
 };
 </script>
 
 <script>
-window.currentUser=null; let vibrateInterval=null;
-function updateLiveTime(){ const now=new Date(); const t=document.getElementById("topLiveTime"), sh=document.getElementById("topLiveShift"), d=document.getElementById("shiftDate"); if(t) t.textContent=now.toLocaleTimeString(); const m=now.getHours()*60+now.getMinutes(); let sn="Shift C"; if(m>=465&&m<975) sn="Shift A"; else if(m>=975&&m<1440) sn="Shift B"; if(sh) sh.textContent="Shift: "+sn; if(d) d.value=now.toLocaleDateString()+" - "+sn; }
-setInterval(updateLiveTime,1000); updateLiveTime();
-window.addEventListener("DOMContentLoaded",()=>{ const u=localStorage.getItem("sutom_user"); if(u){ try{ window.currentUser=JSON.parse(u); loadDashboard(window.currentUser); }catch{ localStorage.removeItem("sutom_user"); } } });
-function handleLogin(e){ e.preventDefault(); window.currentUser={ name:document.getElementById("loginName").value.trim(), id:document.getElementById("loginId").value.trim(), dept:document.getElementById("loginDept").value }; localStorage.setItem("sutom_user", JSON.stringify(window.currentUser)); loadDashboard(window.currentUser); }
-function loadDashboard(user){ document.getElementById("authSection").classList.add("hidden"); document.getElementById("dashboardSection").classList.remove("hidden"); document.getElementById("dashboardSection").classList.add("flex"); document.getElementById("userInfo").classList.remove("hidden"); document.getElementById("userInfo").classList.add("flex"); document.getElementById("userBadge").textContent=`${user.name} (${user.dept.toUpperCase()})`; showDepartmentTab(user.dept); }
-function handleLogout(){ localStorage.removeItem("sutom_user"); window.currentUser=null; document.getElementById("authSection").classList.remove("hidden"); document.getElementById("dashboardSection").classList.add("hidden"); document.getElementById("userInfo").classList.add("hidden"); }
-function showDepartmentTab(deptId){ document.querySelectorAll(".tab-content").forEach(el=>el.classList.add("hidden")); const tab=document.getElementById("tab-"+deptId); if(tab) tab.classList.remove("hidden"); if(deptId==="toolroom") renderToolroom(); if(deptId==="hod") renderHOD(); if(deptId==="supervisor") renderSupervisor(); }
-function openSetupForm(){ document.getElementById("setupFormContainer").scrollIntoView({behavior:"smooth"}); }
-async function handleSetterSubmit(e){ e.preventDefault(); const s=window.activeSetup; s.partName=document.getElementById("partName").value.trim(); s.partNo=document.getElementById("partNo").value.trim(); s.setupType=document.getElementById("setupType").value; s.fixtureNo=document.getElementById("fixtureNo").value.trim(); s.priority=Number(document.getElementById("priority").value); s.pallet=document.getElementById("pallet").value; s.shiftDate=document.getElementById("shiftDate").value; s.toolingReady=false; s.fixtureReady=false; s.setupReady=false; s.sampleCutting=false; s.inspectionDone=false; s.qualityStatus="Pending SOP"; s.correctionRequirement="None"; if(await window.syncToSupabase()) triggerAlert("TOOL ROOM ALERT", `New Setup: ${s.partName} Priority ${s.priority}`); }
-function showExcelView(t){ alert("Excel View: "+t+" - Data: "+window.activeSetup.partName); }
-function closeExcelModal(){}
-function openSetterCorrectionModal(){ const s=window.activeSetup; document.getElementById("setterCorrectionText").textContent=s.correctionRequirement||"None"; const a=document.getElementById("correctionActionArea"); if(s.correctionRequirement!=="None"&&s.qualityStatus==="CORRECTION REQUIRED") a.classList.remove("hidden"); else a.classList.add("hidden"); document.getElementById("setterCorrectionModal").classList.remove("hidden"); }
-function closeSetterCorrectionModal(){ document.getElementById("setterCorrectionModal").classList.add("hidden"); }
-async function handleCorrectionDone(){ closeSetterCorrectionModal(); window.activeSetup.qualityStatus="Correction Done (Pending Inspection)"; window.activeSetup.correctionRequirement="None"; if(await window.syncToSupabase()) triggerAlert("STD ROOM ALERT", "Correction Done!"); }
-async function updateToolroomFixture(){ const av=document.getElementById("toolroomFixtureAvail").value; window.activeSetup.fixtureAvailable=av; window.activeSetup.fixtureNo=av==="YES"?document.getElementById("toolroomFixtureNo").value:"NOT AVAILABLE"; if(await window.syncToSupabase()) alert("Updated: "+av); }
-function triggerAlert(title,msg,cont=false){ document.getElementById("alertTitle").textContent=title; document.getElementById("alertMessage").textContent=msg; document.getElementById("alertModal").classList.remove("hidden"); if("vibrate" in navigator) navigator.vibrate(cont?[500,200,500]:[500,200,500]); }
-function acknowledgeAlert(){ document.getElementById("alertModal").classList.add("hidden"); if("vibrate" in navigator) navigator.vibrate(0); }
-window.renderToolroom=function(){ const tbody=document.getElementById("toolroomTable"); const s=window.activeSetup; tbody.innerHTML=`<tr class="border-b"><td class="p-3 font-semibold">${s.partName} (${s.partNo})</td><td class="p-3 font-bold">${s.fixtureNo}</td><td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">${s.priority}</span></td><td class="p-3 font-bold ${s.toolingReady?"text-green-600":"text-red-500"}">${s.toolingReady?"READY":"PENDING"}</td><td class="p-3 font-bold ${s.fixtureReady?"text-green-600":"text-red-500"}">${s.fixtureReady?"READY":"PENDING"}</td><td class="p-3 space-x-1"><button onclick="toggleTooling()" class="bg-blue-500 text-white text-xs px-2 py-1 rounded">Tooling</button><button onclick="toggleFixture()" class="bg-purple-500 text-white text-xs px-2 py-1 rounded">Fixture</button><button onclick="sendSetupReady()" class="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">READY</button></td></tr>`; };
-async function toggleTooling(){ window.activeSetup.toolingReady=!window.activeSetup.toolingReady; await window.syncToSupabase(); }
-async function toggleFixture(){ window.activeSetup.fixtureReady=!window.activeSetup.fixtureReady; await window.syncToSupabase(); }
-async function sendSetupReady(){ if(window.activeSetup.toolingReady&&window.activeSetup.fixtureReady){ window.activeSetup.setupReady=true; if(await window.syncToSupabase()) triggerAlert("SETTER ALERT", "Tooling Ready!"); } else alert("First mark both READY!"); }
-async function sendSampleCuttingAlert(){ window.activeSetup.sampleCutting=true; if(await window.syncToSupabase()) triggerAlert("STD ROOM ALERT", "Sample Cutting Done!"); }
-async function sendQualityAlert(){ window.activeSetup.inspectionDone=true; if(await window.syncToSupabase()) triggerAlert("QUALITY ALERT", "Inspection Done!"); }
-async function handleQualityAction(status,req="None"){ window.activeSetup.qualityStatus=status; window.activeSetup.correctionRequirement=req; if(await window.syncToSupabase()) triggerAlert("SETTER ALERT", status); }
-async function submitQualityCorrection(){ const sel=document.getElementById("sampleCorrectionSelect").value; window.activeSetup.qualityStatus="CORRECTION REQUIRED"; window.activeSetup.correctionRequirement=sel; if(await window.syncToSupabase()) triggerAlert("CRITICAL ALERT", sel, true); }
-window.renderSupervisor=function(){ const a=document.getElementById("supApprovedCount"), p=document.getElementById("supPendingCount"); if(window.activeSetup.qualityStatus==="SOP APPROVED"){ a.textContent="1"; p.textContent="0"; } else { a.textContent="0"; p.textContent="1"; } };
-window.renderHOD=function(){ const tbody=document.getElementById("hodTable"); const s=window.activeSetup; tbody.innerHTML=`<tr class="border-b"><td class="p-3 font-bold">${s.partName} - ${s.partNo}</td><td class="p-3">${s.pallet}</td><td class="p-3">${s.toolingReady?"✅ Ready":"❌ Pending"}</td><td class="p-3">${s.fixtureReady?"✅ Ready":"❌ Pending"}</td><td class="p-3">${s.setupReady?"✅ Ready":"⏳ Progress"}</td><td class="p-3 font-bold">${s.qualityStatus}</td></tr>`; };
+window.currentUser = null;
+
+function updateLiveTime() {
+  const now = new Date();
+  const t = document.getElementById("topLiveTime"), sh = document.getElementById("topLiveShift"), d = document.getElementById("shiftDate");
+  if(t) t.textContent = now.toLocaleTimeString();
+  const m = now.getHours()*60 + now.getMinutes();
+  let sn = "Shift C";
+  if(m >= 465 && m < 975) sn = "Shift A";
+  else if(m >= 975 && m < 1440) sn = "Shift B";
+  if(sh) sh.textContent = "Shift: " + sn;
+  if(d) d.value = now.toLocaleDateString() + " - " + sn;
+}
+setInterval(updateLiveTime, 1000);
+updateLiveTime();
+
+window.addEventListener("DOMContentLoaded", () => {
+  const u = localStorage.getItem("sutom_user");
+  if(u) {
+    try {
+      window.currentUser = JSON.parse(u);
+      loadDashboard(window.currentUser);
+    } catch { localStorage.removeItem("sutom_user"); }
+  }
+});
+
+function handleLogin(e) {
+  e.preventDefault();
+  window.currentUser = {
+    name: document.getElementById("loginName").value.trim(),
+    id: document.getElementById("loginId").value.trim(),
+    dept: document.getElementById("loginDept").value
+  };
+  localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
+  loadDashboard(window.currentUser);
+}
+
+function loadDashboard(user) {
+  document.getElementById("authSection").classList.add("hidden");
+  document.getElementById("dashboardSection").classList.remove("hidden");
+  document.getElementById("dashboardSection").classList.add("flex");
+  document.getElementById("userInfo").classList.remove("hidden");
+  document.getElementById("userInfo").classList.add("flex");
+  document.getElementById("userBadge").textContent = `${user.name} (${user.dept.toUpperCase()})`;
+  showDepartmentTab(user.dept);
+}
+
+function handleLogout() {
+  localStorage.removeItem("sutom_user");
+  window.currentUser = null;
+  document.getElementById("authSection").classList.remove("hidden");
+  document.getElementById("dashboardSection").classList.add("hidden");
+  document.getElementById("userInfo").classList.add("hidden");
+}
+
+function showDepartmentTab(deptId) {
+  document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
+  const tab = document.getElementById("tab-" + deptId);
+  if(tab) tab.classList.remove("hidden");
+  if(window.renderAllViews) window.renderAllViews();
+}
+
+// REGISTER MULTIPLE SETUPS
+async function handleSetterSubmit(e) {
+  e.preventDefault();
+  const newSetup = {
+    id: Date.now().toString().slice(-4),
+    partName: document.getElementById("partName").value.trim(),
+    partNo: document.getElementById("partNo").value.trim(),
+    setupType: document.getElementById("setupType").value,
+    fixtureNo: document.getElementById("fixtureNo").value.trim(),
+    priority: Number(document.getElementById("priority").value),
+    pallet: document.getElementById("pallet").value,
+    shiftDate: document.getElementById("shiftDate").value,
+    toolingReady: false,
+    fixtureReady: false,
+    setupReady: false,
+    cuttingStage: 'None',
+    inspectionDone: false,
+    qualityStatus: "Pending SOP",
+    correctionRequirement: "None"
+  };
+
+  window.setupsList.push(newSetup);
+  if(await window.syncToSupabase()) {
+    triggerAlert("SETUP REGISTERED", `New Setup #${newSetup.id} (${newSetup.partName}) Added Successfully!`);
+    document.getElementById("setterForm").reset();
+    updateLiveTime();
+    window.renderAllViews();
+  }
+}
+
+// UPDATE CUTTING STAGE (1st, 2nd, 3rd, 4th Sample)
+async function updateCuttingStage(setupId, stage) {
+  const item = window.setupsList.find(s => s.id == setupId);
+  if(item) {
+    item.cuttingStage = stage;
+    if(await window.syncToSupabase()) {
+      triggerAlert("CUTTING STAGE UPDATED", `Setup #${setupId} moved to ${stage} Cutting!`);
+      window.renderAllViews();
+    }
+  }
+}
+
+// RENDER TOOLROOM
+window.renderToolroom = function() {
+  const tbody = document.getElementById("toolroomTable");
+  const list = window.setupsList || [];
+  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="7" class="text-center p-4">No Setups</td></tr>` :
+  list.map(s => `
+    <tr>
+      <td>#${s.id}</td>
+      <td><strong>${s.partName}</strong> (${s.partNo})</td>
+      <td>${s.fixtureNo}</td>
+      <td><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-0.5 rounded">${s.priority}</span></td>
+      <td class="font-bold ${s.toolingReady?'text-green-600':'text-red-500'}">${s.toolingReady?'READY':'PENDING'}</td>
+      <td class="font-bold ${s.fixtureReady?'text-green-600':'text-red-500'}">${s.fixtureReady?'READY':'PENDING'}</td>
+      <td class="space-x-1">
+        <button onclick="toggleTooling(${s.id})" class="bg-blue-600 text-white text-xs px-2 py-1 rounded">Tooling Toggle</button>
+        <button onclick="toggleFixture(${s.id})" class="bg-purple-600 text-white text-xs px-2 py-1 rounded">Fixture Toggle</button>
+        <button onclick="markSetupReady(${s.id})" class="bg-green-600 text-white text-xs px-2 py-1 rounded font-bold">READY</button>
+      </td>
+    </tr>
+  `).join('');
+};
+
+async function toggleTooling(id) {
+  const s = window.setupsList.find(x => x.id == id);
+  if(s) { s.toolingReady = !s.toolingReady; await window.syncToSupabase(); window.renderAllViews(); }
+}
+async function toggleFixture(id) {
+  const s = window.setupsList.find(x => x.id == id);
+  if(s) { s.fixtureReady = !s.fixtureReady; await window.syncToSupabase(); window.renderAllViews(); }
+}
+async function markSetupReady(id) {
+  const s = window.setupsList.find(x => x.id == id);
+  if(s && s.toolingReady && s.fixtureReady) {
+    s.setupReady = true;
+    await window.syncToSupabase();
+    triggerAlert("SETTER ALERT", `Setup #${id} Tooling & Fixture Ready!`);
+    window.renderAllViews();
+  } else {
+    alert("Please mark both Tooling and Fixture READY first!");
+  }
+}
+
+// RENDER STD ROOM
+window.renderStdRoom = function() {
+  const tbody = document.getElementById("stdroomTable");
+  const list = window.setupsList || [];
+  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="5" class="text-center p-4">No Setups</td></tr>` :
+  list.map(s => `
+    <tr>
+      <td>#${s.id}</td>
+      <td><strong>${s.partName}</strong> (${s.partNo})</td>
+      <td><span class="bg-blue-100 text-blue-800 font-bold px-2 py-1 rounded text-xs">${s.cuttingStage || 'None'}</span></td>
+      <td><span class="font-bold ${s.inspectionDone?'text-green-600':'text-amber-600'}">${s.inspectionDone?'Inspection Done':'Pending'}</span></td>
+      <td>
+        <button onclick="markInspectionDone(${s.id})" class="bg-green-600 text-white px-3 py-1 rounded text-xs font-bold">Inspection Done</button>
+      </td>
+    </tr>
+  `).join('');
+};
+
+async function markInspectionDone(id) {
+  const s = window.setupsList.find(x => x.id == id);
+  if(s) {
+    s.inspectionDone = true;
+    if(await window.syncToSupabase()) {
+      triggerAlert("QUALITY ALERT", `Setup #${id} Sample Inspection Completed!`);
+      window.renderAllViews();
+    }
+  }
+}
+
+// RENDER QUALITY
+window.renderQuality = function() {
+  const tbody = document.getElementById("qualityTable");
+  const list = window.setupsList || [];
+  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="5" class="text-center p-4">No Setups</td></tr>` :
+  list.map(s => `
+    <tr>
+      <td>#${s.id}</td>
+      <td><strong>${s.partName}</strong> (${s.partNo})</td>
+      <td><span class="bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded text-xs">${s.cuttingStage || 'None'}</span></td>
+      <td>
+        <button onclick="setQualityAction(${s.id}, 'SOP APPROVED', 'None')" class="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold mr-1">SOP APPROVE</button>
+        <button onclick="setQualityAction(${s.id}, 'CORRECTION REQUIRED', 'Correction Needed')" class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">CORRECTION</button>
+      </td>
+      <td><span class="font-bold text-red-600">${s.correctionRequirement || 'None'}</span></td>
+    </tr>
+  `).join('');
+};
+
+async function setQualityAction(id, status, req) {
+  const s = window.setupsList.find(x => x.id == id);
+  if(s) {
+    s.qualityStatus = status;
+    s.correctionRequirement = req;
+    if(await window.syncToSupabase()) {
+      triggerAlert("SETTER ALERT", `Setup #${id} Quality Status: ${status}`);
+      window.renderAllViews();
+    }
+  }
+}
+
+// RENDER SUPERVISOR
+window.renderSupervisor = function() {
+  const list = window.setupsList || [];
+  document.getElementById("supApprovedCount").textContent = list.filter(s => s.qualityStatus === 'SOP APPROVED').length;
+  document.getElementById("supPendingCount").textContent = list.filter(s => s.qualityStatus !== 'SOP APPROVED').length;
+};
+
+// RENDER HOD
+window.renderHOD = function() {
+  const tbody = document.getElementById("hodTable");
+  const list = window.setupsList || [];
+  tbody.innerHTML = list.length === 0 ? `<tr><td colspan="7" class="text-center p-4">No Data</td></tr>` :
+  list.map(s => `
+    <tr>
+      <td>#${s.id}</td>
+      <td><strong>${s.partName}</strong> (${s.partNo})</td>
+      <td>${s.pallet}</td>
+      <td>${s.toolingReady?'✅ Ready':'❌ Pending'}</td>
+      <td>${s.fixtureReady?'✅ Ready':'❌ Pending'}</td>
+      <td><span class="bg-slate-100 font-bold px-2 py-0.5 rounded text-xs">${s.cuttingStage || 'None'}</span></td>
+      <td class="font-bold ${s.qualityStatus==='SOP APPROVED'?'text-green-600':'text-amber-600'}">${s.qualityStatus}</td>
+    </tr>
+  `).join('');
+};
+
+function triggerAlert(title, msg) {
+  document.getElementById("alertTitle").textContent = title;
+  document.getElementById("alertMessage").textContent = msg;
+  document.getElementById("alertModal").classList.remove("hidden");
+  if("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
+}
+
+function acknowledgeAlert() {
+  document.getElementById("alertModal").classList.add("hidden");
+  if("vibrate" in navigator) navigator.vibrate(0);
+}
 </script>
 </body>
-                                                                                                         </html>
+</html>

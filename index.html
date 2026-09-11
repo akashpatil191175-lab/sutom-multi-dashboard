@@ -46,7 +46,7 @@
   </div>
   <div id="firebaseStatus" class="firebase-live-bar live">
     <i class="fas fa-circle text-green-400 mr-2"></i>
-    <span id="firebaseStatusText">SYSTEM ACTIVE & SYNCHRONIZED (TIME TRACKER ENABLED)</span>
+    <span id="firebaseStatusText">SYSTEM ACTIVE & SYNCHRONIZED (SAMPLE-WISE TIME TRACKER ENABLED)</span>
   </div>
 </header>
 
@@ -92,9 +92,9 @@
     <div class="bg-slate-900 text-white p-4 rounded-xl shadow-lg border border-slate-800 flex justify-between items-center flex-wrap gap-2">
       <div>
         <h2 class="text-xl font-black text-emerald-400 flex items-center gap-2">
-          <i class="fas fa-sliders-h"></i> SETTER CONTROL WORKFLOW & TIME TRACKER
+          <i class="fas fa-sliders-h"></i> SETTER CONTROL WORKFLOW & SAMPLE-WISE TIME TRACKER
         </h2>
-        <p class="text-xs text-slate-400">प्रत्येक डिपार्टमेंटला लागलेला वेळ मोजण्यासाठी अचूक प्रणाली</p>
+        <p class="text-xs text-slate-400">सॅम्पल कटिंग, इन्स्पेक्शन आणि CMM रिपोर्टनुसार अचूक वेळ मोजणारी प्रणाली</p>
       </div>
       <div class="flex items-center gap-2">
         <button onclick="handleResetAllData()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
@@ -158,7 +158,7 @@
           <span id="metric-approved" class="text-lg font-black text-purple-700">0</span>
         </div>
         <p class="text-[11px] font-bold text-slate-800 leading-tight">6) SOP Approved (Done)</p>
-        <p class="text-[9px] text-slate-500">Total Time Calculated</p>
+        <p class="text-[9px] text-slate-500">Sample Times Saved</p>
       </div>
     </div>
 
@@ -230,7 +230,7 @@
     <div class="excel-table-container shadow-xl">
       <div class="bg-emerald-800 text-white p-3 px-4 flex flex-wrap justify-between items-center border-b gap-2">
         <h3 id="excelTableTitle" class="font-bold text-sm tracking-wide flex items-center gap-2">
-          <i class="fas fa-file-excel text-green-300 text-lg"></i> WORKFLOW & TIME TRACKER VIEW
+          <i class="fas fa-file-excel text-green-300 text-lg"></i> WORKFLOW & SAMPLE-WISE TIME TRACKER VIEW
         </h3>
         <span class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200" id="excelRowCount">Rows: 0</span>
       </div>
@@ -241,7 +241,7 @@
               <th>#</th>
               <th>MACHINE</th>
               <th>PART INFO</th>
-              <th>TIME LOGS (Departments)</th>
+              <th>SAMPLE-WISE TIME LOGS</th>
               <th>TOOL ROOM STATUS</th>
               <th>CMM STATUS</th>
               <th>CURRENT STAGE</th>
@@ -260,7 +260,7 @@
   <div id="tab-toolroom" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
       <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
-        <i class="fas fa-tools text-blue-600"></i> Tool Room Dashboard (Time Logged on Approval)
+        <i class="fas fa-tools text-blue-600"></i> Tool Room Dashboard
       </h2>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left border">
@@ -282,7 +282,7 @@
   <div id="tab-stdroom" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
       <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800 flex items-center gap-2">
-        <i class="fas fa-microscope text-purple-600"></i> CMM Room Dashboard (Inspection & Time Log)
+        <i class="fas fa-microscope text-purple-600"></i> CMM Room Dashboard (Sample Cut, Inspection & Report Check Time)
       </h2>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left border">
@@ -290,8 +290,8 @@
             <tr>
               <th class="p-3">Machine & Part</th>
               <th class="p-3">Setup Condition</th>
-              <th class="p-3">Sample Stage</th>
-              <th class="p-3">Action</th>
+              <th class="p-3">Current Sample</th>
+              <th class="p-3">Sample Action (CMM / Inspection)</th>
             </tr>
           </thead>
           <tbody id="stdroomTable"></tbody>
@@ -313,18 +313,17 @@
   <!-- SUPERVISOR / HOD DASHBOARD -->
   <div id="tab-supervisor" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-xl shadow border">
-      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-emerald-600 mr-2"></i> Supervisor & HOD Time Report (Department Wise Duration)</h2>
+      <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800"><i class="fas fa-chart-line text-emerald-600 mr-2"></i> Supervisor & HOD Report (Sample-wise Breakdown)</h2>
       <div class="overflow-x-auto">
         <table class="w-full text-xs text-left border">
           <thead class="bg-slate-200">
             <tr>
               <th class="p-2 border">Machine</th>
               <th class="p-2 border">Part Info</th>
-              <th class="p-2 border">Register Time</th>
-              <th class="p-2 border">Tool Room Done Time</th>
-              <th class="p-2 border">CMM Ready Time</th>
-              <th class="p-2 border">SOP Approved Time</th>
-              <th class="p-2 border font-bold text-red-700">Total Setup Time</th>
+              <th class="p-2 border">1st Sample Cut Time</th>
+              <th class="p-2 border">1st Sample Inspection Time</th>
+              <th class="p-2 border">1st Sample CMM Report Time</th>
+              <th class="p-2 border font-bold text-red-700">Total Time</th>
             </tr>
           </thead>
           <tbody id="hodTable"></tbody>
@@ -368,11 +367,12 @@ const DEFAULT_SETUPS = [
     sampleCount: 1,
     qualityStatus: "SOP PENDING",
     stage: "PENDING (Tool/Fixture)",
-    // टाइम रेकॉर्ड्ससाठी नवीन फिल्ड्स
+    // नवीन सॅम्पल-वाईस टाईम ट्रॅकिंग फिल्ड्स
     timeRegistered: new Date().toLocaleTimeString(),
     timestampRegistered: Date.now(),
-    timeToolRoomDone: null,
-    timeCmmReady: null,
+    timeSampleCut: null,       // 1st sample cut केला त्याला लागलेला वेळ
+    timeSampleInspection: null, // 1st sample inspection लागलेला वेळ
+    timeSampleCmmReport: null,  // 1st sample cmm report check लागलेला वेळ
     timeSopDone: null,
     totalTimeSpent: "Pending"
   }
@@ -494,8 +494,9 @@ function handleSetterSubmit(e) {
     stage: "SETUP PENDING",
     timeRegistered: now.toLocaleTimeString(),
     timestampRegistered: now.getTime(),
-    timeToolRoomDone: null,
-    timeCmmReady: null,
+    timeSampleCut: null,
+    timeSampleInspection: null,
+    timeSampleCmmReport: null,
     timeSopDone: null,
     totalTimeSpent: "Pending"
   };
@@ -526,7 +527,7 @@ window.renderSetterExcelTable = function(filterKey) {
   if(!tbody) return;
 
   let list = window.allSetups || [];
-  let titleText = "WORKFLOW & TIME TRACKER VIEW: ALL";
+  let titleText = "WORKFLOW & SAMPLE-WISE TIME TRACKER: ALL";
 
   if(filterKey === 'ready') { list = list.filter(s => s.toolingReady && s.fixtureReady && s.cmmReadyForSetup); titleText = "READY FOR SETUP"; }
   else if(filterKey === 'pending') { list = list.filter(s => !s.toolingReady || !s.fixtureReady || !s.cmmReadyForSetup); titleText = "SETUP PENDING"; }
@@ -551,8 +552,9 @@ window.renderSetterExcelTable = function(filterKey) {
         <td class="text-left"><span class="font-bold">${s.partName}</span><br><span class="text-xs text-slate-500">${s.partNo}</span></td>
         <td class="text-xs text-left">
           <span class="font-bold text-blue-600">Register:</span> ${s.timeRegistered || '-'}<br>
-          <span class="font-bold text-purple-600">Tool Room:</span> ${s.timeToolRoomDone || 'Pending'}<br>
-          <span class="font-bold text-emerald-600">CMM Ready:</span> ${s.timeCmmReady || 'Pending'}<br>
+          <span class="font-bold text-indigo-600">1st Sample Cut:</span> ${s.timeSampleCut || 'Pending'}<br>
+          <span class="font-bold text-purple-600">1st Sample Insp:</span> ${s.timeSampleInspection || 'Pending'}<br>
+          <span class="font-bold text-emerald-600">1st Sample CMM:</span> ${s.timeSampleCmmReport || 'Pending'}<br>
           <span class="font-bold text-green-700">SOP Done:</span> ${s.timeSopDone || 'Pending'}
         </td>
         <td>
@@ -574,7 +576,7 @@ window.renderSetterExcelTable = function(filterKey) {
           ${isReadyForSetup && !s.setupStarted ? 
             `<button onclick="setterStartSetup('${s.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">START SETUP</button>` :
             (s.setupStarted && s.qualityStatus !== 'SOP DONE' ? 
-              `<button onclick="setterSubmitSample('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Sample #${s.sampleCount}</button>` :
+              `<button onclick="setterSubmitSampleCut('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Cut Sample #${s.sampleCount}</button>` :
               `<span class="text-xs text-green-700 font-bold">${s.totalTimeSpent}</span>`
             )
           }
@@ -589,12 +591,13 @@ window.setterStartSetup = function(id) {
   if(s) { s.setupStarted = true; s.stage = "SETUP STARTED"; saveLocalStorageData(); }
 }
 
-window.setterSubmitSample = function(id) {
+window.setterSubmitSampleCut = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
-    s.stage = `Sample #${s.sampleCount} Submitted`;
+    s.timeSampleCut = new Date().toLocaleTimeString();
+    s.stage = `Sample #${s.sampleCount} Cut Done`;
     saveLocalStorageData();
-    triggerAlert("CMM ROOM", `Sample #${s.sampleCount} submitted for Machine ${s.machineName}!`);
+    triggerAlert("CMM ROOM", `Sample #${s.sampleCount} cut completed for Machine ${s.machineName}! Time recorded.`);
   }
 }
 
@@ -627,26 +630,14 @@ window.renderToolroom = function() {
 
 window.toggleTooling = function(id) {
   const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    s.toolingReady = !s.toolingReady;
-    if(s.toolingReady && s.fixtureReady && !s.timeToolRoomDone) {
-      s.timeToolRoomDone = new Date().toLocaleTimeString();
-    }
-    saveLocalStorageData();
-  }
+  if(s) { s.toolingReady = !s.toolingReady; saveLocalStorageData(); }
 }
 window.toggleFixture = function(id) {
   const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    s.fixtureReady = !s.fixtureReady;
-    if(s.toolingReady && s.fixtureReady && !s.timeToolRoomDone) {
-      s.timeToolRoomDone = new Date().toLocaleTimeString();
-    }
-    saveLocalStorageData();
-  }
+  if(s) { s.fixtureReady = !s.fixtureReady; saveLocalStorageData(); }
 }
 
-/* CMM / STD ROOM VIEW */
+/* CMM / STD ROOM VIEW (Sample Inspection & Report Check) */
 window.renderSTDRoom = function() {
   const tbody = document.getElementById("stdroomTable");
   if(!tbody) return;
@@ -659,8 +650,9 @@ window.renderSTDRoom = function() {
         </button>
       </td>
       <td class="p-3 font-bold">Sample #${s.sampleCount}</td>
-      <td class="p-3">
-        <button onclick="cmmInspectionDone('${s.id}')" class="bg-purple-600 text-white text-xs px-3 py-1.5 rounded font-bold">Inspection Done</button>
+      <td class="p-3 space-x-2 flex">
+        <button onclick="cmmSampleInspection('${s.id}')" class="bg-indigo-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">1. Inspection Done</button>
+        <button onclick="cmmReportCheck('${s.id}')" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">2. CMM Report Check</button>
       </td>
     </tr>
   `).join('');
@@ -668,21 +660,25 @@ window.renderSTDRoom = function() {
 
 window.toggleCMMReady = function(id) {
   const s = window.allSetups.find(x => x.id === id);
+  if(s) { s.cmmReadyForSetup = !s.cmmReadyForSetup; saveLocalStorageData(); }
+}
+
+window.cmmSampleInspection = function(id) {
+  const s = window.allSetups.find(x => x.id === id);
   if(s) {
-    s.cmmReadyForSetup = !s.cmmReadyForSetup;
-    if(s.cmmReadyForSetup && !s.timeCmmReady) {
-      s.timeCmmReady = new Date().toLocaleTimeString();
-    }
+    s.timeSampleInspection = new Date().toLocaleTimeString();
     saveLocalStorageData();
+    triggerAlert("CMM ROOM", `1st sample inspection time recorded for Machine ${s.machineName}!`);
   }
 }
 
-window.cmmInspectionDone = function(id) {
+window.cmmReportCheck = function(id) {
   const s = window.allSetups.find(x => x.id === id);
   if(s) {
-    s.qualityStatus = `Sample #${s.sampleCount} INSPECTION DONE`;
+    s.timeSampleCmmReport = new Date().toLocaleTimeString();
+    s.qualityStatus = `Sample #${s.sampleCount} REPORT CHECKED`;
     saveLocalStorageData();
-    triggerAlert("QUALITY", `Inspection done for Machine ${s.machineName}.`);
+    triggerAlert("QUALITY", `CMM report check completed for Machine ${s.machineName}. Ready for Quality Approval.`);
   }
 }
 
@@ -723,7 +719,6 @@ window.qualityApproveSOP = function(id) {
     s.stage = "SOP APPROVED";
     s.timeSopDone = now.toLocaleTimeString();
     
-    // एकूण वेळ मोजणे (Total Time Calculation: Register ते SOP Done)
     if(s.timestampRegistered) {
       let diffMs = now.getTime() - s.timestampRegistered;
       let diffMins = Math.floor(diffMs / 60000);
@@ -754,10 +749,9 @@ window.renderSupervisor = function() {
     <tr class="border-b">
       <td class="p-2 border font-bold text-blue-700">${s.machineName}</td>
       <td class="p-2 border font-semibold">${s.partName} (${s.partNo})</td>
-      <td class="p-2 border font-bold text-blue-600">${s.timeRegistered || '-'}</td>
-      <td class="p-2 border font-bold text-purple-600">${s.timeToolRoomDone || 'Pending'}</td>
-      <td class="p-2 border font-bold text-emerald-600">${s.timeCmmReady || 'Pending'}</td>
-      <td class="p-2 border font-bold text-green-700">${s.timeSopDone || 'Pending'}</td>
+      <td class="p-2 border font-bold text-indigo-600">${s.timeSampleCut || 'Pending'}</td>
+      <td class="p-2 border font-bold text-purple-600">${s.timeSampleInspection || 'Pending'}</td>
+      <td class="p-2 border font-bold text-emerald-600">${s.timeSampleCmmReport || 'Pending'}</td>
       <td class="p-2 border font-black text-red-600 bg-red-50">${s.totalTimeSpent}</td>
     </tr>
   `).join('');

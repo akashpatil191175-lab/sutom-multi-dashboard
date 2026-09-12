@@ -256,7 +256,11 @@ Access Dashboard
 <h2 class="text-xl font-black text-emerald-400">SETTER CONTROL & MULTI-SAMPLE WORKFLOW</h2>
 <p class="text-xs text-slate-400">फक्त रजिस्टर मशिन शो होत आहेत. क्लिक केल्यावर संपूर्ण डिटेल्स दिसतील.</p>
 </div>
-<div class="flex gap-2">
+<div class="flex gap-2 flex-wrap">
+<!-- EXCEL DOWNLOAD ICON BUTTON -->
+<button onclick="exportSetterDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-lg flex items-center shadow" title="Download Excel Report">
+<i class="fas fa-file-excel mr-1.5 text-sm"></i> Download Excel
+</button>
 <button onclick="openSetterModule('register')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">
 <i class="fas fa-plus mr-1"></i> Register New Setup
 </button>
@@ -875,6 +879,46 @@ window.updateMetrics = function(){
   el("metric-approved", list.filter(s=> s.qualityStatus==="SOP DONE").length);
 };
 
+// ================= EXCEL EXPORT FUNCTION =================
+window.exportSetterDataToExcel = function(){
+  const list = window.allSetups || [];
+  if(list.length === 0){
+    alert("Export करण्यासाठी कोणताही डेटा उपलब्ध नाही!");
+    return;
+  }
+
+  let csvContent = "data:text/csv;charset=utf-8,";
+  // CSV Headers
+  csvContent += "Setup ID,Machine Name,Part Name,Part No,Fixture No,Setup Type,Date,Shift,Pallet,Priority,Registered By,Total Status,Total Time\n";
+
+  list.forEach(s => {
+    let row = [
+      s.id || "",
+      `"${s.machineName || ""}"`,
+      `"${s.partName || ""}"`,
+      `"${s.partNo || ""}"`,
+      `"${s.fixtureNo || ""}"`,
+      s.setupType || "",
+      s.setupDate || "",
+      s.shift || "",
+      s.pallet || "",
+      s.priority || "",
+      `"${s.registeredBy || ""}"`,
+      `"${s.qualityStatus || ""}"`,
+      `"${s.totalTimeSpent || "Pending"}"`
+    ];
+    csvContent += row.join(",") + "\n";
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `SUTOM_Setter_Report_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 window.renderSetterExcelTable = function(filterKey){
   const tbody = document.getElementById("setterExcelTableBody");
   const rowCount = document.getElementById("excelRowCount");
@@ -953,7 +997,6 @@ window.renderSetterExcelTable = function(filterKey){
 window.renderToolroom = function(){
   const tbody = document.getElementById("toolroomTable");
   if(!tbody) return;
-  // फक्त Long Setups दाखवले जातील
   const list = (window.allSetups || []).filter(s => s.setupType === 'Long' || !s.setupType);
   if(list.length===0){
     tbody.innerHTML=`<tr><td colspan="5" class="p-6 text-center text-slate-400">No Long setup registered for Tool Room.</td></tr>`;

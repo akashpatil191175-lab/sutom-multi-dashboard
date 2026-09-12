@@ -312,8 +312,20 @@ Access Dashboard
 <input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No">
 </div>
 <div>
+<label class="block text-xs font-bold mb-1">FIXTURE NUMBER</label>
+<input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Number">
+</div>
+<div>
 <label class="block text-xs font-bold mb-1">FIXTURE SERIAL NO.</label>
-<input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture No">
+<input type="text" id="fixtureSerialNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Serial No">
+</div>
+<div>
+<label class="block text-xs font-bold mb-1">SETUP TYPE</label>
+<select id="setupType" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
+<option value="">-- SELECT TYPE --</option>
+<option value="Short">Short</option>
+<option value="Long">Long</option>
+</select>
 </div>
 <div>
 <label class="block text-xs font-bold mb-1">SETTER REQUIRED FIXTURE NO.</label>
@@ -366,6 +378,7 @@ Access Dashboard
 <th>#</th>
 <th>SETUP ID</th>
 <th>MACHINE / PART<br><span class="text-[10px]">CLICK FOR DETAILS & TIME</span></th>
+<th>SETUP TYPE</th>
 <th>PALLET</th>
 <th>PRIORITY</th>
 <th>TOOL ROOM</th>
@@ -375,7 +388,7 @@ Access Dashboard
 </tr>
 </thead>
 <tbody id="setterExcelTableBody">
-<tr><td colspan="9" class="p-6 text-slate-400 font-semibold">Loading...</td></tr>
+<tr><td colspan="10" class="p-6 text-slate-400 font-semibold">Loading...</td></tr>
 </tbody>
 </table>
 </div>
@@ -387,9 +400,9 @@ Access Dashboard
 <div class="bg-white p-6 rounded-xl shadow border">
 <div class="flex justify-between items-center border-b pb-3 mb-4">
 <h2 class="text-lg font-bold text-slate-800">
-<i class="fas fa-tools text-blue-600 mr-2"></i> Tool Room Setup Preparation (फक्त रजिस्टर फॉर्म्स)
+<i class="fas fa-tools text-blue-600 mr-2"></i> Tool Room Setup Preparation (फक्त Long Setup साठी)
 </h2>
-<span class="text-xs text-slate-500">Fixture mismatch असल्यास Remark मध्ये इनपुट व Action बटण मिळेल.</span>
+<span class="text-xs text-slate-500">Short Setup असलेल्या मशीनसाठी येथे नोटिफिकेशन येणार नाही. Remark मध्ये 'Available Serial No' भरावे लागेल.</span>
 </div>
 <div class="overflow-x-auto">
 <table class="w-full text-sm text-left border">
@@ -397,7 +410,7 @@ Access Dashboard
 <tr>
 <th class="p-3 border">Machine / Part</th>
 <th class="p-3 border">Fixture Details</th>
-<th class="p-3 border">Remark & Input</th>
+<th class="p-3 border">Available Serial Number (Remark)</th>
 <th class="p-3 border">Status</th>
 <th class="p-3 border">Action</th>
 </tr>
@@ -413,9 +426,9 @@ Access Dashboard
 <div class="bg-white p-6 rounded-xl shadow border">
 <div class="flex justify-between items-center border-b pb-3 mb-4">
 <h2 class="text-lg font-bold text-slate-800">
-<i class="fas fa-microscope text-purple-600 mr-2"></i> CMM ROOM / STD ROOM (फक्त मशीन डिटेल्स आणि Action)
+<i class="fas fa-microscope text-purple-600 mr-2"></i> CMM ROOM / STD ROOM (Short आणि Long दोन्हीसाठी)
 </h2>
-<span class="text-xs text-slate-500">कोणताही वर्कफ्लो चार्ट नाही.</span>
+<span class="text-xs text-slate-500">Short setup असल्यास पार्ट चेंज होऊन थेट CMM रूमला नोटिफिकेशन येईल.</span>
 </div>
 <div class="overflow-x-auto">
 <table class="w-full text-sm text-left border">
@@ -460,6 +473,7 @@ Access Dashboard
 <tr>
 <th class="p-2 border">Machine</th>
 <th class="p-2 border">Part</th>
+<th class="p-2 border">Setup Type</th>
 <th class="p-2 border">Pallet</th>
 <th class="p-2 border">Priority</th>
 <th class="p-2 border">Tool Room</th>
@@ -649,6 +663,9 @@ function handleSetterSubmit(e){
   const now = new Date();
   const newKey = dbRef.push().key;
   const setupId = "ST-"+Date.now().toString().slice(-6);
+  const setupType = document.getElementById("setupType").value;
+
+  const isShort = (setupType === "Short");
 
   const newItem={
     firebaseKey: newKey,
@@ -657,6 +674,8 @@ function handleSetterSubmit(e){
     partName: document.getElementById("partName").value.trim(),
     partNo: document.getElementById("partNo").value.trim(),
     fixtureNo: document.getElementById("fixtureNo").value.trim(),
+    fixtureSerialNo: document.getElementById("fixtureSerialNo").value.trim(),
+    setupType: setupType,
     setterReqFixture: document.getElementById("setterReqFixture").value.trim(),
     setupDate: document.getElementById("setupDate").value,
     shift: document.getElementById("setupShift").value,
@@ -667,21 +686,21 @@ function handleSetterSubmit(e){
     registeredById: window.currentUser ? window.currentUser.id : "",
     timestampRegistered: now.getTime(),
     timeRegistered: now.toLocaleTimeString(),
-    toolStart: null,
-    toolEnd: null,
-    toolingReady: false,
-    fixtureReady: false,
+    toolStart: isShort ? "N/A (Short)" : null,
+    toolEnd: isShort ? "N/A (Short)" : null,
+    toolingReady: isShort ? true : false,
+    fixtureReady: isShort ? true : false,
     setupStarted: false,
     sampleCount: 1,
     s1: emptySample(), s2: emptySample(), s3: emptySample(), s4: emptySample(),
-    qualityStatus: "TOOL ROOM PENDING",
-    stage: "Tool Room Pending",
+    qualityStatus: isShort ? "READY FOR SETUP" : "TOOL ROOM PENDING",
+    stage: isShort ? "Ready For Setter" : "Tool Room Pending",
     timeSopDone: null,
     totalTimeSpent: "Pending"
   };
 
   dbRef.child(newKey).set(newItem).then(()=>{
-    triggerAlert("SUCCESS", `Setup ${setupId} registered successfully for ${newItem.machineName}.`);
+    triggerAlert("SUCCESS", `Setup ${setupId} registered successfully for ${newItem.machineName} (${setupType} Setup).`);
     document.getElementById("setterForm").reset();
     document.getElementById("setupDate").value = new Date().toISOString().split("T")[0];
     toggleSetupForm(false);
@@ -693,7 +712,7 @@ function currentTime(){
 }
 
 function parseTimeToday(time){
-  if(!time) return null;
+  if(!time || time.includes("N/A")) return null;
   const d = new Date();
   const match = time.match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
   if(!match) return null;
@@ -710,6 +729,7 @@ function parseTimeToday(time){
 }
 
 function durationMinutes(start,end){
+  if(!start || !end || start.includes("N/A") || end.includes("N/A")) return "0 min";
   const a = parseTimeToday(start);
   const b = parseTimeToday(end);
   if(!a || !b) return "-";
@@ -881,7 +901,7 @@ window.renderSetterExcelTable = function(filterKey){
 
   rowCount.textContent = `Rows: ${list.length}`;
   if(list.length===0){
-    tbody.innerHTML=`<tr><td colspan="9" class="p-6 text-slate-400 font-semibold text-center">No registered setup machines found.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="10" class="p-6 text-slate-400 font-semibold text-center">No registered setup machines found.</td></tr>`;
     return;
   }
 
@@ -898,10 +918,11 @@ window.renderSetterExcelTable = function(filterKey){
       <i class="fas fa-mouse-pointer mr-1"></i> CLICK → DETAILS
       </span>
     </td>
+    <td><span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.setupType==='Short'?'bg-amber-100 text-amber-800':'bg-blue-100 text-blue-800'}">${s.setupType||'Long'}</span></td>
     <td class="font-bold">${s.pallet||"-"}</td>
     <td><span class="bg-orange-100 text-orange-700 px-2 py-1 rounded font-bold">P${s.priority||"-"}</span></td>
     <td class="text-left text-xs">
-      Start: ${s.toolStart||"-"}<br>End: ${s.toolEnd||"-"}<br><b>${durationMinutes(s.toolStart, s.toolEnd)}</b>
+      ${s.setupType==='Short' ? '<span class="text-slate-400 italic">Not Required (Short)</span>' : `Start: ${s.toolStart||"-"}<br>End: ${s.toolEnd||"-"}<br><b>${durationMinutes(s.toolStart, s.toolEnd)}</b>`}
     </td>
     <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click bg-indigo-50 text-indigo-700 font-bold">
       <i class="fas fa-route text-base"></i><br>
@@ -918,11 +939,17 @@ window.renderSetterExcelTable = function(filterKey){
       ` : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-[10px]">${s.qualityStatus||"-"}</span>`}
     </td>
     <td>
-      ${!s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">Tool Start</button>`
+      ${s.setupType==='Short' ? (
+        !getSample(s,s.sampleCount||1).setterStart ? `<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded">Setter Start</button>`
+        : !getSample(s,s.sampleCount||1).setterEnd ? `<button onclick="setterEndSample('${s.firebaseKey}')" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">Setter End</button>`
+        : `<span class="text-[10px] font-bold text-green-700">Workflow Active</span>`
+      ) : (
+        !s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">Tool Start</button>`
         : s.toolStart && !s.toolEnd ? `<button onclick="toolRoomEnd('${s.firebaseKey}')" class="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded">Tool End</button>`
         : !getSample(s,s.sampleCount||1).setterStart ? `<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded">Setter Start</button>`
         : !getSample(s,s.sampleCount||1).setterEnd ? `<button onclick="setterEndSample('${s.firebaseKey}')" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">Setter End</button>`
-        : `<span class="text-[10px] font-bold text-green-700">Workflow Active</span>`}
+        : `<span class="text-[10px] font-bold text-green-700">Workflow Active</span>`
+      )}
     </td>
   </tr>
   `).join("");
@@ -931,14 +958,14 @@ window.renderSetterExcelTable = function(filterKey){
 window.renderToolroom = function(){
   const tbody = document.getElementById("toolroomTable");
   if(!tbody) return;
-  const list = window.allSetups || [];
+  // फक्त Long Setups दाखवले जातील
+  const list = (window.allSetups || []).filter(s => s.setupType === 'Long' || !s.setupType);
   if(list.length===0){
-    tbody.innerHTML=`<tr><td colspan="5" class="p-6 text-center text-slate-400">No setup registered.</td></tr>`;
+    tbody.innerHTML=`<tr><td colspan="5" class="p-6 text-center text-slate-400">No Long setup registered for Tool Room.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = list.map(s => {
-    const isMatch = (s.fixtureNo === s.setterReqFixture);
     return `
     <tr class="border-b">
       <td class="p-3 font-bold text-blue-700">
@@ -947,13 +974,10 @@ window.renderToolroom = function(){
       </td>
       <td class="p-3 text-xs">
         <b>Fixture No:</b> ${s.fixtureNo}<br>
-        <b>Setter Required:</b> ${s.setterReqFixture}
+        <b>Fixture Serial No:</b> ${s.fixtureSerialNo || '-'}
       </td>
       <td class="p-3 text-xs">
-        ${!isMatch ? `
-          <span class="text-red-600 font-bold block mb-1">Mismatch Found!</span>
-          <input type="text" id="remark_${s.firebaseKey}" value="${s.toolRemark || ''}" onchange="updateToolRemarkInput('${s.firebaseKey}', this.value)" class="w-full p-1 border rounded text-xs" placeholder="Enter Remark">
-        ` : `<span class="text-green-600 font-bold">Fixture Matched</span>`}
+        <input type="text" id="remark_${s.firebaseKey}" value="${s.toolRemark || ''}" onchange="updateToolRemarkInput('${s.firebaseKey}', this.value)" class="w-full p-2 border rounded text-xs font-bold bg-amber-50" placeholder="Enter Available Serial Number">
       </td>
       <td class="p-3">
         ${s.toolEnd ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold">READY</span>` : `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">PENDING</span>`}
@@ -978,7 +1002,7 @@ window.renderSTDRoom = function(){
     html+=`
     <tr class="border-b">
       <td class="p-3 font-bold text-blue-700">
-        ${s.machineName} - ${s.partName}<br><span class="text-[10px] text-slate-500">${s.id}</span>
+        ${s.machineName} - ${s.partName}<br><span class="text-[10px] text-slate-500">${s.id} (${s.setupType||'Long'} Setup)</span>
       </td>
       <td class="p-3 font-bold text-indigo-700">SAMPLE #${n}<br><span class="text-xs text-slate-500">Cut: ${x.cutTime||"-"}</span></td>
       <td class="p-3 small-time">${x.cmmStart||"-"}</td>
@@ -1045,9 +1069,10 @@ window.renderSupervisor = function(){
   <tr class="border-b">
     <td onclick="openWorkflowModal('${s.firebaseKey}')" class="p-2 border font-bold text-blue-700 machine-click">${s.machineName}<br><span class="text-[9px] text-slate-500">${s.id}</span></td>
     <td class="p-2 border font-semibold">${s.partName}</td>
+    <td class="p-2 border"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${s.setupType==='Short'?'bg-amber-100 text-amber-800':'bg-blue-100 text-blue-800'}">${s.setupType||'Long'}</span></td>
     <td class="p-2 border">${s.pallet||"-"}</td>
     <td class="p-2 border font-bold">P${s.priority||"-"}</td>
-    <td class="p-2 border">${s.toolStart||"-"} → ${s.toolEnd||"-"}<br><b>${durationMinutes(s.toolStart, s.toolEnd)}</b></td>
+    <td class="p-2 border">${s.setupType==='Short'?'N/A':(s.toolStart||"-")+' → '+(s.toolEnd||"-")}<br><b>${durationMinutes(s.toolStart, s.toolEnd)}</b></td>
     <td onclick="openWorkflowModal('${s.firebaseKey}')" class="p-2 border text-[10px] machine-click bg-indigo-50 text-indigo-700 font-bold"><i class="fas fa-route"></i><br>WORKFLOW PATH SHOW</td>
     <td class="p-2 border font-black text-red-600">${s.qualityStatus==="SOP DONE" ? totalSetupMinutes(s) : "Running"}</td>
   </tr>
@@ -1062,13 +1087,16 @@ window.openWorkflowModal = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
   document.getElementById("workflowModal").classList.remove("hidden");
-  document.getElementById("workflowTitle").textContent = `${s.machineName} - COMPLETE SETUP WORKFLOW`;
+  document.getElementById("workflowTitle").textContent = `${s.machineName} - COMPLETE SETUP WORKFLOW (${s.setupType||'Long'} Setup)`;
   document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Part: ${s.partName} | Pallet: ${s.pallet}`;
 
   let rows="";
   let sr=1;
-  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">SETTER<br><span class="text-[9px]">Setup Registration</span></td><td class="stage-start">${s.timeRegistered||"-"}</td><td class="stage-end">${s.toolStart||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.timeRegistered, s.toolStart)}</td><td>${s.toolStart?`<span class="text-green-700 font-bold text-[10px]">REGISTERED</span>`:`<span class="text-yellow-700 font-bold text-[10px]">WAITING</span>`}</td></tr>`;
-  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">TOOL ROOM<br><span class="text-[9px]">Tooling & Fixture Ready</span></td><td class="stage-start">${s.toolStart||"-"}</td><td class="stage-end">${s.toolEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.toolStart, s.toolEnd)}</td><td>${s.toolEnd?`<span class="text-green-700 font-bold text-[10px]">READY</span>`:`<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>`}</td></tr>`;
+  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">SETTER<br><span class="text-[9px]">Setup Registration</span></td><td class="stage-start">${s.timeRegistered||"-"}</td><td class="stage-end">${s.setupType==='Short'?'N/A':(s.toolStart||"-")}</td><td class="font-bold text-blue-700">${s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered, s.toolStart)}</td><td><span class="text-green-700 font-bold text-[10px]">REGISTERED</span></td></tr>`;
+  
+  if(s.setupType !== 'Short'){
+    rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">TOOL ROOM<br><span class="text-[9px]">Tooling & Fixture Ready</span></td><td class="stage-start">${s.toolStart||"-"}</td><td class="stage-end">${s.toolEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.toolStart, s.toolEnd)}</td><td>${s.toolEnd?`<span class="text-green-700 font-bold text-[10px]">READY</span>`:`<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>`}</td></tr>`;
+  }
 
   for(let n=1;n<=4;n++){
     const x = getSample(s,n);
@@ -1116,7 +1144,9 @@ window.openSopDetailsModal = function(firebaseKey){
       </div>
     </div>
     <div class="bg-white p-4 rounded-lg shadow border flex flex-wrap justify-between items-center text-sm gap-2">
-      <div><b>Fixture Serial No:</b> ${s.fixtureNo}</div>
+      <div><b>Fixture Number:</b> ${s.fixtureNo}</div>
+      <div><b>Fixture Serial No:</b> ${s.fixtureSerialNo || '-'}</div>
+      <div><b>Setup Type:</b> ${s.setupType || 'Long'}</div>
       <div><b>Pallet:</b> ${s.pallet}</div>
       <div><b>Priority:</b> P${s.priority}</div>
       <div><b>Total Time:</b> <span class="text-red-600 font-bold">${s.totalTimeSpent}</span></div>

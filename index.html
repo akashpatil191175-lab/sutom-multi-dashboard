@@ -141,15 +141,6 @@ body{
   font-weight:700;
 }
 
-.machine-card{
-  transition:.2s;
-}
-
-.machine-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 25px rgba(0,0,0,.12);
-}
-
 .modal-scroll{
   max-height:90vh;
   overflow-y:auto;
@@ -158,10 +149,6 @@ body{
 .small-time{
   font-family:monospace;
   font-weight:700;
-}
-
-.workflow-header-card{
-  background:linear-gradient(135deg,#0f172a,#064e3b);
 }
 
 @media(max-width:768px){
@@ -289,7 +276,7 @@ Access Dashboard
 <h3 id="metric-ready" class="text-xl font-black text-green-700">0</h3>
 </div>
 <div onclick="openSetterModule('running')" class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-indigo-600">
-<p class="text-[10px] text-slate-500 font-bold uppercase">In Workflow</p>
+<p class="text-[10px] text-slate-500 font-bold uppercase">Running Setup</p>
 <h3 id="metric-running" class="text-xl font-black text-indigo-700">0</h3>
 </div>
 <div onclick="openSetterModule('correction')" class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-orange-500">
@@ -869,7 +856,7 @@ window.updateMetrics = function(){
   const el = (id,val)=>{ const e = document.getElementById(id); if(e) e.textContent=val; };
   el("metric-all", list.length);
   el("metric-ready", list.filter(s=> s.toolingReady && s.fixtureReady && !s.setupStarted).length);
-  el("metric-running", list.filter(s=> s.qualityStatus!=="SOP DONE").length);
+  el("metric-running", list.filter(s=> s.setupStarted && s.qualityStatus!=="SOP DONE").length);
   el("metric-correction", list.filter(s=> String(s.qualityStatus||"").includes("CORRECTION")).length);
   el("metric-approved", list.filter(s=> s.qualityStatus==="SOP DONE").length);
 };
@@ -879,10 +866,19 @@ window.renderSetterExcelTable = function(filterKey){
   const rowCount = document.getElementById("excelRowCount");
   if(!tbody) return;
   let list = window.allSetups || [];
-  if(filterKey==="ready"){ list = list.filter(s=> s.toolingReady && s.fixtureReady); }
-  else if(filterKey==="running"){ list = list.filter(s=> s.qualityStatus!=="SOP DONE"); }
-  else if(filterKey==="correction"){ list = list.filter(s=> String(s.qualityStatus||"").includes("CORRECTION")); }
-  else if(filterKey==="approved"){ list = list.filter(s=> s.qualityStatus==="SOP DONE"); }
+  
+  if(filterKey==="ready"){ 
+    list = list.filter(s=> s.toolingReady && s.fixtureReady && !s.setupStarted); 
+  }
+  else if(filterKey==="running"){ 
+    list = list.filter(s=> s.setupStarted && s.qualityStatus!=="SOP DONE"); 
+  }
+  else if(filterKey==="correction"){ 
+    list = list.filter(s=> String(s.qualityStatus||"").includes("CORRECTION")); 
+  }
+  else if(filterKey==="approved"){ 
+    list = list.filter(s=> s.qualityStatus==="SOP DONE"); 
+  }
 
   rowCount.textContent = `Rows: ${list.length}`;
   if(list.length===0){
@@ -912,7 +908,16 @@ window.renderSetterExcelTable = function(filterKey){
       <i class="fas fa-route text-lg"></i><br>
       <span class="text-[10px]">S1 → S2 → S3 → S4</span>
     </td>
-    <td class="font-bold"><span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">${s.qualityStatus||"-"}</span></td>
+    <td class="font-bold">
+      ${s.qualityStatus==="SOP DONE" ? `
+        <div onclick="openSopDetailsModal('${s.firebaseKey}')" class="bg-purple-100 text-purple-800 p-2 rounded cursor-pointer hover:bg-purple-200 border border-purple-300 shadow-sm transition" title="Click to view details">
+          <i class="fas fa-check-circle text-purple-600 mr-1"></i> <b>SOP APPROVED</b><br>
+          <span class="text-[10px] block text-slate-700">Date: ${s.setupDate}</span>
+          <span class="text-[10px] block text-blue-800 font-bold">Part: ${s.partName}</span>
+          <span class="text-[10px] block text-slate-600">No: ${s.partNo}</span>
+        </div>
+      ` : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">${s.qualityStatus||"-"}</span>`}
+    </td>
     <td>
       ${!s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">Tool Start</button>`
         : s.toolStart && !s.toolEnd ? `<button onclick="toolRoomEnd('${s.firebaseKey}')" class="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded">Tool End</button>`
@@ -948,7 +953,7 @@ window.renderToolroom = function(){
       <td class="p-3 text-xs">
         ${!isMatch ? `
           <span class="text-red-600 font-bold block mb-1">Mismatch Found!</span>
-          <input type="text" value="${s.toolRemark || ''}" onchange="updateToolRemarkInput('${s.firebaseKey}', this.value)" class="w-full p-1 border rounded text-xs" placeholder="Enter Remark">
+          <input type="text" id="remark_${s.firebaseKey}" value="${s.toolRemark || ''}" onchange="updateToolRemarkInput('${s.firebaseKey}', this.value)" class="w-full p-1 border rounded text-xs" placeholder="Enter Remark">
         ` : `<span class="text-green-600 font-bold">Fixture Matched</span>`}
       </td>
       <td class="p-3">
@@ -1051,7 +1056,6 @@ window.renderSupervisor = function(){
 };
 
 window.openWorkflowModal = function(firebaseKey){
-  // फक्त Setter, Supervisor आणि HOD यांनाच वर्कफ्लो दिसेल
   if(window.currentUser && window.currentUser.dept !== 'setter' && window.currentUser.dept !== 'supervisor'){
     alert("वर्कफ्लो पाहण्याची परवानगी फक्त Setter, Supervisor आणि HOD यांना आहे.");
     return;
@@ -1070,9 +1074,15 @@ window.openWorkflowModal = function(firebaseKey){
   for(let n=1;n<=4;n++){
     const x = getSample(s,n);
     if(!x.setterStart && !x.setterEnd && n>s.sampleCount) continue;
-    rows+=`<tr><td rowspan="3" class="font-black text-purple-700 bg-purple-50">S${n}</td><td class="text-left font-bold">SETTER<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.setterStart||"-"}</td><td class="stage-end">${x.setterEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.setterStart, x.setterEnd)}</td><td>${x.cutTime?`<span class="text-green-700 font-bold">DONE</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
-    rows+=`<tr><td class="text-left font-bold">CMM ROOM<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.cmmStart||"-"}</td><td class="stage-end">${x.cmmEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.cmmStart, x.cmmEnd)}</td><td>${x.cmmEnd?`<span class="text-green-700 font-bold">DONE</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
-    rows+=`<tr><td class="text-left font-bold">QUALITY<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.qualityStart||"-"}</td><td class="stage-end">${x.qualityEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.qualityStart, x.qualityEnd)}</td><td>${x.result?`<span class="text-green-700 font-bold">${x.result}</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
+    
+    // Status Logic for workflow table rows
+    let setStatus = x.cutTime ? '<span class="text-green-700 font-bold">DONE</span>' : (x.setterStart ? '<span class="text-blue-700 font-bold">RUNNING</span>' : '<span class="text-yellow-700 font-bold">PENDING</span>');
+    let cmmStatus = x.cmmEnd ? '<span class="text-green-700 font-bold">DONE</span>' : (x.cmmStart ? '<span class="text-blue-700 font-bold">RUNNING</span>' : '<span class="text-yellow-700 font-bold">PENDING</span>');
+    let qStatus = x.result ? `<span class="text-green-700 font-bold">${x.result}</span>` : (x.qualityStart ? '<span class="text-blue-700 font-bold">RUNNING</span>' : '<span class="text-yellow-700 font-bold">PENDING</span>');
+
+    rows+=`<tr><td rowspan="3" class="font-black text-purple-700 bg-purple-50">S${n}</td><td class="text-left font-bold">SETTER<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.setterStart||"-"}</td><td class="stage-end">${x.setterEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.setterStart, x.setterEnd)}</td><td>${setStatus}</td></tr>`;
+    rows+=`<tr><td class="text-left font-bold">CMM ROOM<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.cmmStart||"-"}</td><td class="stage-end">${x.cmmEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.cmmStart, x.cmmEnd)}</td><td>${cmmStatus}</td></tr>`;
+    rows+=`<tr><td class="text-left font-bold">QUALITY<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.qualityStart||"-"}</td><td class="stage-end">${x.qualityEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.qualityStart, x.qualityEnd)}</td><td>${qStatus}</td></tr>`;
   }
 
   document.getElementById("workflowContent").innerHTML=`
@@ -1081,6 +1091,43 @@ window.openWorkflowModal = function(firebaseKey){
   <thead><tr><th>SR.</th><th>DEPARTMENT</th><th>START</th><th>END</th><th>TOTAL</th><th>STATUS</th></tr></thead>
   <tbody>${rows}</tbody>
   </table>
+  </div>`;
+};
+
+window.openSopDetailsModal = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+  if(!s) return;
+  document.getElementById("workflowModal").classList.remove("hidden");
+  document.getElementById("workflowTitle").textContent = `${s.machineName} - SOP APPROVED DETAILS`;
+  document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Status: Successfully Approved`;
+
+  document.getElementById("workflowContent").innerHTML=`
+  <div class="bg-purple-50 p-6 rounded-xl border border-purple-300 shadow-inner space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+      <div class="bg-white p-4 rounded-lg shadow border">
+        <p class="text-xs text-slate-500 font-bold">SETUP DATE</p>
+        <p class="text-lg font-black text-purple-700 mt-1">${s.setupDate}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow border">
+        <p class="text-xs text-slate-500 font-bold">PART NAME</p>
+        <p class="text-lg font-black text-blue-700 mt-1">${s.partName}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow border">
+        <p class="text-xs text-slate-500 font-bold">PART NUMBER</p>
+        <p class="text-lg font-black text-emerald-700 mt-1">${s.partNo}</p>
+      </div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow border flex justify-between items-center text-sm">
+      <div><b>Fixture Serial No:</b> ${s.fixtureNo}</div>
+      <div><b>Pallet:</b> ${s.pallet}</div>
+      <div><b>Priority:</b> P${s.priority}</div>
+      <div><b>Total Time:</b> <span class="text-red-600 font-bold">${s.totalTimeSpent}</span></div>
+    </div>
+    <div class="text-center pt-2">
+      <button onclick="openWorkflowModal('${s.firebaseKey}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-xs">
+        <i class="fas fa-route mr-1"></i> View Full Workflow History
+      </button>
+    </div>
   </div>`;
 };
 

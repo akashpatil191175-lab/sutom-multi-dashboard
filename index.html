@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUTOM - Setup Time Monitor & Workflow (Multi-Sample Tracker with Supabase)</title>
+<title>SUTOM - Setup Time Monitor & Workflow (Multi-Sample Tracker with Firebase)</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<!-- Supabase JS Client Library -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Firebase App (v10) & Realtime Database CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <style>
 @keyframes pulse-red { 0%,100% { background:#fee2e2; border-color:#ef4444; } 50% { background:#fca5a5; border-color:#dc2626; } }
 .alert-active { animation:pulse-red.8s infinite; }
@@ -30,7 +31,7 @@
       <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400">S</div>
       <div>
         <h1 class="text-xl font-bold tracking-wide text-emerald-400">SUTOM</h1>
-        <p class="text-xs text-slate-400">Multi-Sample & Department-wise Setup Monitor (Supabase Connected)</p>
+        <p class="text-xs text-slate-400">Multi-Sample & Department-wise Setup Monitor (Firebase Connected)</p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -48,7 +49,7 @@
   </div>
   <div class="firebase-live-bar live">
     <i class="fas fa-circle text-green-400 mr-2"></i>
-    <span>SUPABASE CLOUD ACTIVE • 1st, 2nd, 3rd, 4th SAMPLE & CORRECTION TIME TRACKER ENABLED</span>
+    <span>FIREBASE LIVE SYNC ACTIVE • 1st, 2nd, 3rd, 4th SAMPLE & CORRECTION TIME TRACKER ENABLED</span>
   </div>
 </header>
 
@@ -177,7 +178,7 @@
     <!-- MAIN EXCEL TABLE -->
     <div class="excel-table-container shadow-xl">
       <div class="bg-emerald-800 text-white p-3 px-4 flex justify-between items-center border-b">
-        <h3 id="excelTableTitle" class="font-bold text-sm">MULTI-SAMPLE WORKFLOW & DEPARTMENT TIMELINE TRACKER (Supabase)</h3>
+        <h3 id="excelTableTitle" class="font-bold text-sm">MULTI-SAMPLE WORKFLOW & DEPARTMENT TIMELINE TRACKER (Firebase Live)</h3>
         <span class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200" id="excelRowCount">Rows: 0</span>
       </div>
       <div class="overflow-x-auto max-h-[550px]">
@@ -195,7 +196,7 @@
             </tr>
           </thead>
           <tbody id="setterExcelTableBody">
-            <tr><td colspan="8" class="p-6 text-slate-400 font-semibold">Loading from Supabase...</td></tr>
+            <tr><td colspan="8" class="p-6 text-slate-400 font-semibold">Loading from Firebase...</td></tr>
           </tbody>
         </table>
       </div>
@@ -278,10 +279,20 @@
 </div>
 
 <script>
-// Supabase Configuration Integration
-const SUPABASE_URL = "https://umtjqgyeqcudtckanbhp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_kcvEFWRlaNam_bS43NtB4Q_rSog55hV";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Firebase Configuration Integration
+const firebaseConfig = {
+  apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
+  authDomain: "sutom-multi-dashboard.firebaseapp.com",
+  databaseURL: "https://sutom-multi-dashboard-default-rtdb.firebaseio.com",
+  projectId: "sutom-multi-dashboard",
+  storageBucket: "sutom-multi-dashboard.firebasestorage.app",
+  messagingSenderId: "202116185102",
+  appId: "1:202116185102:web:28efd6421d0215d58ed05f"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref("setups");
 
 window.allSetups = [];
 window.currentExcelFilter = 'all';
@@ -299,7 +310,7 @@ function updateLiveTime() {
 setInterval(updateLiveTime, 1000);
 updateLiveTime();
 
-window.addEventListener("DOMContentLoaded", async ()=>{
+window.addEventListener("DOMContentLoaded", ()=>{
   const u = localStorage.getItem("sutom_user");
   if(u){
     try { window.currentUser = JSON.parse(u); loadDashboard(window.currentUser); } catch { localStorage.removeItem("sutom_user"); }
@@ -307,58 +318,27 @@ window.addEventListener("DOMContentLoaded", async ()=>{
   const dateInput = document.getElementById("setupDate");
   if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
   
-  await fetchSetupsFromSupabase();
-});
-
-// Fetch Data from Supabase table named 'setups'
-async function fetchSetupsFromSupabase() {
-  try {
-    const { data, error } = await supabaseClient
-      .from('setups')
-      .select('*')
-      .order('timestampRegistered', { ascending: false });
-    
-    if (error) {
-      console.error('Supabase fetch error:', error);
-      // जर टेबल तयार नसेल किंवा एरर आला तर लोकल डमी डेटा वापरू शकता
-      window.allSetups = [];
+  // Realtime Listeners from Firebase Database
+  dbRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    if(data) {
+      window.allSetups = Object.values(data).sort((a,b) => b.timestampRegistered - a.timestampRegistered);
     } else {
-      window.allSetups = data || [];
+      window.allSetups = [];
     }
     window.renderAllViews();
-  } catch (err) {
-    console.error('Connection error:', err);
-  }
-}
+  }, (error) => {
+    console.error("Firebase read error:", error);
+  });
+});
 
-// Sync / Update record in Supabase
-async function updateSetupInSupabase(setupItem) {
-  try {
-    const { error } = await supabaseClient
-      .from('setups')
-      .upsert([setupItem]);
-
-    if (error) {
-      console.error('Supabase update error:', error);
-      alert('Supabase update failed: ' + error.message);
-    } else {
-      await fetchSetupsFromSupabase();
-    }
-  } catch (err) {
-    console.error('Sync error:', err);
-  }
-}
-
-async function handleResetAllData() {
-  if(confirm("सर्व डेटा Supabase मधୁन डिलीट करायचा का?")) {
-    try {
-      const { error } = await supabaseClient.from('setups').delete().neq('id', '0');
-      window.allSetups = [];
-      window.renderAllViews();
+function handleResetAllData() {
+  if(confirm("सर्व डेटा Firebase मधून डिलीट करायचा का?")) {
+    dbRef.remove().then(() => {
       alert("डेटा यशस्वीरित्या रिकामा केला!");
-    } catch(err) {
+    }).catch((err) => {
       console.error(err);
-    }
+    });
   }
 }
 
@@ -408,10 +388,12 @@ function openSetterModule(key) {
   else { window.currentExcelFilter = key; window.renderSetterExcelTable(key); }
 }
 
-async function handleSetterSubmit(e) {
+function handleSetterSubmit(e) {
   e.preventDefault();
   const now = new Date();
+  const newKey = dbRef.push().key;
   const newItem = {
+    firebaseKey: newKey,
     id: "ST-" + Math.floor(1000 + Math.random() * 9000),
     machineName: document.getElementById("machineName").value,
     partName: document.getElementById("partName").value.trim(),
@@ -435,10 +417,13 @@ async function handleSetterSubmit(e) {
     totalTimeSpent: "Pending"
   };
 
-  await updateSetupInSupabase(newItem);
-  triggerAlert("SUCCESS", `New Setup Registered & Saved to Supabase for Machine ${newItem.machineName}`);
-  document.getElementById("setterForm").reset();
-  toggleSetupForm(false);
+  dbRef.child(newKey).set(newItem).then(() => {
+    triggerAlert("SUCCESS", `New Setup Registered & Saved to Firebase for Machine ${newItem.machineName}`);
+    document.getElementById("setterForm").reset();
+    toggleSetupForm(false);
+  }).catch((err) => {
+    alert("Error saving to Firebase: " + err.message);
+  });
 }
 
 window.updateMetrics = function() {
@@ -506,9 +491,9 @@ window.renderSetterExcelTable = function(filterKey) {
       </td>
       <td>
         ${s.toolingReady && s.fixtureReady && !s.setupStarted ? 
-          `<button onclick="setterStartSetup('${s.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Start Setup</button>` :
+          `<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Start Setup</button>` :
           (s.setupStarted && s.qualityStatus !== 'SOP DONE' ? 
-            `<button onclick="setterCutSample('${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Cut Sample #${s.sampleCount}</button>` :
+            `<button onclick="setterCutSample('${s.firebaseKey}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded shadow">Cut Sample #${s.sampleCount}</button>` :
             `<span class="text-xs text-green-700 font-bold">${s.totalTimeSpent}</span>`
           )
         }
@@ -517,26 +502,26 @@ window.renderSetterExcelTable = function(filterKey) {
   `).join('');
 };
 
-window.setterStartSetup = async function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) { 
-    s.setupStarted = true; 
-    s.stage = "Sample #1 Cutting"; 
-    await updateSetupInSupabase(s); 
-  }
+window.setterStartSetup = function(firebaseKey) {
+  dbRef.child(firebaseKey).update({
+    setupStarted: true,
+    stage: "Sample #1 Cutting"
+  });
 }
 
-window.setterCutSample = async function(id) {
-  const s = window.allSetups.find(x => x.id === id);
+window.setterCutSample = function(firebaseKey) {
+  const s = window.allSetups.find(x => x.firebaseKey === firebaseKey);
   if(s) {
     const timeNow = new Date().toLocaleTimeString();
-    if(s.sampleCount === 1) s.s1_cut = timeNow;
-    else if(s.sampleCount === 2) s.s2_cut = timeNow;
-    else if(s.sampleCount === 3) s.s3_cut = timeNow;
-    else if(s.sampleCount === 4) s.s4_cut = timeNow;
+    let updates = {};
+    if(s.sampleCount === 1) updates.s1_cut = timeNow;
+    else if(s.sampleCount === 2) updates.s2_cut = timeNow;
+    else if(s.sampleCount === 3) updates.s3_cut = timeNow;
+    else if(s.sampleCount === 4) updates.s4_cut = timeNow;
     
-    await updateSetupInSupabase(s);
-    triggerAlert("CMM ROOM", `Sample #${s.sampleCount} cut completed for Machine ${s.machineName}. Send to CMM Room.`);
+    dbRef.child(firebaseKey).update(updates).then(() => {
+      triggerAlert("CMM ROOM", `Sample #${s.sampleCount} cut completed for Machine ${s.machineName}. Send to CMM Room.`);
+    });
   }
 }
 
@@ -553,27 +538,19 @@ window.renderToolroom = function() {
         Fixture: <span class="${s.fixtureReady?'text-green-600 font-bold':'text-red-500'}">${s.fixtureReady?'Ready':'Pending'}</span>
       </td>
       <td class="p-3 space-x-2">
-        <button onclick="toggleTooling('${s.id}')" class="bg-blue-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">Tool Ready</button>
-        <button onclick="toggleFixture('${s.id}')" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">Fixture Ready</button>
+        <button onclick="toggleTooling('${s.firebaseKey}', ${s.toolingReady})" class="bg-blue-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">Tool Ready</button>
+        <button onclick="toggleFixture('${s.firebaseKey}', ${s.fixtureReady})" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">Fixture Ready</button>
       </td>
     </tr>
   `).join('');
 };
 
-window.toggleTooling = async function(id) { 
-  const s = window.allSetups.find(x => x.id === id); 
-  if(s) { 
-    s.toolingReady = !s.toolingReady; 
-    await updateSetupInSupabase(s); 
-  } 
+window.toggleTooling = function(firebaseKey, currentStatus) { 
+  dbRef.child(firebaseKey).update({ toolingReady: !currentStatus }); 
 }
 
-window.toggleFixture = async function(id) { 
-  const s = window.allSetups.find(x => x.id === id); 
-  if(s) { 
-    s.fixtureReady = !s.fixtureReady; 
-    await updateSetupInSupabase(s); 
-  } 
+window.toggleFixture = function(firebaseKey, currentStatus) { 
+  dbRef.child(firebaseKey).update({ fixtureReady: !currentStatus }); 
 }
 
 /* CMM / STD ROOM */
@@ -585,38 +562,39 @@ window.renderSTDRoom = function() {
       <td class="p-3 font-bold">${s.machineName} - ${s.partName}</td>
       <td class="p-3 font-bold text-indigo-700">Active: Sample #${s.sampleCount}</td>
       <td class="p-3 space-x-2 flex">
-        <button onclick="cmmInsp('${s.id}')" class="bg-blue-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">1. Inspection Done</button>
-        <button onclick="cmmReport('${s.id}')" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">2. CMM Report Check</button>
+        <button onclick="cmmInsp('${s.firebaseKey}', ${s.sampleCount})" class="bg-blue-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">1. Inspection Done</button>
+        <button onclick="cmmReport('${s.firebaseKey}', ${s.sampleCount})" class="bg-purple-600 text-white text-xs px-2.5 py-1.5 rounded font-bold">2. CMM Report Check</button>
       </td>
     </tr>
   `).join('');
 };
 
-window.cmmInsp = async function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    const t = new Date().toLocaleTimeString();
-    if(s.sampleCount === 1) s.s1_insp = t;
-    else if(s.sampleCount === 2) s.s2_insp = t;
-    else if(s.sampleCount === 3) s.s3_insp = t;
-    else if(s.sampleCount === 4) s.s4_insp = t;
-    await updateSetupInSupabase(s);
-    triggerAlert("CMM", `Sample #${s.sampleCount} inspection time recorded.`);
-  }
+window.cmmInsp = function(firebaseKey, sampleCount) {
+  const t = new Date().toLocaleTimeString();
+  let updates = {};
+  if(sampleCount === 1) updates.s1_insp = t;
+  else if(sampleCount === 2) updates.s2_insp = t;
+  else if(sampleCount === 3) updates.s3_insp = t;
+  else if(sampleCount === 4) updates.s4_insp = t;
+
+  dbRef.child(firebaseKey).update(updates).then(() => {
+    triggerAlert("CMM", `Sample #${sampleCount} inspection time recorded.`);
+  });
 }
 
-window.cmmReport = async function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    const t = new Date().toLocaleTimeString();
-    if(s.sampleCount === 1) { s.s1_cmm = t; s.s1_result = "Report Checked"; }
-    else if(s.sampleCount === 2) { s.s2_cmm = t; s.s2_result = "Report Checked"; }
-    else if(s.sampleCount === 3) { s.s3_cmm = t; s.s3_result = "Report Checked"; }
-    else if(s.sampleCount === 4) { s.s4_cmm = t; s.s4_result = "Report Checked"; }
-    s.qualityStatus = `Sample #${s.sampleCount} Report Checked`;
-    await updateSetupInSupabase(s);
-    triggerAlert("QUALITY", `CMM report ready for Quality Approval for Sample #${s.sampleCount}.`);
-  }
+window.cmmReport = function(firebaseKey, sampleCount) {
+  const t = new Date().toLocaleTimeString();
+  let updates = {};
+  if(sampleCount === 1) { updates.s1_cmm = t; updates.s1_result = "Report Checked"; }
+  else if(sampleCount === 2) { updates.s2_cmm = t; updates.s2_result = "Report Checked"; }
+  else if(sampleCount === 3) { updates.s3_cmm = t; updates.s3_result = "Report Checked"; }
+  else if(sampleCount === 4) { updates.s4_cmm = t; updates.s4_result = "Report Checked"; }
+  
+  updates.qualityStatus = `Sample #${sampleCount} Report Checked`;
+
+  dbRef.child(firebaseKey).update(updates).then(() => {
+    triggerAlert("QUALITY", `CMM report ready for Quality Approval for Sample #${sampleCount}.`);
+  });
 }
 
 /* QUALITY */
@@ -634,8 +612,8 @@ window.renderQuality = function() {
             <td class="p-3 font-bold">${s.machineName} - ${s.partName}</td>
             <td class="p-3 font-bold text-emerald-700">${s.qualityStatus} (Sample #${s.sampleCount})</td>
             <td class="p-3 space-x-2 flex">
-              <button onclick="qualityApprove('${s.id}')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">SOP Approve</button>
-              ${s.sampleCount < 4 ? `<button onclick="qualityCorrection('${s.id}')" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold">Correction (Next Sample)</button>` : ''}
+              <button onclick="qualityApprove('${s.firebaseKey}', ${s.sampleCount}, ${s.timestampRegistered})" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">SOP Approve</button>
+              ${s.sampleCount < 4 ? `<button onclick="qualityCorrection('${s.firebaseKey}', ${s.sampleCount})" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold">Correction (Next Sample)</button>` : ''}
             </td>
           </tr>
         `).join('')}
@@ -644,38 +622,42 @@ window.renderQuality = function() {
   `;
 };
 
-window.qualityApprove = async function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s) {
-    const now = new Date();
-    s.qualityStatus = "SOP DONE";
-    s.stage = "SOP APPROVED";
-    s.timeSopDone = now.toLocaleTimeString();
-    if(s.sampleCount === 1) s.s1_result = "SOP Approved";
-    else if(s.sampleCount === 2) s.s2_result = "SOP Approved";
-    else if(s.sampleCount === 3) s.s3_result = "SOP Approved";
-    else if(s.sampleCount === 4) s.s4_result = "SOP Approved";
+window.qualityApprove = function(firebaseKey, sampleCount, timestampRegistered) {
+  const now = new Date();
+  let updates = {
+    qualityStatus: "SOP DONE",
+    stage: "SOP APPROVED",
+    timeSopDone: now.toLocaleTimeString()
+  };
 
-    let diffMs = now.getTime() - s.timestampRegistered;
-    let mins = Math.floor(diffMs / 60000);
-    s.totalTimeSpent = `${mins} मिनिटे`;
+  if(sampleCount === 1) updates.s1_result = "SOP Approved";
+  else if(sampleCount === 2) updates.s2_result = "SOP Approved";
+  else if(sampleCount === 3) updates.s3_result = "SOP Approved";
+  else if(sampleCount === 4) updates.s4_result = "SOP Approved";
 
-    await updateSetupInSupabase(s);
-    triggerAlert("SUCCESS", `SOP Approved successfully! Total Time: ${s.totalTimeSpent}`);
-  }
+  let diffMs = now.getTime() - timestampRegistered;
+  let mins = Math.floor(diffMs / 60000);
+  updates.totalTimeSpent = `${mins} मिनिटे`;
+
+  dbRef.child(firebaseKey).update(updates).then(() => {
+    triggerAlert("SUCCESS", `SOP Approved successfully! Total Time: ${updates.totalTimeSpent}`);
+  });
 }
 
-window.qualityCorrection = async function(id) {
-  const s = window.allSetups.find(x => x.id === id);
-  if(s && s.sampleCount < 4) {
-    if(s.sampleCount === 1) s.s1_result = "Correction Req.";
-    if(s.sampleCount === 2) s.s2_result = "Correction Req.";
-    if(s.sampleCount === 3) s.s3_result = "Correction Req.";
+window.qualityCorrection = function(firebaseKey, sampleCount) {
+  if(sampleCount < 4) {
+    let updates = {};
+    if(sampleCount === 1) updates.s1_result = "Correction Req.";
+    if(sampleCount === 2) updates.s2_result = "Correction Req.";
+    if(sampleCount === 3) updates.s3_result = "Correction Req.";
     
-    s.sampleCount += 1;
-    s.qualityStatus = `Sample #${s.sampleCount} CORRECTION REQUIRED`;
-    await updateSetupInSupabase(s);
-    triggerAlert("CORRECTION", `Correction required. Shifted to Sample #${s.sampleCount} cutting cycle.`);
+    let nextCount = sampleCount + 1;
+    updates.sampleCount = nextCount;
+    updates.qualityStatus = `Sample #${nextCount} CORRECTION REQUIRED`;
+
+    dbRef.child(firebaseKey).update(updates).then(() => {
+      triggerAlert("CORRECTION", `Correction required. Shifted to Sample #${nextCount} cutting cycle.`);
+    });
   }
 }
 

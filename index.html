@@ -13,7 +13,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
 <style>
-
 *{
   box-sizing:border-box;
 }
@@ -93,6 +92,16 @@ body{
   background:#dcfce7;
 }
 
+.machine-click{
+  cursor:pointer;
+  transition:.2s;
+}
+
+.machine-click:hover{
+  background:#bfdbfe !important;
+  transform:scale(1.01);
+}
+
 .workflow-table{
   width:100%;
   border-collapse:collapse;
@@ -105,6 +114,7 @@ body{
   padding:10px;
   border:1px solid #334155;
   text-align:center;
+  white-space:nowrap;
 }
 
 .workflow-table td{
@@ -120,11 +130,15 @@ body{
 .stage-start{
   background:#dbeafe;
   color:#1d4ed8;
+  font-family:monospace;
+  font-weight:700;
 }
 
 .stage-end{
   background:#dcfce7;
   color:#15803d;
+  font-family:monospace;
+  font-weight:700;
 }
 
 .stage-pending{
@@ -147,7 +161,7 @@ body{
 }
 
 .modal-scroll{
-  max-height:85vh;
+  max-height:90vh;
   overflow-y:auto;
 }
 
@@ -156,6 +170,25 @@ body{
   font-weight:700;
 }
 
+.workflow-header-card{
+  background:linear-gradient(135deg,#0f172a,#064e3b);
+}
+
+@media(max-width:768px){
+
+  .workflow-table{
+    font-size:11px;
+  }
+
+  .workflow-table th,
+  .workflow-table td{
+    padding:7px 5px;
+  }
+
+  .excel-table{
+    font-size:11px;
+  }
+}
 </style>
 </head>
 
@@ -219,7 +252,7 @@ Logout
 <i class="fas fa-circle text-green-400 mr-2"></i>
 
 <span>
-FIREBASE LIVE SYNC ACTIVE • SAMPLE 1 → SAMPLE 2 → SAMPLE 3 → SAMPLE 4
+FIREBASE LIVE SYNC ACTIVE • S1 → S2 → S3 → S4
 </span>
 
 </div>
@@ -265,7 +298,6 @@ class="w-full p-2.5 border rounded-lg text-sm"
 placeholder="Enter name">
 </div>
 
-
 <div>
 
 <label class="block text-xs font-bold mb-1">
@@ -280,7 +312,6 @@ class="w-full p-2.5 border rounded-lg text-sm"
 placeholder="Enter ID">
 
 </div>
-
 
 <div>
 
@@ -321,7 +352,6 @@ class="w-full p-2.5 border rounded-lg text-sm bg-white">
 
 </div>
 
-
 <button
 type="submit"
 class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md">
@@ -359,7 +389,7 @@ SETTER CONTROL & MULTI-SAMPLE WORKFLOW
 </h2>
 
 <p class="text-xs text-slate-400">
-Sample 1 → Sample 2 → Sample 3 → Sample 4
+Machine वर CLICK करा → Complete Workflow
 </p>
 
 </div>
@@ -698,7 +728,7 @@ REGISTER SETUP & START WORKFLOW
 <div class="bg-emerald-800 text-white p-3 px-4 flex justify-between items-center border-b">
 
 <h3 class="font-bold text-sm">
-REGISTERED SETUP MACHINES & WORKFLOW
+REGISTERED SETUP MACHINES
 </h3>
 
 <span
@@ -721,27 +751,13 @@ Rows: 0
 <tr>
 
 <th>#</th>
-
 <th>SETUP ID</th>
-
-<th>MACHINE / PART</th>
-
+<th>MACHINE / PART<br><span class="text-[10px]">CLICK FOR WORKFLOW</span></th>
 <th>PALLET</th>
-
 <th>PRIORITY</th>
-
 <th>TOOL ROOM</th>
-
-<th>SAMPLE 1</th>
-
-<th>SAMPLE 2</th>
-
-<th>SAMPLE 3</th>
-
-<th>SAMPLE 4</th>
-
+<th>WORKFLOW</th>
 <th>CURRENT STATUS</th>
-
 <th>ACTION</th>
 
 </tr>
@@ -752,7 +768,7 @@ Rows: 0
 
 <tr>
 
-<td colspan="12"
+<td colspan="9"
 class="p-6 text-slate-400 font-semibold">
 
 Loading...
@@ -997,19 +1013,7 @@ Tool Room
 </th>
 
 <th class="p-2 border">
-Sample 1
-</th>
-
-<th class="p-2 border">
-Sample 2
-</th>
-
-<th class="p-2 border">
-Sample 3
-</th>
-
-<th class="p-2 border">
-Sample 4
+Workflow
 </th>
 
 <th class="p-2 border">
@@ -1190,7 +1194,7 @@ for(let i=1;i<=35;i++){
 
 
 /* =========================================================
-   LOAD MACHINE LIST
+   MACHINE LIST LOAD
 ========================================================= */
 
 function loadMachineList(){
@@ -1351,6 +1355,7 @@ window.addEventListener(
 
       window.allSetups =
       Object.values(data)
+      .map(x=>x)
       .sort(
         (a,b)=>
         (b.timestampRegistered||0)
@@ -1563,7 +1568,7 @@ function openSetterModule(key){
 
 
 /* =========================================================
-   CREATE SAMPLE OBJECT
+   EMPTY SAMPLE
 ========================================================= */
 
 function emptySample(){
@@ -1662,15 +1667,11 @@ function handleSetterSubmit(e){
     window.currentUser.id :
     "",
 
-
     timestampRegistered:
     now.getTime(),
 
     timeRegistered:
     now.toLocaleTimeString(),
-
-
-    /* TOOL ROOM */
 
     toolStart:null,
     toolEnd:null,
@@ -1679,13 +1680,7 @@ function handleSetterSubmit(e){
     toolingReady:false,
     fixtureReady:false,
 
-
-    /* SETUP */
-
     setupStarted:false,
-
-
-    /* SAMPLE */
 
     sampleCount:1,
 
@@ -1693,7 +1688,6 @@ function handleSetterSubmit(e){
     s2:emptySample(),
     s3:emptySample(),
     s4:emptySample(),
-
 
     qualityStatus:
     "TOOL ROOM PENDING",
@@ -1909,30 +1903,30 @@ function(firebaseKey){
   if(!s) return;
 
 
+  const n =
+  s.sampleCount || 1;
+
   const updates={
 
     setupStarted:true,
 
     stage:
-    `Sample #${s.sampleCount} - SETTER`,
+    `Sample #${n} - SETTER`,
 
     qualityStatus:
-    `Sample #${s.sampleCount} SETTER RUNNING`
+    `Sample #${n} SETTER RUNNING`
 
   };
 
 
   const sample =
-  getSample(
-  s,
-  s.sampleCount
-  );
+  getSample(s,n);
 
 
   if(!sample.setterStart){
 
     updates[
-      `s${s.sampleCount}/setterStart`
+      `s${n}/setterStart`
     ] =
     currentTime();
 
@@ -1947,7 +1941,7 @@ function(firebaseKey){
 
 
 /* =========================================================
-   SETTER END / CUT SAMPLE
+   SETTER END
 ========================================================= */
 
 window.setterEndSample =
@@ -1962,7 +1956,7 @@ function(firebaseKey){
 
 
   const n =
-  s.sampleCount;
+  s.sampleCount || 1;
 
   const sample =
   getSample(s,n);
@@ -2101,7 +2095,7 @@ function(firebaseKey){
 
 
   const n =
-  s.sampleCount;
+  s.sampleCount || 1;
 
 
   const updates={
@@ -2141,7 +2135,7 @@ function(firebaseKey){
 
 
   const n =
-  s.sampleCount;
+  s.sampleCount || 1;
 
   const sample =
   getSample(s,n);
@@ -2179,7 +2173,7 @@ function(firebaseKey){
 
     triggerAlert(
       "QUALITY",
-      `Sample #${n} CMM inspection completed. Send to Quality.`
+      `Sample #${n} CMM inspection completed. Send ${s.machineName} to Quality.`
     );
 
   });
@@ -2203,7 +2197,7 @@ function(firebaseKey){
 
 
   const n =
-  s.sampleCount;
+  s.sampleCount || 1;
 
 
   dbRef
@@ -2240,7 +2234,7 @@ function(firebaseKey){
 
 
   const n =
-  s.sampleCount;
+  s.sampleCount || 1;
 
   const sample =
   getSample(s,n);
@@ -2294,7 +2288,10 @@ function(firebaseKey){
 
 
   const n =
-  s.sampleCount;
+  s.sampleCount || 1;
+
+  const doneTime =
+  currentTime();
 
   const updates={
 
@@ -2308,7 +2305,7 @@ function(firebaseKey){
     "SOP APPROVED",
 
     timeSopDone:
-    currentTime()
+    doneTime
 
   };
 
@@ -2322,7 +2319,7 @@ function(firebaseKey){
     "SOP DONE",
 
     timeSopDone:
-    currentTime()
+    doneTime
 
   });
 
@@ -2358,7 +2355,7 @@ function(firebaseKey){
 
 
   const n =
-  s.sampleCount;
+  s.sampleCount || 1;
 
 
   if(n>=4){
@@ -2408,7 +2405,7 @@ function(firebaseKey){
 
 
 /* =========================================================
-   RENDER METRICS
+   METRICS
 ========================================================= */
 
 window.updateMetrics =
@@ -2480,58 +2477,9 @@ function(){
 
 
 /* =========================================================
-   SAMPLE MINI VIEW
-========================================================= */
-
-function sampleMini(s,n){
-
-  const x =
-  getSample(s,n);
-
-  return `
-
-  <div class="text-left text-[11px]">
-
-    <b class="text-blue-700">
-    S${n}
-    </b>
-
-    <br>
-
-    Setter:
-    ${x.setterStart||"-"}
-    →
-    ${x.setterEnd||"-"}
-
-    <br>
-
-    CMM:
-    ${x.cmmStart||"-"}
-    →
-    ${x.cmmEnd||"-"}
-
-    <br>
-
-    Quality:
-    ${x.qualityStart||"-"}
-    →
-    ${x.qualityEnd||"-"}
-
-    <br>
-
-    <b>
-    ${x.result||"Pending"}
-    </b>
-
-  </div>
-
-  `;
-
-}
-
-
-/* =========================================================
    SETTER TABLE
+   IMPORTANT:
+   NO SAMPLE 1-4 COLUMNS
 ========================================================= */
 
 window.renderSetterExcelTable =
@@ -2610,7 +2558,7 @@ function(filterKey){
 
     <tr>
 
-    <td colspan="12"
+    <td colspan="9"
     class="p-6 text-slate-400 font-semibold text-center">
 
     No registered setup machines found.
@@ -2642,9 +2590,10 @@ function(filterKey){
     </td>
 
 
+    <!-- MACHINE CLICK -->
     <td
     onclick="openWorkflowModal('${s.firebaseKey}')"
-    class="text-left font-bold text-blue-700 bg-blue-50 cursor-pointer">
+    class="machine-click text-left font-bold text-blue-700 bg-blue-50">
 
       <span class="text-lg">
       ${s.machineName}
@@ -2664,8 +2613,9 @@ function(filterKey){
 
       <br>
 
-      <span class="text-[10px] text-purple-700">
-      Click → Full Workflow
+      <span class="inline-block mt-1 text-[10px] bg-blue-600 text-white px-2 py-1 rounded font-bold">
+      <i class="fas fa-mouse-pointer mr-1"></i>
+      CLICK → FULL WORKFLOW
       </span>
 
     </td>
@@ -2709,23 +2659,26 @@ function(filterKey){
     </td>
 
 
-    <td>
-    ${sampleMini(s,1)}
-    </td>
+    <!-- ONE WORKFLOW COLUMN -->
 
+    <td
+    onclick="openWorkflowModal('${s.firebaseKey}')"
+    class="machine-click bg-indigo-50 text-indigo-700 font-bold">
 
-    <td>
-    ${sampleMini(s,2)}
-    </td>
+      <i class="fas fa-route text-lg"></i>
 
+      <br>
 
-    <td>
-    ${sampleMini(s,3)}
-    </td>
+      <span class="text-[10px]">
+      S1 → S2 → S3 → S4
+      </span>
 
+      <br>
 
-    <td>
-    ${sampleMini(s,4)}
+      <span class="text-[9px] text-slate-500">
+      Click machine to view
+      </span>
+
     </td>
 
 
@@ -2733,7 +2686,7 @@ function(filterKey){
 
       <span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">
 
-      ${s.qualityStatus}
+      ${s.qualityStatus||"-"}
 
       </span>
 
@@ -2765,7 +2718,7 @@ function(filterKey){
 
         :
 
-        !getSample(s,s.sampleCount).setterStart
+        !getSample(s,s.sampleCount||1).setterStart
         ?
 
         `<button
@@ -2776,7 +2729,7 @@ function(filterKey){
 
         :
 
-        !getSample(s,s.sampleCount).setterEnd
+        !getSample(s,s.sampleCount||1).setterEnd
         ?
 
         `<button
@@ -2787,11 +2740,9 @@ function(filterKey){
 
         :
 
-        `<button
-        onclick="openWorkflowModal('${s.firebaseKey}')"
-        class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
-        View Workflow
-        </button>`
+        `<span class="text-xs font-bold text-green-700">
+        Workflow Active
+        </span>`
 
       }
 
@@ -2851,7 +2802,9 @@ function(){
 
   <tr class="border-b">
 
-    <td class="p-3 font-bold">
+    <td
+    onclick="openWorkflowModal('${s.firebaseKey}')"
+    class="p-3 font-bold machine-click text-blue-700">
 
       ${s.machineName}
       -
@@ -2861,6 +2814,12 @@ function(){
 
       <span class="text-[10px] text-slate-500">
       ${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}
+      </span>
+
+      <br>
+
+      <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-1 rounded">
+      CLICK FOR WORKFLOW
       </span>
 
     </td>
@@ -2933,11 +2892,9 @@ function(){
 
         :
 
-        `<button
-        onclick="openWorkflowModal('${s.firebaseKey}')"
-        class="bg-purple-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-        VIEW
-        </button>`
+        `<span class="text-xs font-bold text-green-700">
+        TOOLING READY
+        </span>`
 
       }
 
@@ -2988,7 +2945,9 @@ function(){
 
     <tr class="border-b">
 
-      <td class="p-3 font-bold">
+      <td
+      onclick="openWorkflowModal('${s.firebaseKey}')"
+      class="p-3 font-bold machine-click text-blue-700">
 
         ${s.machineName}
         -
@@ -2998,6 +2957,12 @@ function(){
 
         <span class="text-[10px] text-slate-500">
         ${s.id}
+        </span>
+
+        <br>
+
+        <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-1 rounded">
+        CLICK FOR WORKFLOW
         </span>
 
       </td>
@@ -3017,26 +2982,20 @@ function(){
 
 
       <td class="p-3 small-time">
-
       ${x.cmmStart||"-"}
-
       </td>
 
 
       <td class="p-3 small-time">
-
       ${x.cmmEnd||"-"}
-
       </td>
 
 
       <td class="p-3 font-bold text-blue-700">
-
       ${durationMinutes(
         x.cmmStart,
         x.cmmEnd
       )}
-
       </td>
 
 
@@ -3073,13 +3032,10 @@ function(){
 
         :
 
-        `<button
-        onclick="openWorkflowModal('${s.firebaseKey}')"
-        class="bg-purple-600 text-white text-xs px-3 py-1.5 rounded font-bold">
+        `<span class="text-xs font-bold text-green-700">
+        INSPECTION DONE
+        </span>`
 
-        VIEW
-
-        </button>`
       }
 
       </td>
@@ -3142,7 +3098,9 @@ function(){
 
     <tr class="border-b">
 
-      <td class="p-3 font-bold">
+      <td
+      onclick="openWorkflowModal('${s.firebaseKey}')"
+      class="p-3 font-bold machine-click text-blue-700">
 
         ${s.machineName}
         -
@@ -3152,6 +3110,12 @@ function(){
 
         <span class="text-[10px] text-slate-500">
         ${s.id} | ${s.pallet||"-"} | P${s.priority||"-"}
+        </span>
+
+        <br>
+
+        <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-1 rounded">
+        CLICK FOR WORKFLOW
         </span>
 
       </td>
@@ -3202,6 +3166,7 @@ function(){
           onclick="qualityStart('${s.firebaseKey}')"
           class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold">
 
+          <i class="fas fa-play mr-1"></i>
           START
 
           </button>`
@@ -3216,6 +3181,7 @@ function(){
           onclick="qualityEnd('${s.firebaseKey}')"
           class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">
 
+          <i class="fas fa-stop mr-1"></i>
           END
 
           </button>`
@@ -3251,7 +3217,10 @@ function(){
 
             :
 
-            ``
+            `<span class="text-xs font-bold text-orange-700">
+            4TH SAMPLE LIMIT
+            </span>`
+
           }
 
           </div>
@@ -3347,7 +3316,9 @@ function(){
 
   <tr class="border-b">
 
-    <td class="p-2 border font-bold text-blue-700">
+    <td
+    onclick="openWorkflowModal('${s.firebaseKey}')"
+    class="p-2 border font-bold text-blue-700 machine-click">
 
     ${s.machineName}
 
@@ -3355,6 +3326,12 @@ function(){
 
     <span class="text-[9px] text-slate-500">
     ${s.id}
+    </span>
+
+    <br>
+
+    <span class="text-[9px] bg-blue-100 px-1 py-0.5 rounded">
+    CLICK
     </span>
 
     </td>
@@ -3393,30 +3370,19 @@ function(){
     </td>
 
 
-    <td class="p-2 border text-[10px]">
+    <td
+    onclick="openWorkflowModal('${s.firebaseKey}')"
+    class="p-2 border text-[10px] machine-click bg-indigo-50 text-indigo-700 font-bold">
 
-    ${supervisorSample(s,1)}
+      <i class="fas fa-route"></i>
 
-    </td>
+      <br>
 
+      S1 → S2 → S3 → S4
 
-    <td class="p-2 border text-[10px]">
+      <br>
 
-    ${supervisorSample(s,2)}
-
-    </td>
-
-
-    <td class="p-2 border text-[10px]">
-
-    ${supervisorSample(s,3)}
-
-    </td>
-
-
-    <td class="p-2 border text-[10px]">
-
-    ${supervisorSample(s,4)}
+      CLICK FOR FULL WORKFLOW
 
     </td>
 
@@ -3436,51 +3402,26 @@ function(){
 };
 
 
-function supervisorSample(s,n){
+/* =========================================================
+   WORKFLOW ROW HELPERS
+========================================================= */
 
-  const x =
-  getSample(s,n);
+function workflowStatus(value,doneText){
 
+  if(value){
 
-  if(
-    !x.setterStart &&
-    !x.cmmStart &&
-    !x.qualityStart &&
-    !x.result
-  ){
-
-    return "-";
+    return `
+    <span class="text-green-700 font-bold">
+    ${doneText}
+    </span>
+    `;
 
   }
 
-
   return `
-
-  <b>S${n}</b><br>
-
-  Setter:
-  ${x.setterStart||"-"}
-  →
-  ${x.setterEnd||"-"}
-
-  <br>
-
-  CMM:
-  ${x.cmmStart||"-"}
-  →
-  ${x.cmmEnd||"-"}
-
-  <br>
-
-  Quality:
-  ${x.qualityStart||"-"}
-  →
-  ${x.qualityEnd||"-"}
-
-  <br>
-
-  <b>${x.result||"Pending"}</b>
-
+  <span class="text-yellow-700 font-bold">
+  PENDING
+  </span>
   `;
 
 }
@@ -3509,7 +3450,7 @@ function(firebaseKey){
   document
   .getElementById("workflowTitle")
   .textContent =
-  `${s.machineName} - SETUP WORKFLOW`;
+  `${s.machineName} - COMPLETE SETUP WORKFLOW`;
 
 
   document
@@ -3520,62 +3461,122 @@ function(firebaseKey){
 
   let rows="";
 
+  let sr=1;
 
-  /* TOOL ROOM ROW */
+
+  /* =======================================================
+     STEP 1 - SETUP REGISTRATION
+  ======================================================= */
 
   rows+=`
 
   <tr>
 
-  <td class="font-bold">
-  1
-  </td>
+    <td class="font-bold">
+    ${sr++}
+    </td>
 
-  <td class="text-left font-bold">
-  TOOL ROOM
-  <br>
-  <span class="text-[10px]">
-  Tooling & Fixture Ready
-  </span>
-  </td>
+    <td class="text-left font-bold">
+    SETTER
+    <br>
+    <span class="text-[10px]">
+    Setup Registration
+    </span>
+    </td>
 
-  <td class="stage-start">
-  ${s.toolStart||"-"}
-  </td>
+    <td class="stage-start">
+    ${s.timeRegistered||"-"}
+    </td>
 
-  <td class="stage-end">
-  ${s.toolEnd||"-"}
-  </td>
+    <td class="stage-end">
+    ${s.toolStart||"-"}
+    </td>
 
-  <td class="font-bold text-blue-700">
-  ${durationMinutes(
-    s.toolStart,
-    s.toolEnd
-  )}
-  </td>
+    <td class="font-bold text-blue-700">
+    ${durationMinutes(
+      s.timeRegistered,
+      s.toolStart
+    )}
+    </td>
 
-  <td>
-
-  ${
-    s.toolEnd
-    ?
-    `<span class="text-green-700 font-bold">
-    DONE
-    </span>`
-    :
-    `<span class="text-yellow-700 font-bold">
-    PENDING
-    </span>`
-  }
-
-  </td>
+    <td>
+    ${
+      s.toolStart
+      ?
+      `<span class="text-green-700 font-bold">
+      REGISTERED / SENT TO TOOL ROOM
+      </span>`
+      :
+      `<span class="text-yellow-700 font-bold">
+      WAITING TOOL ROOM
+      </span>`
+    }
+    </td>
 
   </tr>
 
   `;
 
 
-  /* SAMPLES */
+  /* =======================================================
+     STEP 2 - TOOL ROOM
+  ======================================================= */
+
+  rows+=`
+
+  <tr>
+
+    <td class="font-bold">
+    ${sr++}
+    </td>
+
+    <td class="text-left font-bold">
+    TOOL ROOM
+    <br>
+    <span class="text-[10px]">
+    Tooling & Fixture Ready
+    </span>
+    </td>
+
+    <td class="stage-start">
+    ${s.toolStart||"-"}
+    </td>
+
+    <td class="stage-end">
+    ${s.toolEnd||"-"}
+    </td>
+
+    <td class="font-bold text-blue-700">
+    ${durationMinutes(
+      s.toolStart,
+      s.toolEnd
+    )}
+    </td>
+
+    <td>
+
+    ${
+      s.toolEnd
+      ?
+      `<span class="text-green-700 font-bold">
+      TOOLING & FIXTURE READY
+      </span>`
+      :
+      `<span class="text-yellow-700 font-bold">
+      TOOL ROOM PENDING
+      </span>`
+    }
+
+    </td>
+
+  </tr>
+
+  `;
+
+
+  /* =======================================================
+     SAMPLE 1-4
+  ======================================================= */
 
   for(let n=1;n<=4;n++){
 
@@ -3610,44 +3611,60 @@ function(firebaseKey){
 
     <tr>
 
-    <td rowspan="3"
-    class="font-black text-purple-700 bg-purple-50">
-    S${n}
-    </td>
+      <td rowspan="3"
+      class="font-black text-purple-700 bg-purple-50">
 
-    <td class="text-left font-bold">
+      S${n}
 
-    SETTER
+      </td>
 
-    <br>
 
-    <span class="text-[10px]">
-    Sample #${n} Cutting
-    </span>
+      <td class="text-left font-bold">
 
-    </td>
+      SETTER
 
-    <td class="stage-start">
-    ${x.setterStart||"-"}
-    </td>
+      <br>
 
-    <td class="stage-end">
-    ${x.setterEnd||"-"}
-    </td>
+      <span class="text-[10px]">
+      Sample #${n} Cutting
+      </span>
 
-    <td class="font-bold text-blue-700">
-    ${durationMinutes(
-      x.setterStart,
-      x.setterEnd
-    )}
-    </td>
+      </td>
 
-    <td>
-    ${x.cutTime
-      ? `<span class="text-green-700 font-bold">SAMPLE CUT DONE</span>`
-      : `<span class="text-yellow-700 font-bold">PENDING</span>`
-    }
-    </td>
+
+      <td class="stage-start">
+      ${x.setterStart||"-"}
+      </td>
+
+
+      <td class="stage-end">
+      ${x.setterEnd||"-"}
+      </td>
+
+
+      <td class="font-bold text-blue-700">
+      ${durationMinutes(
+        x.setterStart,
+        x.setterEnd
+      )}
+      </td>
+
+
+      <td>
+
+      ${
+        x.cutTime
+        ?
+        `<span class="text-green-700 font-bold">
+        SAMPLE CUT DONE
+        </span>`
+        :
+        `<span class="text-yellow-700 font-bold">
+        PENDING
+        </span>`
+      }
+
+      </td>
 
     </tr>
 
@@ -3656,48 +3673,52 @@ function(firebaseKey){
 
     <tr>
 
-    <td class="text-left font-bold">
+      <td class="text-left font-bold">
 
-    CMM ROOM
+      CMM ROOM
 
-    <br>
+      <br>
 
-    <span class="text-[10px]">
-    Sample #${n} Inspection
-    </span>
+      <span class="text-[10px]">
+      Sample #${n} Inspection
+      </span>
 
-    </td>
+      </td>
 
-    <td class="stage-start">
-    ${x.cmmStart||"-"}
-    </td>
 
-    <td class="stage-end">
-    ${x.cmmEnd||"-"}
-    </td>
+      <td class="stage-start">
+      ${x.cmmStart||"-"}
+      </td>
 
-    <td class="font-bold text-blue-700">
-    ${durationMinutes(
-      x.cmmStart,
-      x.cmmEnd
-    )}
-    </td>
 
-    <td>
+      <td class="stage-end">
+      ${x.cmmEnd||"-"}
+      </td>
 
-    ${
-      x.cmmEnd
-      ?
-      `<span class="text-green-700 font-bold">
-      INSPECTION DONE
-      </span>`
-      :
-      `<span class="text-yellow-700 font-bold">
-      PENDING
-      </span>`
-    }
 
-    </td>
+      <td class="font-bold text-blue-700">
+      ${durationMinutes(
+        x.cmmStart,
+        x.cmmEnd
+      )}
+      </td>
+
+
+      <td>
+
+      ${
+        x.cmmEnd
+        ?
+        `<span class="text-green-700 font-bold">
+        INSPECTION DONE
+        </span>`
+        :
+        `<span class="text-yellow-700 font-bold">
+        PENDING
+        </span>`
+      }
+
+      </td>
 
     </tr>
 
@@ -3706,48 +3727,58 @@ function(firebaseKey){
 
     <tr>
 
-    <td class="text-left font-bold">
+      <td class="text-left font-bold">
 
-    QUALITY
+      QUALITY
 
-    <br>
+      <br>
 
-    <span class="text-[10px]">
-    Sample #${n} Inspection / Decision
-    </span>
+      <span class="text-[10px]">
+      Sample #${n} Inspection / Remark
+      </span>
 
-    </td>
+      </td>
 
-    <td class="stage-start">
-    ${x.qualityStart||"-"}
-    </td>
 
-    <td class="stage-end">
-    ${x.qualityEnd||"-"}
-    </td>
+      <td class="stage-start">
+      ${x.qualityStart||"-"}
+      </td>
 
-    <td class="font-bold text-blue-700">
-    ${durationMinutes(
-      x.qualityStart,
-      x.qualityEnd
-    )}
-    </td>
 
-    <td>
+      <td class="stage-end">
+      ${x.qualityEnd||"-"}
+      </td>
 
-    ${
-      x.result
-      ?
-      `<span class="text-green-700 font-bold">
-      ${x.result}
-      </span>`
-      :
-      `<span class="text-yellow-700 font-bold">
-      PENDING
-      </span>`
-    }
 
-    </td>
+      <td class="font-bold text-blue-700">
+      ${durationMinutes(
+        x.qualityStart,
+        x.qualityEnd
+      )}
+      </td>
+
+
+      <td>
+
+      ${
+        x.result
+        ?
+        `<span class="text-green-700 font-bold">
+        ${x.result}
+        </span>`
+        :
+        x.qualityEnd
+        ?
+        `<span class="text-blue-700 font-bold">
+        DECISION PENDING
+        </span>`
+        :
+        `<span class="text-yellow-700 font-bold">
+        PENDING
+        </span>`
+      }
+
+      </td>
 
     </tr>
 
@@ -3756,59 +3787,126 @@ function(firebaseKey){
   }
 
 
+  /* =======================================================
+     WORKFLOW CONTENT
+  ======================================================= */
+
   document
   .getElementById("workflowContent")
   .innerHTML=`
 
-  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+  <div class="workflow-header-card text-white rounded-xl p-4 mb-5 shadow-lg">
 
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-    <p class="text-[10px] text-slate-500 font-bold">
-    MACHINE
-    </p>
-    <p class="font-black text-blue-700">
-    ${s.machineName}
-    </p>
-    </div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
 
-    <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
-    <p class="text-[10px] text-slate-500 font-bold">
-    PALLET
-    </p>
-    <p class="font-black text-purple-700">
-    ${s.pallet||"-"}
-    </p>
-    </div>
+      <div>
+        <p class="text-[10px] text-emerald-200 font-bold">
+        MACHINE
+        </p>
+        <p class="font-black text-lg">
+        ${s.machineName}
+        </p>
+      </div>
 
-    <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
-    <p class="text-[10px] text-slate-500 font-bold">
-    PRIORITY
-    </p>
-    <p class="font-black text-orange-700">
-    P${s.priority||"-"}
-    </p>
-    </div>
+      <div>
+        <p class="text-[10px] text-emerald-200 font-bold">
+        PART
+        </p>
+        <p class="font-bold">
+        ${s.partName}
+        </p>
+      </div>
 
-    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
-    <p class="text-[10px] text-slate-500 font-bold">
-    CURRENT SAMPLE
-    </p>
-    <p class="font-black text-indigo-700">
-    #${s.sampleCount||1}
-    </p>
-    </div>
+      <div>
+        <p class="text-[10px] text-emerald-200 font-bold">
+        PALLET
+        </p>
+        <p class="font-black">
+        ${s.pallet||"-"}
+        </p>
+      </div>
 
-    <div class="bg-green-50 border border-green-200 rounded-lg p-3">
-    <p class="text-[10px] text-slate-500 font-bold">
-    STATUS
-    </p>
-    <p class="font-black text-green-700 text-xs">
-    ${s.qualityStatus}
-    </p>
+      <div>
+        <p class="text-[10px] text-emerald-200 font-bold">
+        PRIORITY
+        </p>
+        <p class="font-black">
+        P${s.priority||"-"}
+        </p>
+      </div>
+
+      <div>
+        <p class="text-[10px] text-emerald-200 font-bold">
+        CURRENT STATUS
+        </p>
+        <p class="font-black text-xs">
+        ${s.qualityStatus||"-"}
+        </p>
+      </div>
+
     </div>
 
   </div>
 
+
+  <!-- FLOW ARROW -->
+
+  <div class="mb-5 bg-slate-100 rounded-xl p-3 text-center">
+
+    <div class="flex flex-wrap items-center justify-center gap-2 text-xs font-black">
+
+      <span class="bg-blue-600 text-white px-3 py-2 rounded-lg">
+      SETUP
+      </span>
+
+      <i class="fas fa-arrow-right text-slate-500"></i>
+
+      <span class="bg-blue-600 text-white px-3 py-2 rounded-lg">
+      TOOL ROOM
+      </span>
+
+      <i class="fas fa-arrow-right text-slate-500"></i>
+
+      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
+      SETTER S1
+      </span>
+
+      <i class="fas fa-arrow-right text-slate-500"></i>
+
+      <span class="bg-purple-600 text-white px-3 py-2 rounded-lg">
+      CMM S1
+      </span>
+
+      <i class="fas fa-arrow-right text-slate-500"></i>
+
+      <span class="bg-green-600 text-white px-3 py-2 rounded-lg">
+      QUALITY S1
+      </span>
+
+      <i class="fas fa-arrow-right text-slate-500"></i>
+
+      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
+      S2
+      </span>
+
+      <i class="fas fa-arrow-right text-slate-500"></i>
+
+      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
+      S3
+      </span>
+
+      <i class="fas fa-arrow-right text-slate-500"></i>
+
+      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
+      S4
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- WORKFLOW TABLE -->
 
   <div class="excel-table-container">
 
@@ -3844,6 +3942,8 @@ function(firebaseKey){
 
   </div>
 
+
+  <!-- SUMMARY -->
 
   <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
 
@@ -3891,6 +3991,10 @@ function(firebaseKey){
 
 };
 
+
+/* =========================================================
+   CLOSE WORKFLOW
+========================================================= */
 
 function closeWorkflowModal(){
 
@@ -4045,7 +4149,7 @@ function acknowledgeAlert(){
 
 
 /* =========================================================
-   ESCAPE MODAL
+   ESCAPE
 ========================================================= */
 
 document.addEventListener(

@@ -257,7 +257,6 @@ Access Dashboard
 <p class="text-xs text-slate-400">फक्त रजिस्टर मशिन शो होत आहेत. क्लिक केल्यावर संपूर्ण डिटेल्स दिसतील.</p>
 </div>
 <div class="flex gap-2 flex-wrap">
-<!-- EXCEL DOWNLOAD ICON BUTTON -->
 <button onclick="exportSetterDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-lg flex items-center shadow" title="Download Excel Report">
 <i class="fas fa-file-excel mr-1.5 text-sm"></i> Download Excel
 </button>
@@ -358,7 +357,7 @@ Access Dashboard
 </select>
 </div>
 <div class="lg:col-span-4 flex justify-end">
-<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow">
+<button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow">
 <i class="fas fa-play mr-2"></i> REGISTER SETUP & START WORKFLOW
 </button>
 </div>
@@ -538,6 +537,8 @@ window.allSetups = [];
 window.currentExcelFilter = "all";
 window.currentUser = null;
 
+let alertInterval = null; // सतत व्हायब्रेशन आणि साऊंडसाठी व्हेरिएबल
+
 const MACHINE_LIST = [];
 for(let i=1;i<=15;i++){ MACHINE_LIST.push("M"+i); }
 for(let i=1;i<=35;i++){ MACHINE_LIST.push("EN"+i); }
@@ -658,19 +659,32 @@ function emptySample(){
   return { setterStart:null, setterEnd:null, cutTime:null, cmmStart:null, cmmEnd:null, qualityStart:null, qualityEnd:null, result:null };
 }
 
+// ================= डबल सबमिशन प्रतिबंध (Debounce & Disable Button) =================
+let isSubmitting = false;
+
 function handleSetterSubmit(e){
   e.preventDefault();
+  if (isSubmitting) return; // जर आधीच सबमिट होत असेल तर थांबवा
+  isSubmitting = true;
+  
+  const submitBtn = document.getElementById("submitBtn");
+  if(submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
+  }
+
   const now = new Date();
   const newKey = dbRef.push().key;
   const setupId = "ST-"+Date.now().toString().slice(-6);
   const setupType = document.getElementById("setupType").value;
+  const machineName = document.getElementById("machineName").value;
 
   const isShort = (setupType === "Short");
 
   const newItem={
     firebaseKey: newKey,
     id: setupId,
-    machineName: document.getElementById("machineName").value,
+    machineName: machineName,
     partName: document.getElementById("partName").value.trim(),
     partNo: document.getElementById("partNo").value.trim(),
     fixtureNo: document.getElementById("fixtureNo").value.trim(),
@@ -699,11 +713,25 @@ function handleSetterSubmit(e){
   };
 
   dbRef.child(newKey).set(newItem).then(()=>{
-    triggerAlert("SUCCESS", `Setup ${setupId} registered successfully for ${newItem.machineName} (${setupType} Setup).`);
+    // ================= नोटिफिकेशन लॉजिक (Long Setup असल्यास CMM आणि Tool Room ला अलर्ट) =================
+    if (setupType === "Long") {
+      triggerAlert("DEPARTMENT NOTIFICATION", `Setup Long असेल तर CMM Room आणि Tool Room ला नोटिफिकेशन पाठवले आहे! मशिन: ${machineName}`);
+    } else {
+      triggerAlert("SUCCESS", `Setup ${setupId} registered successfully for ${machineName} (Short Setup).`);
+    }
+
     document.getElementById("setterForm").reset();
     document.getElementById("setupDate").value = new Date().toISOString().split("T")[0];
     toggleSetupForm(false);
-  }).catch(err=>{ alert("Firebase Error: "+err.message); });
+  }).catch(err=>{ 
+    alert("Firebase Error: "+err.message); 
+  }).finally(() => {
+    isSubmitting = false;
+    if(submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-play mr-2"></i> REGISTER SETUP & START WORKFLOW';
+    }
+  });
 }
 
 function currentTime(){
@@ -879,7 +907,6 @@ window.updateMetrics = function(){
   el("metric-approved", list.filter(s=> s.qualityStatus==="SOP DONE").length);
 };
 
-// ================= EXCEL EXPORT FUNCTION =================
 window.exportSetterDataToExcel = function(){
   const list = window.allSetups || [];
   if(list.length === 0){
@@ -888,7 +915,6 @@ window.exportSetterDataToExcel = function(){
   }
 
   let csvContent = "data:text/csv;charset=utf-8,";
-  // CSV Headers
   csvContent += "Setup ID,Machine Name,Part Name,Part No,Fixture No,Setup Type,Date,Shift,Pallet,Priority,Registered By,Total Status,Total Time\n";
 
   list.forEach(s => {
@@ -948,7 +974,6 @@ window.renderSetterExcelTable = function(filterKey){
   <tr>
     <td class="font-bold">${idx+1}</td>
     <td class="font-mono font-bold text-purple-700">${s.id}</td>
-    <!-- MACHINE CLICK -->
     <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click text-left font-bold text-blue-700 bg-blue-50">
       <span class="text-sm">${s.machineName}</span><br>
       <span class="text-[11px] text-slate-600">${s.partName}</span><br>
@@ -1217,12 +1242,40 @@ window.renderAllViews = function(){
   if(window.currentUser.dept==="supervisor") window.renderSupervisor();
 };
 
-function triggerAlert(title,msg){
-  document.getElementById("alertTitle").textContent=title;
-  document.getElementById("alertMessage").textContent=msg;
-  document.getElementById("alertModal").classList.remove("hidden");
+// ================= सतत पॉप-अप अलर्ट आणि मोबाईल व्يब्रेशन (जोपर्यंत OK दाबत नाही) =================
+function triggerAlert(title, msg){
+  document.getElementById("alertTitle").textContent = title;
+  document.getElementById("alertMessage").textContent = msg;
+  const alertModal = document.getElementById("alertModal");
+  alertModal.classList.remove("hidden");
+
+  // मोबाईलवर सतत व्हायब्रेशन ट्रिगर करण्यासाठी (Navigator Vibration API)
+  if ("vibrate" in navigator) {
+    try {
+      navigator.vibrate([500, 200, 500, 200, 500]); // पहिल्यांदा व्हायब्रेशन सुरू होईल
+    } catch(e) {}
+  }
+
+  // जर आधीपासून इंटरव्हल चालू असेल तर तो क्लियर करा
+  if (alertInterval) clearInterval(alertInterval);
+
+  // जोपर्यंत युजर 'OK' दाबत नाही, तोपर्यंत दर २ सेकंदांनी पुन्हा व्हायब्रेशन आणि साऊंड अलर्ट चालू राहील
+  alertInterval = setInterval(() => {
+    alertModal.classList.remove("hidden");
+    if ("vibrate" in navigator) {
+      try {
+        navigator.vibrate([500, 200, 500]);
+      } catch(e) {}
+    }
+  }, 2000);
 }
+
 function acknowledgeAlert(){
+  // युजरने 'OK' दाबल्यावर सतत होणारे व्हायब्रेशन व पॉप-अप थांबेल
+  if (alertInterval) {
+    clearInterval(alertInterval);
+    alertInterval = null;
+  }
   document.getElementById("alertModal").classList.add("hidden");
 }
 </script>

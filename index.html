@@ -328,10 +328,6 @@ Access Dashboard
 </select>
 </div>
 <div>
-<label class="block text-xs font-bold mb-1">SETTER REQUIRED FIXTURE NO.</label>
-<input type="text" id="setterReqFixture" required class="w-full p-2 border rounded-lg text-sm" placeholder="Setter Req Fixture No">
-</div>
-<div>
 <label class="block text-xs font-bold mb-1">DATE</label>
 <input type="date" id="setupDate" required class="w-full p-2 border rounded-lg text-sm">
 </div>
@@ -408,7 +404,7 @@ Access Dashboard
 <table class="w-full text-sm text-left border">
 <thead class="bg-slate-100">
 <tr>
-<th class="p-3 border">Machine / Part</th>
+<th class="p-3 border">Machine / Part Number</th>
 <th class="p-3 border">Fixture Details</th>
 <th class="p-3 border">Available Serial Number (Remark)</th>
 <th class="p-3 border">Status</th>
@@ -676,7 +672,6 @@ function handleSetterSubmit(e){
     fixtureNo: document.getElementById("fixtureNo").value.trim(),
     fixtureSerialNo: document.getElementById("fixtureSerialNo").value.trim(),
     setupType: setupType,
-    setterReqFixture: document.getElementById("setterReqFixture").value.trim(),
     setupDate: document.getElementById("setupDate").value,
     shift: document.getElementById("setupShift").value,
     pallet: document.getElementById("pallet").value,
@@ -970,6 +965,7 @@ window.renderToolroom = function(){
     <tr class="border-b">
       <td class="p-3 font-bold text-blue-700">
         ${s.machineName} - ${s.partName}<br>
+        <span class="text-[11px] font-semibold text-emerald-700">Part No: ${s.partNo || '-'}</span><br>
         <span class="text-[10px] text-slate-500">${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}</span>
       </td>
       <td class="p-3 text-xs">

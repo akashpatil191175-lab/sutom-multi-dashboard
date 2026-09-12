@@ -141,16 +141,6 @@ body{
   font-weight:700;
 }
 
-.stage-pending{
-  background:#fef3c7;
-  color:#92400e;
-}
-
-.stage-done{
-  background:#dcfce7;
-  color:#166534;
-}
-
 .machine-card{
   transition:.2s;
 }
@@ -175,16 +165,13 @@ body{
 }
 
 @media(max-width:768px){
-
   .workflow-table{
     font-size:11px;
   }
-
   .workflow-table th,
   .workflow-table td{
     padding:7px 5px;
   }
-
   .excel-table{
     font-size:11px;
   }
@@ -195,3978 +182,935 @@ body{
 <body class="font-sans min-h-screen">
 
 <!-- ================= HEADER ================= -->
-
 <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
-
 <div class="p-3 px-4 md:px-6 flex flex-wrap justify-between items-center gap-2">
-
 <div class="flex items-center space-x-3">
-
 <div class="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center font-black text-xl text-white shadow-md border border-emerald-400">
 S
 </div>
-
 <div>
 <h1 class="text-xl font-bold tracking-wide text-emerald-400">
 SUTOM
 </h1>
-
 <p class="text-xs text-slate-400">
 Setup Time Monitor • Multi Sample Workflow
 </p>
 </div>
-
 </div>
-
 <div class="flex flex-wrap items-center gap-2 text-xs">
-
 <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
 <i class="fas fa-calendar-alt text-emerald-400 mr-1"></i>
 <span id="topLiveShift">Shift: A</span>
 </div>
-
 <div class="bg-slate-800 px-3 py-1.5 rounded border border-slate-700">
 <i class="fas fa-clock text-green-400 mr-1"></i>
 <span id="topLiveTime">00:00:00</span>
 </div>
-
 <div id="userInfo" class="hidden items-center space-x-2">
-
-<span id="userBadge"
-class="bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase">
-</span>
-
-<button onclick="handleLogout()"
-class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold">
+<span id="userBadge" class="bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-full font-bold uppercase"></span>
+<button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded font-bold">
 Logout
 </button>
-
 </div>
-
 </div>
-
 </div>
-
 <div class="firebase-live-bar live">
-
 <i class="fas fa-circle text-green-400 mr-2"></i>
-
-<span>
-FIREBASE LIVE SYNC ACTIVE • S1 → S2 → S3 → S4
-</span>
-
+<span>FIREBASE LIVE SYNC ACTIVE • S1 → S2 → S3 → S4</span>
 </div>
-
 </header>
 
-
 <!-- ================= LOGIN ================= -->
-
-<div id="authSection"
-class="flex justify-center items-center py-10 px-4">
-
+<div id="authSection" class="flex justify-center items-center py-10 px-4">
 <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
-
 <div class="flex flex-col items-center mb-5">
-
 <div class="w-16 h-16 bg-emerald-600 text-white font-black text-3xl rounded-2xl flex items-center justify-center shadow-lg mb-2 border-2 border-emerald-400">
 S
 </div>
-
-<h2 class="text-2xl font-bold text-slate-800">
-Department Login
-</h2>
-
-<p class="text-xs text-slate-500 mt-1">
-SUTOM Workflow System
-</p>
-
+<h2 class="text-2xl font-bold text-slate-800">Department Login</h2>
+<p class="text-xs text-slate-500 mt-1">SUTOM Workflow System</p>
 </div>
-
 <form onsubmit="handleLogin(event)" class="space-y-4">
-
 <div>
-<label class="block text-xs font-bold mb-1">
-Employee Name
-</label>
-
-<input
-type="text"
-id="loginName"
-required
-class="w-full p-2.5 border rounded-lg text-sm"
-placeholder="Enter name">
+<label class="block text-xs font-bold mb-1">Employee Name</label>
+<input type="text" id="loginName" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="Enter name">
 </div>
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-Employee ID
-</label>
-
-<input
-type="text"
-id="loginId"
-required
-class="w-full p-2.5 border rounded-lg text-sm"
-placeholder="Enter ID">
-
+<label class="block text-xs font-bold mb-1">Employee ID</label>
+<input type="text" id="loginId" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="Enter ID">
 </div>
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-Select Department
-</label>
-
-<select
-id="loginDept"
-required
-class="w-full p-2.5 border rounded-lg text-sm bg-white">
-
-<option value="">
--- Choose Department --
-</option>
-
-<option value="setter">
-1. SETTER / HMC
-</option>
-
-<option value="toolroom">
-2. TOOL ROOM
-</option>
-
-<option value="stdroom">
-3. CMM / STD ROOM
-</option>
-
-<option value="quality">
-4. QUALITY
-</option>
-
-<option value="supervisor">
-5. SUPERVISOR / HOD
-</option>
-
+<label class="block text-xs font-bold mb-1">Select Department</label>
+<select id="loginDept" required class="w-full p-2.5 border rounded-lg text-sm bg-white">
+<option value="">-- Choose Department --</option>
+<option value="setter">1. SETTER / HMC</option>
+<option value="toolroom">2. TOOL ROOM</option>
+<option value="stdroom">3. CMM / STD ROOM</option>
+<option value="quality">4. QUALITY</option>
+<option value="supervisor">5. SUPERVISOR / HOD</option>
 </select>
-
 </div>
-
-<button
-type="submit"
-class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md">
-
+<button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md">
 Access Dashboard
-
 </button>
-
 </form>
-
 </div>
-
 </div>
-
 
 <!-- ================= DASHBOARD ================= -->
-
-<div id="dashboardSection"
-class="hidden flex-col min-h-[calc(100vh-65px)]">
-
+<div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]">
 <main class="flex-1 p-4 md:p-6 overflow-y-auto">
 
-
 <!-- ================= SETTER ================= -->
-
-<div id="tab-setter"
-class="tab-content space-y-6 hidden">
-
+<div id="tab-setter" class="tab-content space-y-6 hidden">
 <div class="bg-slate-900 text-white p-4 rounded-xl shadow-lg border border-slate-800 flex justify-between items-center flex-wrap gap-2">
-
 <div>
-
-<h2 class="text-xl font-black text-emerald-400">
-SETTER CONTROL & MULTI-SAMPLE WORKFLOW
-</h2>
-
-<p class="text-xs text-slate-400">
-Machine वर CLICK करा → Complete Workflow
-</p>
-
+<h2 class="text-xl font-black text-emerald-400">SETTER CONTROL & MULTI-SAMPLE WORKFLOW</h2>
+<p class="text-xs text-slate-400">फक्त रजिस्टर मशिन शो होत आहेत. क्लिक केल्यावर संपूर्ण डिटेल्स दिसतील.</p>
 </div>
-
 <div class="flex gap-2">
-
-<button
-onclick="openSetterModule('register')"
-class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">
-
-<i class="fas fa-plus mr-1"></i>
-Register New Setup
-
+<button onclick="openSetterModule('register')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg">
+<i class="fas fa-plus mr-1"></i> Register New Setup
 </button>
-
-<button
-onclick="handleResetAllData()"
-class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2.5 rounded-lg">
-
-<i class="fas fa-trash-alt"></i>
-Reset All
-
+<button onclick="handleResetAllData()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2.5 rounded-lg">
+<i class="fas fa-trash-alt"></i> Reset All
 </button>
-
 </div>
-
 </div>
-
 
 <!-- METRICS -->
-
 <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-
-<div onclick="openSetterModule('all')"
-class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-blue-600">
-
-<p class="text-[10px] text-slate-500 font-bold uppercase">
-Total Setups
-</p>
-
-<h3 id="metric-all"
-class="text-xl font-black text-blue-700">
-0
-</h3>
-
+<div onclick="openSetterModule('all')" class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-blue-600">
+<p class="text-[10px] text-slate-500 font-bold uppercase">Total Setups</p>
+<h3 id="metric-all" class="text-xl font-black text-blue-700">0</h3>
 </div>
-
-
-<div onclick="openSetterModule('ready')"
-class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-green-600">
-
-<p class="text-[10px] text-slate-500 font-bold uppercase">
-Ready For Setup
-</p>
-
-<h3 id="metric-ready"
-class="text-xl font-black text-green-700">
-0
-</h3>
-
+<div onclick="openSetterModule('ready')" class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-green-600">
+<p class="text-[10px] text-slate-500 font-bold uppercase">Ready For Setup</p>
+<h3 id="metric-ready" class="text-xl font-black text-green-700">0</h3>
 </div>
-
-
-<div onclick="openSetterModule('running')"
-class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-indigo-600">
-
-<p class="text-[10px] text-slate-500 font-bold uppercase">
-In Workflow
-</p>
-
-<h3 id="metric-running"
-class="text-xl font-black text-indigo-700">
-0
-</h3>
-
+<div onclick="openSetterModule('running')" class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-indigo-600">
+<p class="text-[10px] text-slate-500 font-bold uppercase">In Workflow</p>
+<h3 id="metric-running" class="text-xl font-black text-indigo-700">0</h3>
 </div>
-
-
-<div onclick="openSetterModule('correction')"
-class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-orange-500">
-
-<p class="text-[10px] text-slate-500 font-bold uppercase">
-Correction
-</p>
-
-<h3 id="metric-correction"
-class="text-xl font-black text-orange-700">
-0
-</h3>
-
+<div onclick="openSetterModule('correction')" class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-orange-500">
+<p class="text-[10px] text-slate-500 font-bold uppercase">Correction</p>
+<h3 id="metric-correction" class="text-xl font-black text-orange-700">0</h3>
 </div>
-
-
-<div onclick="openSetterModule('approved')"
-class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-purple-600">
-
-<p class="text-[10px] text-slate-500 font-bold uppercase">
-SOP Approved
-</p>
-
-<h3 id="metric-approved"
-class="text-xl font-black text-purple-700">
-0
-</h3>
-
+<div onclick="openSetterModule('approved')" class="bg-white p-3 rounded-xl shadow border cursor-pointer border-l-4 border-l-purple-600">
+<p class="text-[10px] text-slate-500 font-bold uppercase">SOP Approved</p>
+<h3 id="metric-approved" class="text-xl font-black text-purple-700">0</h3>
 </div>
-
 </div>
-
 
 <!-- ================= REGISTER FORM ================= -->
-
-<div id="setupFormCard"
-class="bg-white p-6 rounded-xl shadow border border-blue-200 hidden">
-
+<div id="setupFormCard" class="bg-white p-6 rounded-xl shadow border border-blue-200 hidden">
 <div class="flex justify-between items-center border-b pb-3 mb-5">
-
-<h3 class="text-md font-bold text-blue-800">
-REGISTER NEW SETUP FORM
-</h3>
-
-<button
-onclick="toggleSetupForm(false)"
-class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">
-
-Close
-
-</button>
-
+<h3 class="text-md font-bold text-blue-800">REGISTER NEW SETUP FORM</h3>
+<button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Close</button>
 </div>
-
-
-<form
-id="setterForm"
-onsubmit="handleSetterSubmit(event)"
-class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-
-<!-- MACHINE -->
-
+<form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 <div>
-
-<label class="block text-xs font-bold mb-1">
-MACHINE NAME
-</label>
-
-<select
-id="machineName"
-required
-class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
-
-<option value="">
--- SELECT MACHINE --
-</option>
-
+<label class="block text-xs font-bold mb-1">MACHINE NAME</label>
+<select id="machineName" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
+<option value="">-- SELECT MACHINE --</option>
 </select>
-
 </div>
-
-
-<!-- PART NAME -->
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-PART NAME
-</label>
-
-<input
-type="text"
-id="partName"
-required
-class="w-full p-2 border rounded-lg text-sm"
-placeholder="Part Name">
-
+<label class="block text-xs font-bold mb-1">PART NAME</label>
+<input type="text" id="partName" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part Name">
 </div>
-
-
-<!-- PART NO -->
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-PART NUMBER
-</label>
-
-<input
-type="text"
-id="partNo"
-required
-class="w-full p-2 border rounded-lg text-sm"
-placeholder="Part No">
-
+<label class="block text-xs font-bold mb-1">PART NUMBER</label>
+<input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No">
 </div>
-
-
-<!-- FIXTURE -->
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-FIXTURE SERIAL NO.
-</label>
-
-<input
-type="text"
-id="fixtureNo"
-required
-class="w-full p-2 border rounded-lg text-sm"
-placeholder="Fixture No">
-
+<label class="block text-xs font-bold mb-1">FIXTURE SERIAL NO.</label>
+<input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture No">
 </div>
-
-
-<!-- DATE -->
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-DATE
-</label>
-
-<input
-type="date"
-id="setupDate"
-required
-class="w-full p-2 border rounded-lg text-sm">
-
+<label class="block text-xs font-bold mb-1">SETTER REQUIRED FIXTURE NO.</label>
+<input type="text" id="setterReqFixture" required class="w-full p-2 border rounded-lg text-sm" placeholder="Setter Req Fixture No">
 </div>
-
-
-<!-- SHIFT -->
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-SHIFT
-</label>
-
-<select
-id="setupShift"
-required
-class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
-
-<option value="Shift A">
-Shift A
-</option>
-
-<option value="Shift B">
-Shift B
-</option>
-
-<option value="Shift C">
-Shift C
-</option>
-
+<label class="block text-xs font-bold mb-1">DATE</label>
+<input type="date" id="setupDate" required class="w-full p-2 border rounded-lg text-sm">
+</div>
+<div>
+<label class="block text-xs font-bold mb-1">SHIFT</label>
+<select id="setupShift" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
+<option value="Shift A">Shift A</option>
+<option value="Shift B">Shift B</option>
+<option value="Shift C">Shift C</option>
 </select>
-
 </div>
-
-
-<!-- PALLET -->
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-PALLET
-</label>
-
-<select
-id="pallet"
-required
-class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
-
-<option value="">
--- SELECT --
-</option>
-
-<option value="Pallet A">
-PALLET A
-</option>
-
-<option value="Pallet B">
-PALLET B
-</option>
-
+<label class="block text-xs font-bold mb-1">PALLET</label>
+<select id="pallet" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
+<option value="">-- SELECT --</option>
+<option value="Pallet A">PALLET A</option>
+<option value="Pallet B">PALLET B</option>
 </select>
-
 </div>
-
-
-<!-- PRIORITY -->
-
 <div>
-
-<label class="block text-xs font-bold mb-1">
-PRIORITY
-</label>
-
-<select
-id="priority"
-required
-class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
-
-<option value="">
--- SELECT --
-</option>
-
+<label class="block text-xs font-bold mb-1">PRIORITY</label>
+<select id="priority" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold">
+<option value="">-- SELECT --</option>
 </select>
-
 </div>
-
-
 <div class="lg:col-span-4 flex justify-end">
-
-<button
-type="submit"
-class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow">
-
-<i class="fas fa-play mr-2"></i>
-REGISTER SETUP & START WORKFLOW
-
+<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow">
+<i class="fas fa-play mr-2"></i> REGISTER SETUP & START WORKFLOW
 </button>
-
 </div>
-
 </form>
-
 </div>
-
 
 <!-- ================= SETUP TABLE ================= -->
-
 <div class="excel-table-container shadow-xl">
-
 <div class="bg-emerald-800 text-white p-3 px-4 flex justify-between items-center border-b">
-
-<h3 class="font-bold text-sm">
-REGISTERED SETUP MACHINES
-</h3>
-
-<span
-class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200"
-id="excelRowCount">
-
-Rows: 0
-
-</span>
-
+<h3 class="font-bold text-sm">REGISTERED SETUP MACHINES (फक्त रजिस्टर मशिन)</h3>
+<span class="text-xs bg-emerald-900 px-2.5 py-1 rounded font-mono text-emerald-200" id="excelRowCount">Rows: 0</span>
 </div>
-
-
 <div class="overflow-x-auto max-h-[600px]">
-
 <table class="excel-table">
-
 <thead>
-
 <tr>
-
 <th>#</th>
 <th>SETUP ID</th>
-<th>MACHINE / PART<br><span class="text-[10px]">CLICK FOR WORKFLOW</span></th>
+<th>MACHINE / PART<br><span class="text-[10px]">CLICK FOR DETAILS & TIME</span></th>
 <th>PALLET</th>
 <th>PRIORITY</th>
 <th>TOOL ROOM</th>
 <th>WORKFLOW</th>
 <th>CURRENT STATUS</th>
 <th>ACTION</th>
-
 </tr>
-
 </thead>
-
 <tbody id="setterExcelTableBody">
-
-<tr>
-
-<td colspan="9"
-class="p-6 text-slate-400 font-semibold">
-
-Loading...
-
-</td>
-
-</tr>
-
+<tr><td colspan="9" class="p-6 text-slate-400 font-semibold">Loading...</td></tr>
 </tbody>
-
 </table>
-
 </div>
-
 </div>
-
 </div>
-
 
 <!-- ================= TOOL ROOM ================= -->
-
-<div id="tab-toolroom"
-class="tab-content hidden space-y-6">
-
+<div id="tab-toolroom" class="tab-content hidden space-y-6">
 <div class="bg-white p-6 rounded-xl shadow border">
-
 <div class="flex justify-between items-center border-b pb-3 mb-4">
-
 <h2 class="text-lg font-bold text-slate-800">
-
-<i class="fas fa-tools text-blue-600 mr-2"></i>
-
-Tool Room Setup Preparation
-
+<i class="fas fa-tools text-blue-600 mr-2"></i> Tool Room Setup Preparation (फक्त रजिस्टर फॉर्म्स)
 </h2>
-
-<span class="text-xs text-slate-500">
-Start → Tooling/Fixture Ready → End
-</span>
-
+<span class="text-xs text-slate-500">Fixture mismatch असल्यास Remark मध्ये इनपुट व Action बटण मिळेल.</span>
 </div>
-
-
 <div class="overflow-x-auto">
-
 <table class="w-full text-sm text-left border">
-
 <thead class="bg-slate-100">
-
 <tr>
-
-<th class="p-3 border">
-Machine / Part
-</th>
-
-<th class="p-3 border">
-Fixture
-</th>
-
-<th class="p-3 border">
-Start Time
-</th>
-
-<th class="p-3 border">
-End Time
-</th>
-
-<th class="p-3 border">
-Total
-</th>
-
-<th class="p-3 border">
-Status
-</th>
-
-<th class="p-3 border">
-Action
-</th>
-
+<th class="p-3 border">Machine / Part</th>
+<th class="p-3 border">Fixture Details</th>
+<th class="p-3 border">Remark & Input</th>
+<th class="p-3 border">Status</th>
+<th class="p-3 border">Action</th>
 </tr>
-
 </thead>
-
 <tbody id="toolroomTable"></tbody>
-
 </table>
-
 </div>
-
 </div>
-
 </div>
-
 
 <!-- ================= CMM ================= -->
-
-<div id="tab-stdroom"
-class="tab-content hidden space-y-6">
-
+<div id="tab-stdroom" class="tab-content hidden space-y-6">
 <div class="bg-white p-6 rounded-xl shadow border">
-
 <div class="flex justify-between items-center border-b pb-3 mb-4">
-
 <h2 class="text-lg font-bold text-slate-800">
-
-<i class="fas fa-microscope text-purple-600 mr-2"></i>
-
-CMM ROOM / STD ROOM
-
+<i class="fas fa-microscope text-purple-600 mr-2"></i> CMM ROOM / STD ROOM (फक्त मशीन डिटेल्स आणि Action)
 </h2>
-
-<span class="text-xs text-slate-500">
-Inspection Start → Inspection End
-</span>
-
+<span class="text-xs text-slate-500">कोणताही वर्कफ्लो चार्ट नाही.</span>
 </div>
-
-
 <div class="overflow-x-auto">
-
 <table class="w-full text-sm text-left border">
-
 <thead class="bg-slate-100">
-
 <tr>
-
-<th class="p-3 border">
-Machine / Part
-</th>
-
-<th class="p-3 border">
-Sample
-</th>
-
-<th class="p-3 border">
-Start Time
-</th>
-
-<th class="p-3 border">
-End Time
-</th>
-
-<th class="p-3 border">
-Total
-</th>
-
-<th class="p-3 border">
-Action
-</th>
-
+<th class="p-3 border">Machine / Part</th>
+<th class="p-3 border">Sample</th>
+<th class="p-3 border">Start Time</th>
+<th class="p-3 border">End Time</th>
+<th class="p-3 border">Total</th>
+<th class="p-3 border">Action</th>
 </tr>
-
 </thead>
-
 <tbody id="stdroomTable"></tbody>
-
 </table>
-
 </div>
-
 </div>
-
 </div>
-
 
 <!-- ================= QUALITY ================= -->
-
-<div id="tab-quality"
-class="tab-content hidden space-y-6">
-
+<div id="tab-quality" class="tab-content hidden space-y-6">
 <div class="bg-white p-6 rounded-xl shadow border">
-
 <div class="flex justify-between items-center border-b pb-3 mb-4">
-
 <h2 class="text-lg font-bold text-slate-800">
-
-<i class="fas fa-clipboard-check text-green-600 mr-2"></i>
-
-QUALITY INSPECTION & SOP DECISION
-
+<i class="fas fa-clipboard-check text-green-600 mr-2"></i> QUALITY INSPECTION (फक्त मशीन डिटेल्स आणि Action)
 </h2>
-
-<span class="text-xs text-slate-500">
-Start → End → Approve / Correction
-</span>
-
+<span class="text-xs text-slate-500">वर्कफ्लोची गरज नाही.</span>
 </div>
-
-
-<div id="qualityTableArea"
-class="overflow-x-auto">
-
+<div id="qualityTableArea" class="overflow-x-auto"></div>
 </div>
-
 </div>
-
-</div>
-
 
 <!-- ================= SUPERVISOR ================= -->
-
-<div id="tab-supervisor"
-class="tab-content hidden space-y-6">
-
+<div id="tab-supervisor" class="tab-content hidden space-y-6">
 <div class="bg-white p-6 rounded-xl shadow border">
-
 <h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
-
-<i class="fas fa-chart-line text-emerald-600 mr-2"></i>
-
-Supervisor / HOD - Complete Workflow Summary
-
+<i class="fas fa-chart-line text-emerald-600 mr-2"></i> Supervisor / HOD - Complete Workflow Summary
 </h2>
-
-
 <div class="overflow-x-auto">
-
 <table class="w-full text-xs text-left border">
-
 <thead class="bg-slate-200">
-
 <tr>
-
-<th class="p-2 border">
-Machine
-</th>
-
-<th class="p-2 border">
-Part
-</th>
-
-<th class="p-2 border">
-Pallet
-</th>
-
-<th class="p-2 border">
-Priority
-</th>
-
-<th class="p-2 border">
-Tool Room
-</th>
-
-<th class="p-2 border">
-Workflow
-</th>
-
-<th class="p-2 border">
-Total Actual Time
-</th>
-
+<th class="p-2 border">Machine</th>
+<th class="p-2 border">Part</th>
+<th class="p-2 border">Pallet</th>
+<th class="p-2 border">Priority</th>
+<th class="p-2 border">Tool Room</th>
+<th class="p-2 border">Workflow Path</th>
+<th class="p-2 border">Total Actual Time</th>
 </tr>
-
 </thead>
-
 <tbody id="hodTable"></tbody>
-
 </table>
-
 </div>
-
 </div>
-
 </div>
 
 </main>
-
 </div>
-
 
 <!-- ================= WORKFLOW MODAL ================= -->
-
-<div
-id="workflowModal"
-class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] p-3 md:p-6">
-
+<div id="workflowModal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] p-3 md:p-6">
 <div class="bg-white rounded-2xl w-full max-w-7xl mx-auto shadow-2xl modal-scroll">
-
 <div class="sticky top-0 bg-slate-900 text-white p-4 z-10">
-
 <div class="flex justify-between items-start gap-3">
-
 <div>
-
-<h2
-id="workflowTitle"
-class="text-lg md:text-2xl font-black text-emerald-400">
-Machine Workflow
-</h2>
-
-<p
-id="workflowSubtitle"
-class="text-xs text-slate-300 mt-1">
-</p>
-
+<h2 id="workflowTitle" class="text-lg md:text-2xl font-black text-emerald-400">Machine Workflow</h2>
+<p id="workflowSubtitle" class="text-xs text-slate-300 mt-1"></p>
 </div>
-
-<button
-onclick="closeWorkflowModal()"
-class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold">
-
+<button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold">
 <i class="fas fa-times"></i>
-
 </button>
-
 </div>
-
 </div>
-
-
 <div class="p-4 md:p-6">
-
 <div id="workflowContent"></div>
-
 </div>
-
 </div>
-
 </div>
-
 
 <!-- ================= ALERT ================= -->
-
-<div
-id="alertModal"
-class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-[100] p-4">
-
+<div id="alertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-[100] p-4">
 <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active shadow-2xl">
-
 <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-black">
-
 <i class="fas fa-bell"></i>
-
 </div>
-
-<h3
-id="alertTitle"
-class="text-xl font-black text-red-600">
-WORKFLOW NOTIFICATION
-</h3>
-
-<p
-id="alertMessage"
-class="text-sm my-4 font-bold text-slate-700">
-Details
-</p>
-
-<button
-onclick="acknowledgeAlert()"
-class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">
-
-OK
-
-</button>
-
+<h3 id="alertTitle" class="text-xl font-black text-red-600">WORKFLOW NOTIFICATION</h3>
+<p id="alertMessage" class="text-sm my-4 font-bold text-slate-700">Details</p>
+<button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">OK</button>
 </div>
-
 </div>
-
 
 <script>
-
-/* =========================================================
-   FIREBASE
-========================================================= */
-
 const firebaseConfig = {
-
   apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
-
   authDomain: "sutom-multi-dashboard.firebaseapp.com",
-
-  databaseURL:
-  "https://sutom-multi-dashboard-default-rtdb.firebaseio.com",
-
-  projectId:
-  "sutom-multi-dashboard",
-
-  storageBucket:
-  "sutom-multi-dashboard.firebasestorage.app",
-
-  messagingSenderId:
-  "202116185102",
-
-  appId:
-  "1:202116185102:web:28efd6421d0215d58ed05f"
-
+  databaseURL: "https://sutom-multi-dashboard-default-rtdb.firebaseio.com",
+  projectId: "sutom-multi-dashboard",
+  storageBucket: "sutom-multi-dashboard.firebasestorage.app",
+  messagingSenderId: "202116185102",
+  appId: "1:202116185102:web:28efd6421d0215d58ed05f"
 };
-
 
 firebase.initializeApp(firebaseConfig);
-
-const dbRef =
-firebase.database().ref("setups");
-
+const dbRef = firebase.database().ref("setups");
 
 window.allSetups = [];
-
 window.currentExcelFilter = "all";
-
 window.currentUser = null;
 
-
-/* =========================================================
-   MACHINE LIST
-========================================================= */
-
 const MACHINE_LIST = [];
-
-for(let i=1;i<=15;i++){
-  MACHINE_LIST.push("M"+i);
-}
-
-for(let i=1;i<=35;i++){
-  MACHINE_LIST.push("EN"+i);
-}
-
-[
-  3,8,11,13,15,25,27,28
-].forEach(n=>{
-  MACHINE_LIST.push("MK"+n);
-});
-
-
-/* =========================================================
-   MACHINE LIST LOAD
-========================================================= */
+for(let i=1;i<=15;i++){ MACHINE_LIST.push("M"+i); }
+for(let i=1;i<=35;i++){ MACHINE_LIST.push("EN"+i); }
+[3,8,11,13,15,25,27,28].forEach(n=>{ MACHINE_LIST.push("MK"+n); });
 
 function loadMachineList(){
-
-  const select =
-  document.getElementById("machineName");
-
+  const select = document.getElementById("machineName");
   if(!select) return;
-
-  select.innerHTML =
-  `<option value="">-- SELECT MACHINE --</option>`;
-
+  select.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
   MACHINE_LIST.forEach(machine=>{
-
-    select.innerHTML +=
-    `<option value="${machine}">
-      ${machine}
-    </option>`;
-
+    select.innerHTML += `<option value="${machine}">${machine}</option>`;
   });
-
 }
-
-
-/* =========================================================
-   PRIORITY
-========================================================= */
 
 function loadPriority(){
-
-  const select =
-  document.getElementById("priority");
-
+  const select = document.getElementById("priority");
   if(!select) return;
-
-  select.innerHTML =
-  `<option value="">-- SELECT --</option>`;
-
+  select.innerHTML = `<option value="">-- SELECT --</option>`;
   for(let i=1;i<=10;i++){
-
-    select.innerHTML +=
-    `<option value="${i}">
-      Priority ${i}
-    </option>`;
-
+    select.innerHTML += `<option value="${i}">Priority ${i}</option>`;
   }
-
 }
-
-
-/* =========================================================
-   LIVE CLOCK
-========================================================= */
 
 function updateLiveTime(){
-
-  const now =
-  new Date();
-
-  const t =
-  document.getElementById("topLiveTime");
-
-  const sh =
-  document.getElementById("topLiveShift");
-
-  if(t){
-    t.textContent =
-    now.toLocaleTimeString();
-  }
-
-  const m =
-  now.getHours()*60+
-  now.getMinutes();
-
-  let sn;
-
-  if(m>=465 && m<975){
-    sn="Shift A";
-  }
-  else if(m>=975 && m<1440){
-    sn="Shift B";
-  }
-  else{
-    sn="Shift C";
-  }
-
-  if(sh){
-    sh.textContent =
-    "Shift: "+sn;
-  }
-
+  const now = new Date();
+  const t = document.getElementById("topLiveTime");
+  const sh = document.getElementById("topLiveShift");
+  if(t){ t.textContent = now.toLocaleTimeString(); }
+  const m = now.getHours()*60 + now.getMinutes();
+  let sn = (m>=465 && m<975) ? "Shift A" : (m>=975 && m<1440) ? "Shift B" : "Shift C";
+  if(sh){ sh.textContent = "Shift: "+sn; }
 }
-
 setInterval(updateLiveTime,1000);
-
 updateLiveTime();
 
-
-/* =========================================================
-   DOM READY
-========================================================= */
-
-window.addEventListener(
-"DOMContentLoaded",
-()=>{
-
+window.addEventListener("DOMContentLoaded", ()=>{
   loadMachineList();
-
   loadPriority();
-
-  const u =
-  localStorage.getItem("sutom_user");
-
+  const u = localStorage.getItem("sutom_user");
   if(u){
-
     try{
-
-      window.currentUser =
-      JSON.parse(u);
-
-      loadDashboard(
-      window.currentUser
-      );
-
+      window.currentUser = JSON.parse(u);
+      loadDashboard(window.currentUser);
+    }catch{
+      localStorage.removeItem("sutom_user");
     }
-    catch{
-
-      localStorage.removeItem(
-      "sutom_user"
-      );
-
-    }
-
   }
-
-
-  const dateInput =
-  document.getElementById("setupDate");
-
+  const dateInput = document.getElementById("setupDate");
   if(dateInput){
-
-    dateInput.value =
-    new Date()
-    .toISOString()
-    .split("T")[0];
-
+    dateInput.value = new Date().toISOString().split("T")[0];
   }
 
-
-  dbRef.on(
-  "value",
-  snapshot=>{
-
-    const data =
-    snapshot.val();
-
+  dbRef.on("value", snapshot=>{
+    const data = snapshot.val();
     if(data){
-
-      window.allSetups =
-      Object.values(data)
-      .map(x=>x)
-      .sort(
-        (a,b)=>
-        (b.timestampRegistered||0)
-        -
-        (a.timestampRegistered||0)
-      );
-
-    }
-    else{
-
+      window.allSetups = Object.values(data).map(x=>x).sort((a,b)=>(b.timestampRegistered||0)-(a.timestampRegistered||0));
+    }else{
       window.allSetups=[];
-
     }
-
     window.renderAllViews();
-
-  },
-  error=>{
-
-    console.error(
-    "Firebase read error:",
-    error
-    );
-
   });
-
 });
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
 
 function handleLogin(e){
-
   e.preventDefault();
-
   window.currentUser={
-
-    name:
-    document.getElementById(
-    "loginName"
-    ).value.trim(),
-
-    id:
-    document.getElementById(
-    "loginId"
-    ).value.trim(),
-
-    dept:
-    document.getElementById(
-    "loginDept"
-    ).value
-
+    name: document.getElementById("loginName").value.trim(),
+    id: document.getElementById("loginId").value.trim(),
+    dept: document.getElementById("loginDept").value
   };
-
-
-  localStorage.setItem(
-  "sutom_user",
-  JSON.stringify(
-  window.currentUser
-  )
-  );
-
-
-  loadDashboard(
-  window.currentUser
-  );
-
+  localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
+  loadDashboard(window.currentUser);
 }
-
-
-/* =========================================================
-   LOAD DASHBOARD
-========================================================= */
 
 function loadDashboard(user){
-
-  document
-  .getElementById("authSection")
-  .classList.add("hidden");
-
-  document
-  .getElementById("dashboardSection")
-  .classList.remove("hidden");
-
-  document
-  .getElementById("dashboardSection")
-  .classList.add("flex");
-
-  document
-  .getElementById("userInfo")
-  .classList.remove("hidden");
-
-  document
-  .getElementById("userInfo")
-  .classList.add("flex");
-
-  document
-  .getElementById("userBadge")
-  .textContent =
-  `${user.name} (${user.dept.toUpperCase()})`;
-
-  showDepartmentTab(
-  user.dept
-  );
-
+  document.getElementById("authSection").classList.add("hidden");
+  document.getElementById("dashboardSection").classList.remove("hidden");
+  document.getElementById("dashboardSection").classList.add("flex");
+  document.getElementById("userInfo").classList.remove("hidden");
+  document.getElementById("userInfo").classList.add("flex");
+  document.getElementById("userBadge").textContent = `${user.name} (${user.dept.toUpperCase()})`;
+  showDepartmentTab(user.dept);
 }
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
 
 function handleLogout(){
-
-  localStorage.removeItem(
-  "sutom_user"
-  );
-
+  localStorage.removeItem("sutom_user");
   window.currentUser=null;
-
-  document
-  .getElementById("authSection")
-  .classList.remove("hidden");
-
-  document
-  .getElementById("dashboardSection")
-  .classList.add("hidden");
-
-  document
-  .getElementById("userInfo")
-  .classList.add("hidden");
-
+  document.getElementById("authSection").classList.remove("hidden");
+  document.getElementById("dashboardSection").classList.add("hidden");
+  document.getElementById("userInfo").classList.add("hidden");
 }
-
-
-/* =========================================================
-   DEPARTMENT TAB
-========================================================= */
 
 function showDepartmentTab(deptId){
-
-  document
-  .querySelectorAll(".tab-content")
-  .forEach(el=>
-    el.classList.add("hidden")
-  );
-
-  const tab =
-  document.getElementById(
-  "tab-"+deptId
-  );
-
-  if(tab){
-    tab.classList.remove("hidden");
-  }
-
+  document.querySelectorAll(".tab-content").forEach(el=>el.classList.add("hidden"));
+  const tab = document.getElementById("tab-"+deptId);
+  if(tab){ tab.classList.remove("hidden"); }
   window.renderAllViews();
-
 }
-
-
-/* =========================================================
-   FORM
-========================================================= */
 
 function toggleSetupForm(show){
-
-  const card =
-  document.getElementById(
-  "setupFormCard"
-  );
-
+  const card = document.getElementById("setupFormCard");
   if(!card) return;
-
-  if(show)
-    card.classList.remove("hidden");
-  else
-    card.classList.add("hidden");
-
+  if(show) card.classList.remove("hidden");
+  else card.classList.add("hidden");
 }
-
 
 function openSetterModule(key){
-
   if(key==="register"){
-
     toggleSetupForm(true);
-
-    document
-    .getElementById("setupFormCard")
-    .scrollIntoView({
-      behavior:"smooth"
-    });
-
+    document.getElementById("setupFormCard").scrollIntoView({behavior:"smooth"});
+  }else{
+    window.currentExcelFilter = key;
+    window.renderSetterExcelTable(key);
   }
-  else{
-
-    window.currentExcelFilter =
-    key;
-
-    window.renderSetterExcelTable(
-    key
-    );
-
-  }
-
 }
-
-
-/* =========================================================
-   EMPTY SAMPLE
-========================================================= */
 
 function emptySample(){
-
-  return {
-
-    setterStart:null,
-    setterEnd:null,
-
-    cutTime:null,
-
-    cmmStart:null,
-    cmmEnd:null,
-
-    qualityStart:null,
-    qualityEnd:null,
-
-    result:null
-
-  };
-
+  return { setterStart:null, setterEnd:null, cutTime:null, cmmStart:null, cmmEnd:null, qualityStart:null, qualityEnd:null, result:null };
 }
-
-
-/* =========================================================
-   REGISTER SETUP
-========================================================= */
 
 function handleSetterSubmit(e){
-
   e.preventDefault();
-
-  const now =
-  new Date();
-
-  const newKey =
-  dbRef.push().key;
-
-  const setupId =
-  "ST-"+Date.now().toString().slice(-6);
-
+  const now = new Date();
+  const newKey = dbRef.push().key;
+  const setupId = "ST-"+Date.now().toString().slice(-6);
 
   const newItem={
-
-    firebaseKey:newKey,
-
-    id:setupId,
-
-    machineName:
-    document.getElementById(
-    "machineName"
-    ).value,
-
-    partName:
-    document.getElementById(
-    "partName"
-    ).value.trim(),
-
-    partNo:
-    document.getElementById(
-    "partNo"
-    ).value.trim(),
-
-    fixtureNo:
-    document.getElementById(
-    "fixtureNo"
-    ).value.trim(),
-
-    setupDate:
-    document.getElementById(
-    "setupDate"
-    ).value,
-
-    shift:
-    document.getElementById(
-    "setupShift"
-    ).value,
-
-    pallet:
-    document.getElementById(
-    "pallet"
-    ).value,
-
-    priority:
-    document.getElementById(
-    "priority"
-    ).value,
-
-    registeredBy:
-    window.currentUser ?
-    window.currentUser.name :
-    "",
-
-    registeredById:
-    window.currentUser ?
-    window.currentUser.id :
-    "",
-
-    timestampRegistered:
-    now.getTime(),
-
-    timeRegistered:
-    now.toLocaleTimeString(),
-
-    toolStart:null,
-    toolEnd:null,
-    toolTotal:null,
-
-    toolingReady:false,
-    fixtureReady:false,
-
-    setupStarted:false,
-
-    sampleCount:1,
-
-    s1:emptySample(),
-    s2:emptySample(),
-    s3:emptySample(),
-    s4:emptySample(),
-
-    qualityStatus:
-    "TOOL ROOM PENDING",
-
-    stage:
-    "Tool Room Pending",
-
-    timeSopDone:null,
-
-    totalTimeSpent:
-    "Pending"
-
+    firebaseKey: newKey,
+    id: setupId,
+    machineName: document.getElementById("machineName").value,
+    partName: document.getElementById("partName").value.trim(),
+    partNo: document.getElementById("partNo").value.trim(),
+    fixtureNo: document.getElementById("fixtureNo").value.trim(),
+    setterReqFixture: document.getElementById("setterReqFixture").value.trim(),
+    setupDate: document.getElementById("setupDate").value,
+    shift: document.getElementById("setupShift").value,
+    pallet: document.getElementById("pallet").value,
+    priority: document.getElementById("priority").value,
+    toolRemark: "",
+    registeredBy: window.currentUser ? window.currentUser.name : "",
+    registeredById: window.currentUser ? window.currentUser.id : "",
+    timestampRegistered: now.getTime(),
+    timeRegistered: now.toLocaleTimeString(),
+    toolStart: null,
+    toolEnd: null,
+    toolingReady: false,
+    fixtureReady: false,
+    setupStarted: false,
+    sampleCount: 1,
+    s1: emptySample(), s2: emptySample(), s3: emptySample(), s4: emptySample(),
+    qualityStatus: "TOOL ROOM PENDING",
+    stage: "Tool Room Pending",
+    timeSopDone: null,
+    totalTimeSpent: "Pending"
   };
 
-
-  dbRef
-  .child(newKey)
-  .set(newItem)
-  .then(()=>{
-
-    triggerAlert(
-      "SUCCESS",
-      `Setup ${setupId} registered successfully for ${newItem.machineName}.`
-    );
-
-    document
-    .getElementById("setterForm")
-    .reset();
-
-    document
-    .getElementById("setupDate")
-    .value =
-    new Date()
-    .toISOString()
-    .split("T")[0];
-
+  dbRef.child(newKey).set(newItem).then(()=>{
+    triggerAlert("SUCCESS", `Setup ${setupId} registered successfully for ${newItem.machineName}.`);
+    document.getElementById("setterForm").reset();
+    document.getElementById("setupDate").value = new Date().toISOString().split("T")[0];
     toggleSetupForm(false);
-
-  })
-  .catch(err=>{
-
-    alert(
-    "Firebase Error: "+
-    err.message
-    );
-
-  });
-
+  }).catch(err=>{ alert("Firebase Error: "+err.message); });
 }
-
-
-/* =========================================================
-   TIME HELPERS
-========================================================= */
 
 function currentTime(){
-
-  return new Date()
-  .toLocaleTimeString(
-    "en-IN",
-    {
-      hour:"2-digit",
-      minute:"2-digit",
-      second:"2-digit",
-      hour12:true
-    }
-  );
-
+  return new Date().toLocaleTimeString("en-IN", {hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:true});
 }
-
 
 function parseTimeToday(time){
-
   if(!time) return null;
-
-  const d =
-  new Date();
-
-  const match =
-  time.match(
-  /(\d+):(\d+):(\d+)\s*(AM|PM)?/i
-  );
-
+  const d = new Date();
+  const match = time.match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
   if(!match) return null;
-
-  let h =
-  parseInt(match[1]);
-
-  const m =
-  parseInt(match[2]);
-
-  const s =
-  parseInt(match[3]);
-
-  const ap =
-  match[4];
-
+  let h = parseInt(match[1]);
+  const m = parseInt(match[2]);
+  const s = parseInt(match[3]);
+  const ap = match[4];
   if(ap){
-
-    if(
-      ap.toUpperCase()==="PM"
-      && h<12
-    ) h+=12;
-
-    if(
-      ap.toUpperCase()==="AM"
-      && h===12
-    ) h=0;
-
+    if(ap.toUpperCase()==="PM" && h<12) h+=12;
+    if(ap.toUpperCase()==="AM" && h===12) h=0;
   }
-
-  d.setHours(
-    h,m,s,0
-  );
-
+  d.setHours(h,m,s,0);
   return d;
-
 }
-
 
 function durationMinutes(start,end){
-
-  const a =
-  parseTimeToday(start);
-
-  const b =
-  parseTimeToday(end);
-
-  if(!a || !b)
-    return "-";
-
-  let diff =
-  Math.floor(
-    (b-a)/60000
-  );
-
-  if(diff<0)
-    diff+=1440;
-
+  const a = parseTimeToday(start);
+  const b = parseTimeToday(end);
+  if(!a || !b) return "-";
+  let diff = Math.floor((b-a)/60000);
+  if(diff<0) diff+=1440;
   return diff+" min";
-
 }
-
 
 function totalSetupMinutes(s){
-
-  if(!s.timestampRegistered)
-    return "-";
-
-  if(
-    s.qualityStatus!=="SOP DONE"
-    || !s.timeSopDone
-  ){
-    return "-";
-  }
-
-  const end =
-  parseTimeToday(
-  s.timeSopDone
-  );
-
-  if(!end)
-    return "-";
-
-  const start =
-  new Date(
-  s.timestampRegistered
-  );
-
-  let diff =
-  Math.floor(
-    (end-start)/60000
-  );
-
-  if(diff<0)
-    return "-";
-
+  if(!s.timestampRegistered) return "-";
+  if(s.qualityStatus!=="SOP DONE" || !s.timeSopDone) return "-";
+  const end = parseTimeToday(s.timeSopDone);
+  if(!end) return "-";
+  const start = new Date(s.timestampRegistered);
+  let diff = Math.floor((end-start)/60000);
+  if(diff<0) return "-";
   return diff+" min";
-
 }
-
-
-/* =========================================================
-   SAFE SAMPLE
-========================================================= */
 
 function getSample(s,n){
-
-  if(!s["s"+n]){
-
-    s["s"+n]=
-    emptySample();
-
-  }
-
+  if(!s["s"+n]){ s["s"+n]= emptySample(); }
   return s["s"+n];
-
 }
 
-
-/* =========================================================
-   SETTER START
-========================================================= */
-
-window.setterStartSetup =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+window.setterStartSetup = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-
-
-  const n =
-  s.sampleCount || 1;
-
-  const updates={
-
-    setupStarted:true,
-
-    stage:
-    `Sample #${n} - SETTER`,
-
-    qualityStatus:
-    `Sample #${n} SETTER RUNNING`
-
-  };
-
-
-  const sample =
-  getSample(s,n);
-
-
-  if(!sample.setterStart){
-
-    updates[
-      `s${n}/setterStart`
-    ] =
-    currentTime();
-
-  }
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates);
-
+  const n = s.sampleCount || 1;
+  const updates={ setupStarted:true, stage:`Sample #${n} - SETTER`, qualityStatus:`Sample #${n} SETTER RUNNING` };
+  const sample = getSample(s,n);
+  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
+  dbRef.child(firebaseKey).update(updates);
 };
 
-
-/* =========================================================
-   SETTER END
-========================================================= */
-
-window.setterEndSample =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+window.setterEndSample = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-
-
-  const n =
-  s.sampleCount || 1;
-
-  const sample =
-  getSample(s,n);
-
+  const n = s.sampleCount || 1;
+  const sample = getSample(s,n);
   const updates={};
-
-
-  if(!sample.setterStart){
-
-    updates[
-      `s${n}/setterStart`
-    ] =
-    currentTime();
-
-  }
-
-
-  updates[
-    `s${n}/setterEnd`
-  ] =
-  currentTime();
-
-  updates[
-    `s${n}/cutTime`
-  ] =
-  currentTime();
-
-  updates.stage =
-  `Sample #${n} - CMM Pending`;
-
-  updates.qualityStatus =
-  `Sample #${n} CMM PENDING`;
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates)
-  .then(()=>{
-
-    triggerAlert(
-      "CMM ROOM",
-      `Sample #${n} completed by Setter. Send ${s.machineName} to CMM Room.`
-    );
-
+  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
+  updates[`s${n}/setterEnd`] = currentTime();
+  updates[`s${n}/cutTime`] = currentTime();
+  updates.stage = `Sample #${n} - CMM Pending`;
+  updates.qualityStatus = `Sample #${n} CMM PENDING`;
+  dbRef.child(firebaseKey).update(updates).then(()=>{
+    triggerAlert("CMM ROOM", `Sample #${n} completed by Setter. Send ${s.machineName} to CMM Room.`);
   });
-
 };
 
-
-/* =========================================================
-   TOOL ROOM START
-========================================================= */
-
-window.toolRoomStart =
-function(firebaseKey){
-
-  dbRef
-  .child(firebaseKey)
-  .update({
-
-    toolStart:
-    currentTime(),
-
-    stage:
-    "Tool Room Running",
-
-    qualityStatus:
-    "TOOL ROOM RUNNING"
-
-  });
-
+window.toolRoomStart = function(firebaseKey){
+  dbRef.child(firebaseKey).update({ toolStart: currentTime(), stage: "Tool Room Running", qualityStatus: "TOOL ROOM RUNNING" });
 };
 
-
-/* =========================================================
-   TOOL ROOM END
-========================================================= */
-
-window.toolRoomEnd =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
-  if(!s) return;
-
-
-  const updates={
-
-    toolEnd:
-    currentTime(),
-
-    toolingReady:true,
-
-    fixtureReady:true,
-
-    stage:
-    "Ready For Setter",
-
-    qualityStatus:
-    "READY FOR SETUP"
-
+window.toolRoomEnd = function(firebaseKey, remarkVal = "") {
+  const s = window.allSetups.find(x => x.firebaseKey === firebaseKey);
+  if (!s) return;
+  const updates = {
+    toolEnd: currentTime(),
+    toolingReady: true,
+    fixtureReady: true,
+    toolRemark: remarkVal,
+    stage: "Ready For Setter",
+    qualityStatus: "READY FOR SETUP"
   };
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates)
-  .then(()=>{
-
-    triggerAlert(
-      "SETTER",
-      `Tooling & Fixture Ready for ${s.machineName}. Setter can start setup.`
-    );
-
+  dbRef.child(firebaseKey).update(updates).then(() => {
+    triggerAlert("SETTER", `Tooling & Fixture Ready for ${s.machineName}. Setter can start setup.`);
   });
-
 };
 
-
-/* =========================================================
-   CMM START
-========================================================= */
-
-window.cmmStart =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
-  if(!s) return;
-
-
-  const n =
-  s.sampleCount || 1;
-
-
-  const updates={
-
-    [`s${n}/cmmStart`]:
-    currentTime(),
-
-    stage:
-    `Sample #${n} - CMM Running`,
-
-    qualityStatus:
-    `Sample #${n} CMM RUNNING`
-
-  };
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates);
-
+window.updateToolRemarkInput = function(firebaseKey, val){
+  dbRef.child(firebaseKey).update({ toolRemark: val });
 };
 
-
-/* =========================================================
-   CMM END
-========================================================= */
-
-window.cmmEnd =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+window.cmmStart = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
+  const n = s.sampleCount || 1;
+  dbRef.child(firebaseKey).update({ [`s${n}/cmmStart`]: currentTime(), stage: `Sample #${n} - CMM Running`, qualityStatus: `Sample #${n} CMM RUNNING` });
+};
 
-
-  const n =
-  s.sampleCount || 1;
-
-  const sample =
-  getSample(s,n);
-
+window.cmmEnd = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+  if(!s) return;
+  const n = s.sampleCount || 1;
+  const sample = getSample(s,n);
   const updates={};
-
-
-  if(!sample.cmmStart){
-
-    updates[
-      `s${n}/cmmStart`
-    ] =
-    currentTime();
-
-  }
-
-
-  updates[
-    `s${n}/cmmEnd`
-  ] =
-  currentTime();
-
-
-  updates.stage =
-  `Sample #${n} - Quality Pending`;
-
-  updates.qualityStatus =
-  `Sample #${n} QUALITY PENDING`;
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates)
-  .then(()=>{
-
-    triggerAlert(
-      "QUALITY",
-      `Sample #${n} CMM inspection completed. Send ${s.machineName} to Quality.`
-    );
-
+  if(!sample.cmmStart){ updates[`s${n}/cmmStart`] = currentTime(); }
+  updates[`s${n}/cmmEnd`] = currentTime();
+  updates.stage = `Sample #${n} - Quality Pending`;
+  updates.qualityStatus = `Sample #${n} QUALITY PENDING`;
+  dbRef.child(firebaseKey).update(updates).then(()=>{
+    triggerAlert("QUALITY", `Sample #${n} CMM inspection completed. Send ${s.machineName} to Quality.`);
   });
-
 };
 
-
-/* =========================================================
-   QUALITY START
-========================================================= */
-
-window.qualityStart =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+window.qualityStart = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-
-
-  const n =
-  s.sampleCount || 1;
-
-
-  dbRef
-  .child(firebaseKey)
-  .update({
-
-    [`s${n}/qualityStart`]:
-    currentTime(),
-
-    stage:
-    `Sample #${n} - Quality Running`,
-
-    qualityStatus:
-    `Sample #${n} QUALITY RUNNING`
-
-  });
-
+  const n = s.sampleCount || 1;
+  dbRef.child(firebaseKey).update({ [`s${n}/qualityStart`]: currentTime(), stage: `Sample #${n} - Quality Running`, qualityStatus: `Sample #${n} QUALITY RUNNING` });
 };
 
-
-/* =========================================================
-   QUALITY END
-========================================================= */
-
-window.qualityEnd =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+window.qualityEnd = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-
-
-  const n =
-  s.sampleCount || 1;
-
-  const sample =
-  getSample(s,n);
-
+  const n = s.sampleCount || 1;
+  const sample = getSample(s,n);
   const updates={};
-
-
-  if(!sample.qualityStart){
-
-    updates[
-      `s${n}/qualityStart`
-    ] =
-    currentTime();
-
-  }
-
-
-  updates[
-    `s${n}/qualityEnd`
-  ] =
-  currentTime();
-
-
-  updates.stage =
-  `Sample #${n} - Quality Decision`;
-
-  updates.qualityStatus =
-  `Sample #${n} READY FOR DECISION`;
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates);
-
+  if(!sample.qualityStart){ updates[`s${n}/qualityStart`] = currentTime(); }
+  updates[`s${n}/qualityEnd`] = currentTime();
+  updates.stage = `Sample #${n} - Quality Decision`;
+  updates.qualityStatus = `Sample #${n} READY FOR DECISION`;
+  dbRef.child(firebaseKey).update(updates);
 };
 
-
-/* =========================================================
-   QUALITY APPROVE
-========================================================= */
-
-window.qualityApprove =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+window.qualityApprove = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-
-
-  const n =
-  s.sampleCount || 1;
-
-  const doneTime =
-  currentTime();
-
-  const updates={
-
-    [`s${n}/result`]:
-    "SOP Approved",
-
-    qualityStatus:
-    "SOP DONE",
-
-    stage:
-    "SOP APPROVED",
-
-    timeSopDone:
-    doneTime
-
-  };
-
-
-  updates.totalTimeSpent =
-  totalSetupMinutes({
-
-    ...s,
-
-    qualityStatus:
-    "SOP DONE",
-
-    timeSopDone:
-    doneTime
-
+  const n = s.sampleCount || 1;
+  const doneTime = currentTime();
+  const updates={ [`s${n}/result`]: "SOP Approved", qualityStatus: "SOP DONE", stage: "SOP APPROVED", timeSopDone: doneTime };
+  updates.totalTimeSpent = totalSetupMinutes({ ...s, qualityStatus: "SOP DONE", timeSopDone: doneTime });
+  dbRef.child(firebaseKey).update(updates).then(()=>{
+    triggerAlert("SOP APPROVED", `${s.machineName} Sample #${n} approved successfully.`);
   });
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates)
-  .then(()=>{
-
-    triggerAlert(
-      "SOP APPROVED",
-      `${s.machineName} Sample #${n} approved successfully.`
-    );
-
-  });
-
 };
 
-
-/* =========================================================
-   QUALITY CORRECTION
-========================================================= */
-
-window.qualityCorrection =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+window.qualityCorrection = function(firebaseKey){
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-
-
-  const n =
-  s.sampleCount || 1;
-
-
-  if(n>=4){
-
-    alert(
-      "4th Sample correction limit reached."
-    );
-
-    return;
-
-  }
-
-
-  const next =
-  n+1;
-
-  const updates={
-
-    [`s${n}/result`]:
-    "Correction Required",
-
-    sampleCount:
-    next,
-
-    stage:
-    `Sample #${next} - Setter Pending`,
-
-    qualityStatus:
-    `Sample #${next} CORRECTION REQUIRED`
-
-  };
-
-
-  dbRef
-  .child(firebaseKey)
-  .update(updates)
-  .then(()=>{
-
-    triggerAlert(
-      "CORRECTION",
-      `Correction required for ${s.machineName}. Shifted to Sample #${next}.`
-    );
-
+  const n = s.sampleCount || 1;
+  if(n>=4){ alert("4th Sample correction limit reached."); return; }
+  const next = n+1;
+  const updates={ [`s${n}/result`]: "Correction Required", sampleCount: next, stage: `Sample #${next} - Setter Pending`, qualityStatus: `Sample #${next} CORRECTION REQUIRED` };
+  dbRef.child(firebaseKey).update(updates).then(()=>{
+    triggerAlert("CORRECTION", `Correction required for ${s.machineName}. Shifted to Sample #${next}.`);
   });
-
 };
 
-
-/* =========================================================
-   METRICS
-========================================================= */
-
-window.updateMetrics =
-function(){
-
-  const list =
-  window.allSetups || [];
-
-  const el =
-  (id,val)=>{
-
-    const e =
-    document.getElementById(id);
-
-    if(e)
-      e.textContent=val;
-
-  };
-
-
-  el(
-    "metric-all",
-    list.length
-  );
-
-
-  el(
-    "metric-ready",
-    list.filter(
-      s=>
-      s.toolingReady &&
-      s.fixtureReady &&
-      !s.setupStarted
-    ).length
-  );
-
-
-  el(
-    "metric-running",
-    list.filter(
-      s=>
-      s.qualityStatus!=="SOP DONE"
-    ).length
-  );
-
-
-  el(
-    "metric-correction",
-    list.filter(
-      s=>
-      String(
-      s.qualityStatus||""
-      ).includes(
-      "CORRECTION"
-      )
-    ).length
-  );
-
-
-  el(
-    "metric-approved",
-    list.filter(
-      s=>
-      s.qualityStatus==="SOP DONE"
-    ).length
-  );
-
+window.updateMetrics = function(){
+  const list = window.allSetups || [];
+  const el = (id,val)=>{ const e = document.getElementById(id); if(e) e.textContent=val; };
+  el("metric-all", list.length);
+  el("metric-ready", list.filter(s=> s.toolingReady && s.fixtureReady && !s.setupStarted).length);
+  el("metric-running", list.filter(s=> s.qualityStatus!=="SOP DONE").length);
+  el("metric-correction", list.filter(s=> String(s.qualityStatus||"").includes("CORRECTION")).length);
+  el("metric-approved", list.filter(s=> s.qualityStatus==="SOP DONE").length);
 };
 
-
-/* =========================================================
-   SETTER TABLE
-   IMPORTANT:
-   NO SAMPLE 1-4 COLUMNS
-========================================================= */
-
-window.renderSetterExcelTable =
-function(filterKey){
-
-  const tbody =
-  document.getElementById(
-  "setterExcelTableBody"
-  );
-
-  const rowCount =
-  document.getElementById(
-  "excelRowCount"
-  );
-
+window.renderSetterExcelTable = function(filterKey){
+  const tbody = document.getElementById("setterExcelTableBody");
+  const rowCount = document.getElementById("excelRowCount");
   if(!tbody) return;
+  let list = window.allSetups || [];
+  if(filterKey==="ready"){ list = list.filter(s=> s.toolingReady && s.fixtureReady); }
+  else if(filterKey==="running"){ list = list.filter(s=> s.qualityStatus!=="SOP DONE"); }
+  else if(filterKey==="correction"){ list = list.filter(s=> String(s.qualityStatus||"").includes("CORRECTION")); }
+  else if(filterKey==="approved"){ list = list.filter(s=> s.qualityStatus==="SOP DONE"); }
 
-
-  let list =
-  window.allSetups || [];
-
-
-  if(filterKey==="ready"){
-
-    list =
-    list.filter(
-      s=>
-      s.toolingReady &&
-      s.fixtureReady
-    );
-
-  }
-
-  else if(filterKey==="running"){
-
-    list =
-    list.filter(
-      s=>
-      s.qualityStatus!=="SOP DONE"
-    );
-
-  }
-
-  else if(filterKey==="correction"){
-
-    list =
-    list.filter(
-      s=>
-      String(
-      s.qualityStatus||""
-      ).includes(
-      "CORRECTION"
-      )
-    );
-
-  }
-
-  else if(filterKey==="approved"){
-
-    list =
-    list.filter(
-      s=>
-      s.qualityStatus==="SOP DONE"
-    );
-
-  }
-
-
-  rowCount.textContent =
-  `Rows: ${list.length}`;
-
-
+  rowCount.textContent = `Rows: ${list.length}`;
   if(list.length===0){
-
-    tbody.innerHTML=`
-
-    <tr>
-
-    <td colspan="9"
-    class="p-6 text-slate-400 font-semibold text-center">
-
-    No registered setup machines found.
-
-    </td>
-
-    </tr>
-
-    `;
-
+    tbody.innerHTML=`<tr><td colspan="9" class="p-6 text-slate-400 font-semibold text-center">No registered setup machines found.</td></tr>`;
     return;
-
   }
 
-
-  tbody.innerHTML =
-  list.map(
-  (s,idx)=>`
-
+  tbody.innerHTML = list.map((s,idx)=>`
   <tr>
-
-    <td class="font-bold">
-    ${idx+1}
-    </td>
-
-
-    <td class="font-mono font-bold text-purple-700">
-    ${s.id}
-    </td>
-
-
+    <td class="font-bold">${idx+1}</td>
+    <td class="font-mono font-bold text-purple-700">${s.id}</td>
     <!-- MACHINE CLICK -->
-    <td
-    onclick="openWorkflowModal('${s.firebaseKey}')"
-    class="machine-click text-left font-bold text-blue-700 bg-blue-50">
-
-      <span class="text-lg">
-      ${s.machineName}
-      </span>
-
-      <br>
-
-      <span class="text-xs text-slate-600">
-      ${s.partName}
-      </span>
-
-      <br>
-
-      <span class="text-[10px]">
-      Part No: ${s.partNo}
-      </span>
-
-      <br>
-
+    <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click text-left font-bold text-blue-700 bg-blue-50">
+      <span class="text-lg">${s.machineName}</span><br>
+      <span class="text-xs text-slate-600">${s.partName}</span><br>
+      <span class="text-[10px]">Part No: ${s.partNo}</span><br>
       <span class="inline-block mt-1 text-[10px] bg-blue-600 text-white px-2 py-1 rounded font-bold">
-      <i class="fas fa-mouse-pointer mr-1"></i>
-      CLICK → FULL WORKFLOW
+      <i class="fas fa-mouse-pointer mr-1"></i> CLICK → DETAILS & TIME
       </span>
-
     </td>
-
-
-    <td class="font-bold">
-    ${s.pallet||"-"}
-    </td>
-
-
-    <td>
-
-      <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded font-bold">
-
-      P${s.priority||"-"}
-
-      </span>
-
-    </td>
-
-
+    <td class="font-bold">${s.pallet||"-"}</td>
+    <td><span class="bg-orange-100 text-orange-700 px-2 py-1 rounded font-bold">P${s.priority||"-"}</span></td>
     <td class="text-left text-xs">
-
-      Start:
-      ${s.toolStart||"-"}
-
-      <br>
-
-      End:
-      ${s.toolEnd||"-"}
-
-      <br>
-
-      <b>
-      ${durationMinutes(
-        s.toolStart,
-        s.toolEnd
-      )}
-      </b>
-
+      Start: ${s.toolStart||"-"}<br>End: ${s.toolEnd||"-"}<br><b>${durationMinutes(s.toolStart, s.toolEnd)}</b>
     </td>
-
-
-    <!-- ONE WORKFLOW COLUMN -->
-
-    <td
-    onclick="openWorkflowModal('${s.firebaseKey}')"
-    class="machine-click bg-indigo-50 text-indigo-700 font-bold">
-
-      <i class="fas fa-route text-lg"></i>
-
-      <br>
-
-      <span class="text-[10px]">
-      S1 → S2 → S3 → S4
-      </span>
-
-      <br>
-
-      <span class="text-[9px] text-slate-500">
-      Click machine to view
-      </span>
-
+    <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click bg-indigo-50 text-indigo-700 font-bold">
+      <i class="fas fa-route text-lg"></i><br>
+      <span class="text-[10px]">S1 → S2 → S3 → S4</span>
     </td>
-
-
-    <td class="font-bold">
-
-      <span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">
-
-      ${s.qualityStatus||"-"}
-
-      </span>
-
-    </td>
-
-
+    <td class="font-bold"><span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">${s.qualityStatus||"-"}</span></td>
     <td>
-
-      ${
-        !s.toolStart
-        ?
-
-        `<button
-        onclick="toolRoomStart('${s.firebaseKey}')"
-        class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
-        Tool Start
-        </button>`
-
-        :
-
-        s.toolStart && !s.toolEnd
-        ?
-
-        `<button
-        onclick="toolRoomEnd('${s.firebaseKey}')"
-        class="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded">
-        Tool End
-        </button>`
-
-        :
-
-        !getSample(s,s.sampleCount||1).setterStart
-        ?
-
-        `<button
-        onclick="setterStartSetup('${s.firebaseKey}')"
-        class="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded">
-        Setter Start
-        </button>`
-
-        :
-
-        !getSample(s,s.sampleCount||1).setterEnd
-        ?
-
-        `<button
-        onclick="setterEndSample('${s.firebaseKey}')"
-        class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
-        Setter End / Cut
-        </button>`
-
-        :
-
-        `<span class="text-xs font-bold text-green-700">
-        Workflow Active
-        </span>`
-
-      }
-
+      ${!s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">Tool Start</button>`
+        : s.toolStart && !s.toolEnd ? `<button onclick="toolRoomEnd('${s.firebaseKey}')" class="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded">Tool End</button>`
+        : !getSample(s,s.sampleCount||1).setterStart ? `<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded">Setter Start</button>`
+        : !getSample(s,s.sampleCount||1).setterEnd ? `<button onclick="setterEndSample('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">Setter End / Cut</button>`
+        : `<span class="text-xs font-bold text-green-700">Workflow Active</span>`}
     </td>
-
   </tr>
-
   `).join("");
-
 };
 
-
-/* =========================================================
-   TOOL ROOM TABLE
-========================================================= */
-
-window.renderToolroom =
-function(){
-
-  const tbody =
-  document.getElementById(
-  "toolroomTable"
-  );
-
+window.renderToolroom = function(){
+  const tbody = document.getElementById("toolroomTable");
   if(!tbody) return;
-
-
-  const list =
-  window.allSetups || [];
-
-
+  const list = window.allSetups || [];
   if(list.length===0){
-
-    tbody.innerHTML=`
-
-    <tr>
-
-    <td colspan="7"
-    class="p-6 text-center text-slate-400">
-
-    No setup registered.
-
-    </td>
-
-    </tr>
-
-    `;
-
+    tbody.innerHTML=`<tr><td colspan="5" class="p-6 text-center text-slate-400">No setup registered.</td></tr>`;
     return;
-
   }
 
-
-  tbody.innerHTML =
-  list.map(
-  s=>`
-
-  <tr class="border-b">
-
-    <td
-    onclick="openWorkflowModal('${s.firebaseKey}')"
-    class="p-3 font-bold machine-click text-blue-700">
-
-      ${s.machineName}
-      -
-      ${s.partName}
-
-      <br>
-
-      <span class="text-[10px] text-slate-500">
-      ${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}
-      </span>
-
-      <br>
-
-      <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-1 rounded">
-      CLICK FOR WORKFLOW
-      </span>
-
-    </td>
-
-
-    <td class="p-3 font-mono">
-    ${s.fixtureNo}
-    </td>
-
-
-    <td class="p-3 small-time">
-    ${s.toolStart||"-"}
-    </td>
-
-
-    <td class="p-3 small-time">
-    ${s.toolEnd||"-"}
-    </td>
-
-
-    <td class="p-3 font-bold text-blue-700">
-    ${durationMinutes(
-      s.toolStart,
-      s.toolEnd
-    )}
-    </td>
-
-
-    <td class="p-3">
-
-      ${
-        s.toolEnd
-        ?
-        `<span class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold">
-        READY
-        </span>`
-        :
-        `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">
-        PENDING
-        </span>`
-      }
-
-    </td>
-
-
-    <td class="p-3">
-
-      ${
-        !s.toolStart
-        ?
-
-        `<button
-        onclick="toolRoomStart('${s.firebaseKey}')"
-        class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-        <i class="fas fa-play mr-1"></i>
-        START
-        </button>`
-
-        :
-
-        !s.toolEnd
-        ?
-
-        `<button
-        onclick="toolRoomEnd('${s.firebaseKey}')"
-        class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-        <i class="fas fa-stop mr-1"></i>
-        END / READY
-        </button>`
-
-        :
-
-        `<span class="text-xs font-bold text-green-700">
-        TOOLING READY
-        </span>`
-
-      }
-
-    </td>
-
-  </tr>
-
-  `).join("");
-
-};
-
-
-/* =========================================================
-   CMM TABLE
-========================================================= */
-
-window.renderSTDRoom =
-function(){
-
-  const tbody =
-  document.getElementById(
-  "stdroomTable"
-  );
-
-  if(!tbody) return;
-
-
-  let html="";
-
-
-  (window.allSetups||[])
-  .forEach(s=>{
-
-    const n =
-    s.sampleCount || 1;
-
-    const x =
-    getSample(s,n);
-
-
-    if(
-      s.qualityStatus==="SOP DONE"
-    )
-    return;
-
-
-    html+=`
-
-    <tr class="border-b">
-
-      <td
-      onclick="openWorkflowModal('${s.firebaseKey}')"
-      class="p-3 font-bold machine-click text-blue-700">
-
-        ${s.machineName}
-        -
-        ${s.partName}
-
-        <br>
-
-        <span class="text-[10px] text-slate-500">
-        ${s.id}
-        </span>
-
-        <br>
-
-        <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-1 rounded">
-        CLICK FOR WORKFLOW
-        </span>
-
-      </td>
-
-
-      <td class="p-3 font-bold text-indigo-700">
-
-        SAMPLE #${n}
-
-        <br>
-
-        <span class="text-xs text-slate-500">
-        Cut: ${x.cutTime||"-"}
-        </span>
-
-      </td>
-
-
-      <td class="p-3 small-time">
-      ${x.cmmStart||"-"}
-      </td>
-
-
-      <td class="p-3 small-time">
-      ${x.cmmEnd||"-"}
-      </td>
-
-
-      <td class="p-3 font-bold text-blue-700">
-      ${durationMinutes(
-        x.cmmStart,
-        x.cmmEnd
-      )}
-      </td>
-
-
-      <td class="p-3">
-
-      ${
-        !x.cmmStart
-
-        ?
-
-        `<button
-        onclick="cmmStart('${s.firebaseKey}')"
-        class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-
-        <i class="fas fa-play mr-1"></i>
-        START
-
-        </button>`
-
-        :
-
-        !x.cmmEnd
-
-        ?
-
-        `<button
-        onclick="cmmEnd('${s.firebaseKey}')"
-        class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-
-        <i class="fas fa-stop mr-1"></i>
-        END
-
-        </button>`
-
-        :
-
-        `<span class="text-xs font-bold text-green-700">
-        INSPECTION DONE
-        </span>`
-
-      }
-
-      </td>
-
-    </tr>
-
-    `;
-
-  });
-
-
-  tbody.innerHTML =
-  html ||
-
-  `<tr>
-  <td colspan="6"
-  class="p-6 text-center text-slate-400">
-  No active CMM sample.
-  </td>
-  </tr>`;
-
-};
-
-
-/* =========================================================
-   QUALITY TABLE
-========================================================= */
-
-window.renderQuality =
-function(){
-
-  const area =
-  document.getElementById(
-  "qualityTableArea"
-  );
-
-  if(!area) return;
-
-
-  let rows="";
-
-
-  (window.allSetups||[])
-  .forEach(s=>{
-
-    if(
-      s.qualityStatus==="SOP DONE"
-    )
-    return;
-
-
-    const n =
-    s.sampleCount||1;
-
-    const x =
-    getSample(s,n);
-
-
-    rows+=`
-
-    <tr class="border-b">
-
-      <td
-      onclick="openWorkflowModal('${s.firebaseKey}')"
-      class="p-3 font-bold machine-click text-blue-700">
-
-        ${s.machineName}
-        -
-        ${s.partName}
-
-        <br>
-
-        <span class="text-[10px] text-slate-500">
-        ${s.id} | ${s.pallet||"-"} | P${s.priority||"-"}
-        </span>
-
-        <br>
-
-        <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-1 rounded">
-        CLICK FOR WORKFLOW
-        </span>
-
-      </td>
-
-
-      <td class="p-3 font-bold text-indigo-700">
-
-      SAMPLE #${n}
-
-      <br>
-
-      <span class="text-xs">
-      CMM:
-      ${x.cmmStart||"-"}
-      →
-      ${x.cmmEnd||"-"}
-      </span>
-
-      </td>
-
-
-      <td class="p-3 small-time">
-      ${x.qualityStart||"-"}
-      </td>
-
-
-      <td class="p-3 small-time">
-      ${x.qualityEnd||"-"}
-      </td>
-
-
-      <td class="p-3 font-bold text-blue-700">
-      ${durationMinutes(
-        x.qualityStart,
-        x.qualityEnd
-      )}
-      </td>
-
-
-      <td class="p-3">
-
-        ${
-          !x.qualityStart
-
-          ?
-
-          `<button
-          onclick="qualityStart('${s.firebaseKey}')"
-          class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-
-          <i class="fas fa-play mr-1"></i>
-          START
-
-          </button>`
-
-          :
-
-          !x.qualityEnd
-
-          ?
-
-          `<button
-          onclick="qualityEnd('${s.firebaseKey}')"
-          class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-
-          <i class="fas fa-stop mr-1"></i>
-          END
-
-          </button>`
-
-          :
-
-          `
-
-          <div class="flex flex-wrap gap-2 justify-center">
-
-          <button
-          onclick="qualityApprove('${s.firebaseKey}')"
-          class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-
-          <i class="fas fa-check mr-1"></i>
-          SOP APPROVE
-
-          </button>
-
-          ${
-            n<4
-
-            ?
-
-            `<button
-            onclick="qualityCorrection('${s.firebaseKey}')"
-            class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold">
-
-            <i class="fas fa-rotate-right mr-1"></i>
-            CORRECTION → S${n+1}
-
-            </button>`
-
-            :
-
-            `<span class="text-xs font-bold text-orange-700">
-            4TH SAMPLE LIMIT
-            </span>`
-
-          }
-
-          </div>
-
-          `
-
-        }
-
-      </td>
-
-    </tr>
-
-    `;
-
-  });
-
-
-  area.innerHTML=`
-
-  <table class="w-full text-sm text-left border">
-
-  <thead class="bg-slate-100">
-
-  <tr>
-
-  <th class="p-3 border">
-  Machine / Part
-  </th>
-
-  <th class="p-3 border">
-  Sample
-  </th>
-
-  <th class="p-3 border">
-  Quality Start
-  </th>
-
-  <th class="p-3 border">
-  Quality End
-  </th>
-
-  <th class="p-3 border">
-  Total
-  </th>
-
-  <th class="p-3 border">
-  Action
-  </th>
-
-  </tr>
-
-  </thead>
-
-  <tbody>
-
-  ${rows ||
-
-  `<tr>
-  <td colspan="6"
-  class="p-6 text-center text-slate-400">
-  No Quality pending setup.
-  </td>
-  </tr>`}
-
-  </tbody>
-
-  </table>
-
-  `;
-
-};
-
-
-/* =========================================================
-   SUPERVISOR
-========================================================= */
-
-window.renderSupervisor =
-function(){
-
-  const tbody =
-  document.getElementById(
-  "hodTable"
-  );
-
-  if(!tbody) return;
-
-
-  tbody.innerHTML =
-  (window.allSetups||[])
-  .map(
-  s=>`
-
-  <tr class="border-b">
-
-    <td
-    onclick="openWorkflowModal('${s.firebaseKey}')"
-    class="p-2 border font-bold text-blue-700 machine-click">
-
-    ${s.machineName}
-
-    <br>
-
-    <span class="text-[9px] text-slate-500">
-    ${s.id}
-    </span>
-
-    <br>
-
-    <span class="text-[9px] bg-blue-100 px-1 py-0.5 rounded">
-    CLICK
-    </span>
-
-    </td>
-
-
-    <td class="p-2 border font-semibold">
-    ${s.partName}
-    </td>
-
-
-    <td class="p-2 border">
-    ${s.pallet||"-"}
-    </td>
-
-
-    <td class="p-2 border font-bold">
-    P${s.priority||"-"}
-    </td>
-
-
-    <td class="p-2 border">
-
-    ${s.toolStart||"-"}
-    →
-    ${s.toolEnd||"-"}
-
-    <br>
-
-    <b>
-    ${durationMinutes(
-      s.toolStart,
-      s.toolEnd
-    )}
-    </b>
-
-    </td>
-
-
-    <td
-    onclick="openWorkflowModal('${s.firebaseKey}')"
-    class="p-2 border text-[10px] machine-click bg-indigo-50 text-indigo-700 font-bold">
-
-      <i class="fas fa-route"></i>
-
-      <br>
-
-      S1 → S2 → S3 → S4
-
-      <br>
-
-      CLICK FOR FULL WORKFLOW
-
-    </td>
-
-
-    <td class="p-2 border font-black text-red-600">
-
-    ${s.qualityStatus==="SOP DONE"
-      ? totalSetupMinutes(s)
-      : "Running"}
-
-    </td>
-
-  </tr>
-
-  `).join("");
-
-};
-
-
-/* =========================================================
-   WORKFLOW ROW HELPERS
-========================================================= */
-
-function workflowStatus(value,doneText){
-
-  if(value){
-
+  tbody.innerHTML = list.map(s => {
+    const isMatch = (s.fixtureNo === s.setterReqFixture);
     return `
-    <span class="text-green-700 font-bold">
-    ${doneText}
-    </span>
-    `;
+    <tr class="border-b">
+      <td class="p-3 font-bold text-blue-700">
+        ${s.machineName} - ${s.partName}<br>
+        <span class="text-[10px] text-slate-500">${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}</span>
+      </td>
+      <td class="p-3 text-xs">
+        <b>Fixture No:</b> ${s.fixtureNo}<br>
+        <b>Setter Required:</b> ${s.setterReqFixture}
+      </td>
+      <td class="p-3 text-xs">
+        ${!isMatch ? `
+          <span class="text-red-600 font-bold block mb-1">Mismatch Found!</span>
+          <input type="text" value="${s.toolRemark || ''}" onchange="updateToolRemarkInput('${s.firebaseKey}', this.value)" class="w-full p-1 border rounded text-xs" placeholder="Enter Remark">
+        ` : `<span class="text-green-600 font-bold">Fixture Matched</span>`}
+      </td>
+      <td class="p-3">
+        ${s.toolEnd ? `<span class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold">READY</span>` : `<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">PENDING</span>`}
+      </td>
+      <td class="p-3">
+        ${!s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-play mr-1"></i> START</button>`
+          : !s.toolEnd ? `<button onclick="toolRoomEnd('${s.firebaseKey}', document.getElementById('remark_${s.firebaseKey}') ? document.getElementById('remark_${s.firebaseKey}').value : '')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-stop mr-1"></i> ACTION / END</button>`
+          : `<span class="text-xs font-bold text-green-700">COMPLETED</span>`}
+      </td>
+    </tr>`;
+  }).join("");
+};
 
+window.renderSTDRoom = function(){
+  const tbody = document.getElementById("stdroomTable");
+  if(!tbody) return;
+  let html="";
+  (window.allSetups||[]).forEach(s=>{
+    const n = s.sampleCount || 1;
+    const x = getSample(s,n);
+    if(s.qualityStatus==="SOP DONE") return;
+    html+=`
+    <tr class="border-b">
+      <td class="p-3 font-bold text-blue-700">
+        ${s.machineName} - ${s.partName}<br><span class="text-[10px] text-slate-500">${s.id}</span>
+      </td>
+      <td class="p-3 font-bold text-indigo-700">SAMPLE #${n}<br><span class="text-xs text-slate-500">Cut: ${x.cutTime||"-"}</span></td>
+      <td class="p-3 small-time">${x.cmmStart||"-"}</td>
+      <td class="p-3 small-time">${x.cmmEnd||"-"}</td>
+      <td class="p-3 font-bold text-blue-700">${durationMinutes(x.cmmStart, x.cmmEnd)}</td>
+      <td class="p-3">
+        ${!x.cmmStart ? `<button onclick="cmmStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-play mr-1"></i> START</button>`
+          : !x.cmmEnd ? `<button onclick="cmmEnd('${s.firebaseKey}')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-stop mr-1"></i> ACTION / END</button>`
+          : `<span class="text-xs font-bold text-green-700">DONE</span>`}
+      </td>
+    </tr>`;
+  });
+  tbody.innerHTML = html || `<tr><td colspan="6" class="p-6 text-center text-slate-400">No active CMM sample.</td></tr>`;
+};
+
+window.renderQuality = function(){
+  const area = document.getElementById("qualityTableArea");
+  if(!area) return;
+  let rows="";
+  (window.allSetups||[]).forEach(s=>{
+    if(s.qualityStatus==="SOP DONE") return;
+    const n = s.sampleCount||1;
+    const x = getSample(s,n);
+    rows+=`
+    <tr class="border-b">
+      <td class="p-3 font-bold text-blue-700">
+        ${s.machineName} - ${s.partName}<br><span class="text-[10px] text-slate-500">${s.id} | P${s.priority||"-"}</span>
+      </td>
+      <td class="p-3 font-bold text-indigo-700">SAMPLE #${n}</td>
+      <td class="p-3 small-time">${x.qualityStart||"-"}</td>
+      <td class="p-3 small-time">${x.qualityEnd||"-"}</td>
+      <td class="p-3 font-bold text-blue-700">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
+      <td class="p-3">
+        ${!x.qualityStart ? `<button onclick="qualityStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-play mr-1"></i> START</button>`
+          : !x.qualityEnd ? `<button onclick="qualityEnd('${s.firebaseKey}')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-stop mr-1"></i> ACTION / END</button>`
+          : `
+          <div class="flex flex-wrap gap-2 justify-center">
+            <button onclick="qualityApprove('${s.firebaseKey}')" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-check mr-1"></i> APPROVE</button>
+            ${n<4 ? `<button onclick="qualityCorrection('${s.firebaseKey}')" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-rotate-right mr-1"></i> CORRECTION</button>` : ``}
+          </div>`}
+      </td>
+    </tr>`;
+  });
+  area.innerHTML=`
+  <table class="w-full text-sm text-left border">
+  <thead class="bg-slate-100">
+  <tr>
+  <th class="p-3 border">Machine / Part</th>
+  <th class="p-3 border">Sample</th>
+  <th class="p-3 border">Start</th>
+  <th class="p-3 border">End</th>
+  <th class="p-3 border">Total</th>
+  <th class="p-3 border">Action</th>
+  </tr>
+  </thead>
+  <tbody>${rows || `<tr><td colspan="6" class="p-6 text-center text-slate-400">No Quality pending setup.</td></tr>`}</tbody>
+  </table>`;
+};
+
+window.renderSupervisor = function(){
+  const tbody = document.getElementById("hodTable");
+  if(!tbody) return;
+  tbody.innerHTML = (window.allSetups||[]).map(s=>`
+  <tr class="border-b">
+    <td onclick="openWorkflowModal('${s.firebaseKey}')" class="p-2 border font-bold text-blue-700 machine-click">${s.machineName}<br><span class="text-[9px] text-slate-500">${s.id}</span></td>
+    <td class="p-2 border font-semibold">${s.partName}</td>
+    <td class="p-2 border">${s.pallet||"-"}</td>
+    <td class="p-2 border font-bold">P${s.priority||"-"}</td>
+    <td class="p-2 border">${s.toolStart||"-"} → ${s.toolEnd||"-"}<br><b>${durationMinutes(s.toolStart, s.toolEnd)}</b></td>
+    <td onclick="openWorkflowModal('${s.firebaseKey}')" class="p-2 border text-[10px] machine-click bg-indigo-50 text-indigo-700 font-bold"><i class="fas fa-route"></i><br>WORKFLOW PATH SHOW</td>
+    <td class="p-2 border font-black text-red-600">${s.qualityStatus==="SOP DONE" ? totalSetupMinutes(s) : "Running"}</td>
+  </tr>
+  `).join("");
+};
+
+window.openWorkflowModal = function(firebaseKey){
+  // फक्त Setter, Supervisor आणि HOD यांनाच वर्कफ्लो दिसेल
+  if(window.currentUser && window.currentUser.dept !== 'setter' && window.currentUser.dept !== 'supervisor'){
+    alert("वर्कफ्लो पाहण्याची परवानगी फक्त Setter, Supervisor आणि HOD यांना आहे.");
+    return;
   }
-
-  return `
-  <span class="text-yellow-700 font-bold">
-  PENDING
-  </span>
-  `;
-
-}
-
-
-/* =========================================================
-   WORKFLOW MODAL
-========================================================= */
-
-window.openWorkflowModal =
-function(firebaseKey){
-
-  const s =
-  window.allSetups.find(
-    x=>x.firebaseKey===firebaseKey
-  );
-
+  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-
-
-  document
-  .getElementById("workflowModal")
-  .classList.remove("hidden");
-
-
-  document
-  .getElementById("workflowTitle")
-  .textContent =
-  `${s.machineName} - COMPLETE SETUP WORKFLOW`;
-
-
-  document
-  .getElementById("workflowSubtitle")
-  .textContent =
-  `Setup ID: ${s.id} | Part: ${s.partName} | Part No: ${s.partNo} | Pallet: ${s.pallet} | Priority: ${s.priority}`;
-
+  document.getElementById("workflowModal").classList.remove("hidden");
+  document.getElementById("workflowTitle").textContent = `${s.machineName} - COMPLETE SETUP WORKFLOW`;
+  document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Part: ${s.partName} | Pallet: ${s.pallet}`;
 
   let rows="";
-
   let sr=1;
-
-
-  /* =======================================================
-     STEP 1 - SETUP REGISTRATION
-  ======================================================= */
-
-  rows+=`
-
-  <tr>
-
-    <td class="font-bold">
-    ${sr++}
-    </td>
-
-    <td class="text-left font-bold">
-    SETTER
-    <br>
-    <span class="text-[10px]">
-    Setup Registration
-    </span>
-    </td>
-
-    <td class="stage-start">
-    ${s.timeRegistered||"-"}
-    </td>
-
-    <td class="stage-end">
-    ${s.toolStart||"-"}
-    </td>
-
-    <td class="font-bold text-blue-700">
-    ${durationMinutes(
-      s.timeRegistered,
-      s.toolStart
-    )}
-    </td>
-
-    <td>
-    ${
-      s.toolStart
-      ?
-      `<span class="text-green-700 font-bold">
-      REGISTERED / SENT TO TOOL ROOM
-      </span>`
-      :
-      `<span class="text-yellow-700 font-bold">
-      WAITING TOOL ROOM
-      </span>`
-    }
-    </td>
-
-  </tr>
-
-  `;
-
-
-  /* =======================================================
-     STEP 2 - TOOL ROOM
-  ======================================================= */
-
-  rows+=`
-
-  <tr>
-
-    <td class="font-bold">
-    ${sr++}
-    </td>
-
-    <td class="text-left font-bold">
-    TOOL ROOM
-    <br>
-    <span class="text-[10px]">
-    Tooling & Fixture Ready
-    </span>
-    </td>
-
-    <td class="stage-start">
-    ${s.toolStart||"-"}
-    </td>
-
-    <td class="stage-end">
-    ${s.toolEnd||"-"}
-    </td>
-
-    <td class="font-bold text-blue-700">
-    ${durationMinutes(
-      s.toolStart,
-      s.toolEnd
-    )}
-    </td>
-
-    <td>
-
-    ${
-      s.toolEnd
-      ?
-      `<span class="text-green-700 font-bold">
-      TOOLING & FIXTURE READY
-      </span>`
-      :
-      `<span class="text-yellow-700 font-bold">
-      TOOL ROOM PENDING
-      </span>`
-    }
-
-    </td>
-
-  </tr>
-
-  `;
-
-
-  /* =======================================================
-     SAMPLE 1-4
-  ======================================================= */
+  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">SETTER<br><span class="text-[10px]">Setup Registration</span></td><td class="stage-start">${s.timeRegistered||"-"}</td><td class="stage-end">${s.toolStart||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.timeRegistered, s.toolStart)}</td><td>${s.toolStart?`<span class="text-green-700 font-bold">REGISTERED</span>`:`<span class="text-yellow-700 font-bold">WAITING</span>`}</td></tr>`;
+  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">TOOL ROOM<br><span class="text-[10px]">Tooling & Fixture Ready</span></td><td class="stage-start">${s.toolStart||"-"}</td><td class="stage-end">${s.toolEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.toolStart, s.toolEnd)}</td><td>${s.toolEnd?`<span class="text-green-700 font-bold">READY</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
 
   for(let n=1;n<=4;n++){
-
-    const x =
-    getSample(s,n);
-
-
-    const hasData =
-    x.setterStart ||
-    x.setterEnd ||
-    x.cutTime ||
-    x.cmmStart ||
-    x.cmmEnd ||
-    x.qualityStart ||
-    x.qualityEnd ||
-    x.result;
-
-
-    if(
-      !hasData &&
-      n>s.sampleCount
-    ){
-
-      continue;
-
-    }
-
-
-    /* SETTER */
-
-    rows+=`
-
-    <tr>
-
-      <td rowspan="3"
-      class="font-black text-purple-700 bg-purple-50">
-
-      S${n}
-
-      </td>
-
-
-      <td class="text-left font-bold">
-
-      SETTER
-
-      <br>
-
-      <span class="text-[10px]">
-      Sample #${n} Cutting
-      </span>
-
-      </td>
-
-
-      <td class="stage-start">
-      ${x.setterStart||"-"}
-      </td>
-
-
-      <td class="stage-end">
-      ${x.setterEnd||"-"}
-      </td>
-
-
-      <td class="font-bold text-blue-700">
-      ${durationMinutes(
-        x.setterStart,
-        x.setterEnd
-      )}
-      </td>
-
-
-      <td>
-
-      ${
-        x.cutTime
-        ?
-        `<span class="text-green-700 font-bold">
-        SAMPLE CUT DONE
-        </span>`
-        :
-        `<span class="text-yellow-700 font-bold">
-        PENDING
-        </span>`
-      }
-
-      </td>
-
-    </tr>
-
-
-    <!-- CMM -->
-
-    <tr>
-
-      <td class="text-left font-bold">
-
-      CMM ROOM
-
-      <br>
-
-      <span class="text-[10px]">
-      Sample #${n} Inspection
-      </span>
-
-      </td>
-
-
-      <td class="stage-start">
-      ${x.cmmStart||"-"}
-      </td>
-
-
-      <td class="stage-end">
-      ${x.cmmEnd||"-"}
-      </td>
-
-
-      <td class="font-bold text-blue-700">
-      ${durationMinutes(
-        x.cmmStart,
-        x.cmmEnd
-      )}
-      </td>
-
-
-      <td>
-
-      ${
-        x.cmmEnd
-        ?
-        `<span class="text-green-700 font-bold">
-        INSPECTION DONE
-        </span>`
-        :
-        `<span class="text-yellow-700 font-bold">
-        PENDING
-        </span>`
-      }
-
-      </td>
-
-    </tr>
-
-
-    <!-- QUALITY -->
-
-    <tr>
-
-      <td class="text-left font-bold">
-
-      QUALITY
-
-      <br>
-
-      <span class="text-[10px]">
-      Sample #${n} Inspection / Remark
-      </span>
-
-      </td>
-
-
-      <td class="stage-start">
-      ${x.qualityStart||"-"}
-      </td>
-
-
-      <td class="stage-end">
-      ${x.qualityEnd||"-"}
-      </td>
-
-
-      <td class="font-bold text-blue-700">
-      ${durationMinutes(
-        x.qualityStart,
-        x.qualityEnd
-      )}
-      </td>
-
-
-      <td>
-
-      ${
-        x.result
-        ?
-        `<span class="text-green-700 font-bold">
-        ${x.result}
-        </span>`
-        :
-        x.qualityEnd
-        ?
-        `<span class="text-blue-700 font-bold">
-        DECISION PENDING
-        </span>`
-        :
-        `<span class="text-yellow-700 font-bold">
-        PENDING
-        </span>`
-      }
-
-      </td>
-
-    </tr>
-
-    `;
-
+    const x = getSample(s,n);
+    if(!x.setterStart && !x.setterEnd && n>s.sampleCount) continue;
+    rows+=`<tr><td rowspan="3" class="font-black text-purple-700 bg-purple-50">S${n}</td><td class="text-left font-bold">SETTER<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.setterStart||"-"}</td><td class="stage-end">${x.setterEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.setterStart, x.setterEnd)}</td><td>${x.cutTime?`<span class="text-green-700 font-bold">DONE</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
+    rows+=`<tr><td class="text-left font-bold">CMM ROOM<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.cmmStart||"-"}</td><td class="stage-end">${x.cmmEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.cmmStart, x.cmmEnd)}</td><td>${x.cmmEnd?`<span class="text-green-700 font-bold">DONE</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
+    rows+=`<tr><td class="text-left font-bold">QUALITY<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.qualityStart||"-"}</td><td class="stage-end">${x.qualityEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.qualityStart, x.qualityEnd)}</td><td>${x.result?`<span class="text-green-700 font-bold">${x.result}</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
   }
 
-
-  /* =======================================================
-     WORKFLOW CONTENT
-  ======================================================= */
-
-  document
-  .getElementById("workflowContent")
-  .innerHTML=`
-
-  <div class="workflow-header-card text-white rounded-xl p-4 mb-5 shadow-lg">
-
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-
-      <div>
-        <p class="text-[10px] text-emerald-200 font-bold">
-        MACHINE
-        </p>
-        <p class="font-black text-lg">
-        ${s.machineName}
-        </p>
-      </div>
-
-      <div>
-        <p class="text-[10px] text-emerald-200 font-bold">
-        PART
-        </p>
-        <p class="font-bold">
-        ${s.partName}
-        </p>
-      </div>
-
-      <div>
-        <p class="text-[10px] text-emerald-200 font-bold">
-        PALLET
-        </p>
-        <p class="font-black">
-        ${s.pallet||"-"}
-        </p>
-      </div>
-
-      <div>
-        <p class="text-[10px] text-emerald-200 font-bold">
-        PRIORITY
-        </p>
-        <p class="font-black">
-        P${s.priority||"-"}
-        </p>
-      </div>
-
-      <div>
-        <p class="text-[10px] text-emerald-200 font-bold">
-        CURRENT STATUS
-        </p>
-        <p class="font-black text-xs">
-        ${s.qualityStatus||"-"}
-        </p>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- FLOW ARROW -->
-
-  <div class="mb-5 bg-slate-100 rounded-xl p-3 text-center">
-
-    <div class="flex flex-wrap items-center justify-center gap-2 text-xs font-black">
-
-      <span class="bg-blue-600 text-white px-3 py-2 rounded-lg">
-      SETUP
-      </span>
-
-      <i class="fas fa-arrow-right text-slate-500"></i>
-
-      <span class="bg-blue-600 text-white px-3 py-2 rounded-lg">
-      TOOL ROOM
-      </span>
-
-      <i class="fas fa-arrow-right text-slate-500"></i>
-
-      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
-      SETTER S1
-      </span>
-
-      <i class="fas fa-arrow-right text-slate-500"></i>
-
-      <span class="bg-purple-600 text-white px-3 py-2 rounded-lg">
-      CMM S1
-      </span>
-
-      <i class="fas fa-arrow-right text-slate-500"></i>
-
-      <span class="bg-green-600 text-white px-3 py-2 rounded-lg">
-      QUALITY S1
-      </span>
-
-      <i class="fas fa-arrow-right text-slate-500"></i>
-
-      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
-      S2
-      </span>
-
-      <i class="fas fa-arrow-right text-slate-500"></i>
-
-      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
-      S3
-      </span>
-
-      <i class="fas fa-arrow-right text-slate-500"></i>
-
-      <span class="bg-indigo-600 text-white px-3 py-2 rounded-lg">
-      S4
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <!-- WORKFLOW TABLE -->
-
+  document.getElementById("workflowContent").innerHTML=`
   <div class="excel-table-container">
-
   <table class="workflow-table">
-
-  <thead>
-
-  <tr>
-
-  <th>SR.</th>
-
-  <th>DEPARTMENT / ACTIVITY</th>
-
-  <th>START TIME</th>
-
-  <th>END TIME</th>
-
-  <th>TOTAL MIN (COUNT)</th>
-
-  <th>STATUS</th>
-
-  </tr>
-
-  </thead>
-
-  <tbody>
-
-  ${rows}
-
-  </tbody>
-
+  <thead><tr><th>SR.</th><th>DEPARTMENT</th><th>START</th><th>END</th><th>TOTAL</th><th>STATUS</th></tr></thead>
+  <tbody>${rows}</tbody>
   </table>
-
-  </div>
-
-
-  <!-- SUMMARY -->
-
-  <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-
-    <div class="bg-slate-900 text-white rounded-xl p-4">
-
-      <p class="text-xs text-slate-400">
-      REGISTERED
-      </p>
-
-      <p class="font-bold">
-      ${s.timeRegistered||"-"}
-      </p>
-
-    </div>
-
-
-    <div class="bg-slate-900 text-white rounded-xl p-4">
-
-      <p class="text-xs text-slate-400">
-      SOP DONE
-      </p>
-
-      <p class="font-bold">
-      ${s.timeSopDone||"-"}
-      </p>
-
-    </div>
-
-
-    <div class="bg-red-900 text-white rounded-xl p-4">
-
-      <p class="text-xs text-red-200">
-      TOTAL ACTUAL TIME
-      </p>
-
-      <p class="font-black text-lg">
-      ${totalSetupMinutes(s)}
-      </p>
-
-    </div>
-
-  </div>
-
-  `;
-
+  </div>`;
 };
-
-
-/* =========================================================
-   CLOSE WORKFLOW
-========================================================= */
 
 function closeWorkflowModal(){
-
-  document
-  .getElementById("workflowModal")
-  .classList.add("hidden");
-
+  document.getElementById("workflowModal").classList.add("hidden");
 }
-
-
-/* =========================================================
-   RESET
-========================================================= */
 
 function handleResetAllData(){
-
-  if(
-    !confirm(
-      "सर्व SUTOM setup data Firebase मधून delete करायचा आहे का?"
-    )
-  ){
-
-    return;
-
-  }
-
-
-  dbRef
-  .remove()
-  .then(()=>{
-
-    alert(
-      "सर्व setup data delete झाला."
-    );
-
-  })
-  .catch(err=>{
-
-    alert(
-      "Error: "+
-      err.message
-    );
-
-  });
-
+  if(!confirm("सर्व SUTOM setup data delete करायचा आहे का?")) return;
+  dbRef.remove().then(()=>{ alert("Data deleted."); });
 }
 
-
-/* =========================================================
-   ALL VIEWS
-========================================================= */
-
-window.renderAllViews =
-function(){
-
+window.renderAllViews = function(){
   window.updateMetrics();
-
-  window.renderSetterExcelTable(
-    window.currentExcelFilter
-  );
-
-
-  if(!window.currentUser)
-    return;
-
-
-  if(
-    window.currentUser.dept==="toolroom"
-  ){
-
-    window.renderToolroom();
-
-  }
-
-
-  if(
-    window.currentUser.dept==="stdroom"
-  ){
-
-    window.renderSTDRoom();
-
-  }
-
-
-  if(
-    window.currentUser.dept==="quality"
-  ){
-
-    window.renderQuality();
-
-  }
-
-
-  if(
-    window.currentUser.dept==="supervisor"
-  ){
-
-    window.renderSupervisor();
-
-  }
-
+  window.renderSetterExcelTable(window.currentExcelFilter);
+  if(!window.currentUser) return;
+  if(window.currentUser.dept==="toolroom") window.renderToolroom();
+  if(window.currentUser.dept==="stdroom") window.renderSTDRoom();
+  if(window.currentUser.dept==="quality") window.renderQuality();
+  if(window.currentUser.dept==="supervisor") window.renderSupervisor();
 };
 
-
-/* =========================================================
-   ALERT
-========================================================= */
-
 function triggerAlert(title,msg){
-
-  const titleEl =
-  document.getElementById(
-  "alertTitle"
-  );
-
-  const msgEl =
-  document.getElementById(
-  "alertMessage"
-  );
-
-
-  if(titleEl)
-    titleEl.textContent=title;
-
-  if(msgEl)
-    msgEl.textContent=msg;
-
-
-  document
-  .getElementById("alertModal")
-  .classList.remove("hidden");
-
-
-  if("vibrate" in navigator){
-
-    navigator.vibrate(
-    [300,100,300]
-    );
-
-  }
-
+  document.getElementById("alertTitle").textContent=title;
+  document.getElementById("alertMessage").textContent=msg;
+  document.getElementById("alertModal").classList.remove("hidden");
 }
-
-
 function acknowledgeAlert(){
-
-  document
-  .getElementById("alertModal")
-  .classList.add("hidden");
-
+  document.getElementById("alertModal").classList.add("hidden");
 }
-
-
-/* =========================================================
-   ESCAPE
-========================================================= */
-
-document.addEventListener(
-"keydown",
-e=>{
-
-  if(e.key==="Escape"){
-
-    closeWorkflowModal();
-
-    acknowledgeAlert();
-
-  }
-
-});
-
 </script>
-
 </body>
-  </html>
+</html>

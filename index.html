@@ -63,7 +63,7 @@ body{
 .excel-table{
   border-collapse:collapse;
   width:100%;
-  font-size:12px;
+  font-size:11px;
   font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
 }
 
@@ -71,7 +71,7 @@ body{
   background:#065f46;
   color:white;
   border:1px solid #047857;
-  padding:9px 10px;
+  padding:8px 6px;
   font-weight:700;
   text-align:center;
   white-space:nowrap;
@@ -79,7 +79,7 @@ body{
 
 .excel-table td{
   border:1px solid #d1d5db;
-  padding:7px 8px;
+  padding:6px 6px;
   text-align:center;
   vertical-align:middle;
 }
@@ -105,22 +105,23 @@ body{
 .workflow-table{
   width:100%;
   border-collapse:collapse;
-  font-size:13px;
+  font-size:11px;
 }
 
 .workflow-table th{
   background:#0f172a;
   color:white;
-  padding:10px;
+  padding:8px 4px;
   border:1px solid #334155;
   text-align:center;
   white-space:nowrap;
 }
 
 .workflow-table td{
-  padding:9px;
+  padding:6px 4px;
   border:1px solid #cbd5e1;
   text-align:center;
+  word-break: break-word;
 }
 
 .workflow-table tr:nth-child(even){
@@ -153,14 +154,14 @@ body{
 
 @media(max-width:768px){
   .workflow-table{
-    font-size:11px;
+    font-size:10px;
   }
   .workflow-table th,
   .workflow-table td{
-    padding:7px 5px;
+    padding:5px 2px;
   }
   .excel-table{
-    font-size:11px;
+    font-size:10px;
   }
 }
 </style>
@@ -476,20 +477,18 @@ Access Dashboard
 </div>
 
 <!-- ================= WORKFLOW MODAL ================= -->
-<div id="workflowModal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] p-3 md:p-6">
+<div id="workflowModal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] p-2 md:p-6">
 <div class="bg-white rounded-2xl w-full max-w-7xl mx-auto shadow-2xl modal-scroll">
-<div class="sticky top-0 bg-slate-900 text-white p-4 z-10">
-<div class="flex justify-between items-start gap-3">
+<div class="sticky top-0 bg-slate-900 text-white p-3 md:p-4 z-10 flex justify-between items-start gap-3">
 <div>
-<h2 id="workflowTitle" class="text-lg md:text-2xl font-black text-emerald-400">Machine Workflow</h2>
+<h2 id="workflowTitle" class="text-md md:text-xl font-black text-emerald-400">Machine Workflow</h2>
 <p id="workflowSubtitle" class="text-xs text-slate-300 mt-1"></p>
 </div>
-<button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold">
+<button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold text-xs">
 <i class="fas fa-times"></i>
 </button>
 </div>
-</div>
-<div class="p-4 md:p-6">
+<div class="p-2 md:p-6 overflow-x-auto">
 <div id="workflowContent"></div>
 </div>
 </div>
@@ -892,11 +891,11 @@ window.renderSetterExcelTable = function(filterKey){
     <td class="font-mono font-bold text-purple-700">${s.id}</td>
     <!-- MACHINE CLICK -->
     <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click text-left font-bold text-blue-700 bg-blue-50">
-      <span class="text-lg">${s.machineName}</span><br>
-      <span class="text-xs text-slate-600">${s.partName}</span><br>
+      <span class="text-sm">${s.machineName}</span><br>
+      <span class="text-[11px] text-slate-600">${s.partName}</span><br>
       <span class="text-[10px]">Part No: ${s.partNo}</span><br>
-      <span class="inline-block mt-1 text-[10px] bg-blue-600 text-white px-2 py-1 rounded font-bold">
-      <i class="fas fa-mouse-pointer mr-1"></i> CLICK → DETAILS & TIME
+      <span class="inline-block mt-1 text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold">
+      <i class="fas fa-mouse-pointer mr-1"></i> CLICK → DETAILS
       </span>
     </td>
     <td class="font-bold">${s.pallet||"-"}</td>
@@ -905,25 +904,25 @@ window.renderSetterExcelTable = function(filterKey){
       Start: ${s.toolStart||"-"}<br>End: ${s.toolEnd||"-"}<br><b>${durationMinutes(s.toolStart, s.toolEnd)}</b>
     </td>
     <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click bg-indigo-50 text-indigo-700 font-bold">
-      <i class="fas fa-route text-lg"></i><br>
-      <span class="text-[10px]">S1 → S2 → S3 → S4</span>
+      <i class="fas fa-route text-base"></i><br>
+      <span class="text-[9px]">S1 → S2 → S3 → S4</span>
     </td>
     <td class="font-bold">
       ${s.qualityStatus==="SOP DONE" ? `
-        <div onclick="openSopDetailsModal('${s.firebaseKey}')" class="bg-purple-100 text-purple-800 p-2 rounded cursor-pointer hover:bg-purple-200 border border-purple-300 shadow-sm transition" title="Click to view details">
+        <div onclick="openSopDetailsModal('${s.firebaseKey}')" class="bg-purple-100 text-purple-800 p-1.5 rounded cursor-pointer hover:bg-purple-200 border border-purple-300 shadow-sm transition" title="Click to view details">
           <i class="fas fa-check-circle text-purple-600 mr-1"></i> <b>SOP APPROVED</b><br>
-          <span class="text-[10px] block text-slate-700">Date: ${s.setupDate}</span>
-          <span class="text-[10px] block text-blue-800 font-bold">Part: ${s.partName}</span>
-          <span class="text-[10px] block text-slate-600">No: ${s.partNo}</span>
+          <span class="text-[9px] block text-slate-700">Date: ${s.setupDate}</span>
+          <span class="text-[9px] block text-blue-800 font-bold">Part: ${s.partName}</span>
+          <span class="text-[9px] block text-slate-600">No: ${s.partNo}</span>
         </div>
-      ` : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">${s.qualityStatus||"-"}</span>`}
+      ` : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-[10px]">${s.qualityStatus||"-"}</span>`}
     </td>
     <td>
-      ${!s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">Tool Start</button>`
-        : s.toolStart && !s.toolEnd ? `<button onclick="toolRoomEnd('${s.firebaseKey}')" class="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded">Tool End</button>`
-        : !getSample(s,s.sampleCount||1).setterStart ? `<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded">Setter Start</button>`
-        : !getSample(s,s.sampleCount||1).setterEnd ? `<button onclick="setterEndSample('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">Setter End / Cut</button>`
-        : `<span class="text-xs font-bold text-green-700">Workflow Active</span>`}
+      ${!s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">Tool Start</button>`
+        : s.toolStart && !s.toolEnd ? `<button onclick="toolRoomEnd('${s.firebaseKey}')" class="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded">Tool End</button>`
+        : !getSample(s,s.sampleCount||1).setterStart ? `<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded">Setter Start</button>`
+        : !getSample(s,s.sampleCount||1).setterEnd ? `<button onclick="setterEndSample('${s.firebaseKey}')" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded">Setter End</button>`
+        : `<span class="text-[10px] font-bold text-green-700">Workflow Active</span>`}
     </td>
   </tr>
   `).join("");
@@ -1068,21 +1067,20 @@ window.openWorkflowModal = function(firebaseKey){
 
   let rows="";
   let sr=1;
-  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">SETTER<br><span class="text-[10px]">Setup Registration</span></td><td class="stage-start">${s.timeRegistered||"-"}</td><td class="stage-end">${s.toolStart||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.timeRegistered, s.toolStart)}</td><td>${s.toolStart?`<span class="text-green-700 font-bold">REGISTERED</span>`:`<span class="text-yellow-700 font-bold">WAITING</span>`}</td></tr>`;
-  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">TOOL ROOM<br><span class="text-[10px]">Tooling & Fixture Ready</span></td><td class="stage-start">${s.toolStart||"-"}</td><td class="stage-end">${s.toolEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.toolStart, s.toolEnd)}</td><td>${s.toolEnd?`<span class="text-green-700 font-bold">READY</span>`:`<span class="text-yellow-700 font-bold">PENDING</span>`}</td></tr>`;
+  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">SETTER<br><span class="text-[9px]">Setup Registration</span></td><td class="stage-start">${s.timeRegistered||"-"}</td><td class="stage-end">${s.toolStart||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.timeRegistered, s.toolStart)}</td><td>${s.toolStart?`<span class="text-green-700 font-bold text-[10px]">REGISTERED</span>`:`<span class="text-yellow-700 font-bold text-[10px]">WAITING</span>`}</td></tr>`;
+  rows+=`<tr><td class="font-bold">${sr++}</td><td class="text-left font-bold">TOOL ROOM<br><span class="text-[9px]">Tooling & Fixture Ready</span></td><td class="stage-start">${s.toolStart||"-"}</td><td class="stage-end">${s.toolEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(s.toolStart, s.toolEnd)}</td><td>${s.toolEnd?`<span class="text-green-700 font-bold text-[10px]">READY</span>`:`<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>`}</td></tr>`;
 
   for(let n=1;n<=4;n++){
     const x = getSample(s,n);
     if(!x.setterStart && !x.setterEnd && n>s.sampleCount) continue;
     
-    // Status Logic for workflow table rows
-    let setStatus = x.cutTime ? '<span class="text-green-700 font-bold">DONE</span>' : (x.setterStart ? '<span class="text-blue-700 font-bold">RUNNING</span>' : '<span class="text-yellow-700 font-bold">PENDING</span>');
-    let cmmStatus = x.cmmEnd ? '<span class="text-green-700 font-bold">DONE</span>' : (x.cmmStart ? '<span class="text-blue-700 font-bold">RUNNING</span>' : '<span class="text-yellow-700 font-bold">PENDING</span>');
-    let qStatus = x.result ? `<span class="text-green-700 font-bold">${x.result}</span>` : (x.qualityStart ? '<span class="text-blue-700 font-bold">RUNNING</span>' : '<span class="text-yellow-700 font-bold">PENDING</span>');
+    let setStatus = x.cutTime ? '<span class="text-green-700 font-bold text-[10px]">DONE</span>' : (x.setterStart ? '<span class="text-blue-700 font-bold text-[10px]">RUNNING</span>' : '<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>');
+    let cmmStatus = x.cmmEnd ? '<span class="text-green-700 font-bold text-[10px]">DONE</span>' : (x.cmmStart ? '<span class="text-blue-700 font-bold text-[10px]">RUNNING</span>' : '<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>');
+    let qStatus = x.result ? `<span class="text-green-700 font-bold text-[10px]">${x.result}</span>` : (x.qualityStart ? '<span class="text-blue-700 font-bold text-[10px]">RUNNING</span>' : '<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>');
 
-    rows+=`<tr><td rowspan="3" class="font-black text-purple-700 bg-purple-50">S${n}</td><td class="text-left font-bold">SETTER<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.setterStart||"-"}</td><td class="stage-end">${x.setterEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.setterStart, x.setterEnd)}</td><td>${setStatus}</td></tr>`;
-    rows+=`<tr><td class="text-left font-bold">CMM ROOM<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.cmmStart||"-"}</td><td class="stage-end">${x.cmmEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.cmmStart, x.cmmEnd)}</td><td>${cmmStatus}</td></tr>`;
-    rows+=`<tr><td class="text-left font-bold">QUALITY<br><span class="text-[10px]">Sample #${n}</span></td><td class="stage-start">${x.qualityStart||"-"}</td><td class="stage-end">${x.qualityEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.qualityStart, x.qualityEnd)}</td><td>${qStatus}</td></tr>`;
+    rows+=`<tr><td rowspan="3" class="font-black text-purple-700 bg-purple-50">S${n}</td><td class="text-left font-bold">SETTER<br><span class="text-[9px]">Sample #${n}</span></td><td class="stage-start">${x.setterStart||"-"}</td><td class="stage-end">${x.setterEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.setterStart, x.setterEnd)}</td><td>${setStatus}</td></tr>`;
+    rows+=`<tr><td class="text-left font-bold">CMM ROOM<br><span class="text-[9px]">Sample #${n}</span></td><td class="stage-start">${x.cmmStart||"-"}</td><td class="stage-end">${x.cmmEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.cmmStart, x.cmmEnd)}</td><td>${cmmStatus}</td></tr>`;
+    rows+=`<tr><td class="text-left font-bold">QUALITY<br><span class="text-[9px]">Sample #${n}</span></td><td class="stage-start">${x.qualityStart||"-"}</td><td class="stage-end">${x.qualityEnd||"-"}</td><td class="font-bold text-blue-700">${durationMinutes(x.qualityStart, x.qualityEnd)}</td><td>${qStatus}</td></tr>`;
   }
 
   document.getElementById("workflowContent").innerHTML=`
@@ -1102,7 +1100,7 @@ window.openSopDetailsModal = function(firebaseKey){
   document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Status: Successfully Approved`;
 
   document.getElementById("workflowContent").innerHTML=`
-  <div class="bg-purple-50 p-6 rounded-xl border border-purple-300 shadow-inner space-y-4">
+  <div class="bg-purple-50 p-4 md:p-6 rounded-xl border border-purple-300 shadow-inner space-y-4">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
       <div class="bg-white p-4 rounded-lg shadow border">
         <p class="text-xs text-slate-500 font-bold">SETUP DATE</p>
@@ -1117,7 +1115,7 @@ window.openSopDetailsModal = function(firebaseKey){
         <p class="text-lg font-black text-emerald-700 mt-1">${s.partNo}</p>
       </div>
     </div>
-    <div class="bg-white p-4 rounded-lg shadow border flex justify-between items-center text-sm">
+    <div class="bg-white p-4 rounded-lg shadow border flex flex-wrap justify-between items-center text-sm gap-2">
       <div><b>Fixture Serial No:</b> ${s.fixtureNo}</div>
       <div><b>Pallet:</b> ${s.pallet}</div>
       <div><b>Priority:</b> P${s.priority}</div>

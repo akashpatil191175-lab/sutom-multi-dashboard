@@ -856,7 +856,6 @@ CLICK FOR DETAILS & TIME
 <th>PALLET</th>
 <th>PRIORITY</th>
 <th>TOOL ROOM</th>
-<th>AVAILABLE FIXTURE</th>
 <th>WORKFLOW</th>
 <th>CURRENT STATUS</th>
 <th>ACTION</th>
@@ -868,7 +867,7 @@ CLICK FOR DETAILS & TIME
 <tbody id="setterExcelTableBody">
 
 <tr>
-<td colspan="11"
+<td colspan="10"
 class="p-6 text-slate-400 font-semibold">
 Loading...
 </td>
@@ -2127,46 +2126,6 @@ function getSample(s,n){
 /* ===================================================== */
 
 
-/* ================= SETTER FIXTURE SELECTION ================= */
-
-window.saveSetterFixtureSelection =
-function(firebaseKey){
-
-  const s =
-  window.allSetups
-  .find(x=>x.firebaseKey===firebaseKey);
-
-  if(!s) return;
-
-  const checked =
-  document.querySelector(`input[name="fixture_pick_${firebaseKey}"]:checked`);
-
-  const manual =
-  document.getElementById(`manual_fixture_${firebaseKey}`);
-
-  const selected =
-  checked ? checked.value.trim() : (manual ? manual.value.trim() : "");
-
-  if(!selected){
-    alert("Available Fixture No. मधून एक Fixture select करा किंवा Manual Fixture No. टाका.");
-    return;
-  }
-
-  dbRef.child(firebaseKey).update({
-    selectedFixtureSerialNo:selected,
-    availableFixtureSerialNo:selected,
-    toolRemark:selected,
-    "notifications/setter/read":true
-  }).then(()=>{
-    triggerAlert(
-      "FIXTURE SELECTED",
-      `${s.machineName} - ${s.partName} साठी Fixture No. ${selected} Setter ने select केला.`
-    );
-  });
-
-};
-
-
 /* ================= SETTER START ================= */
 
 window.setterStartSetup =
@@ -2188,12 +2147,12 @@ function(firebaseKey){
     !(
       s.toolingReady &&
       s.fixtureReady &&
-      (s.selectedFixtureSerialNo || s.availableFixtureSerialNo)
+      s.availableFixtureSerialNo
     )
   ){
 
     alert(
-      "Tooling आणि Fixture Ready असून Available Fixture No. select/input केल्यानंतरच Setter Setup Start करू शकतो."
+      "Tooling आणि Fixture Ready होऊन Available Fixture No. अपडेट झाल्यानंतरच Setter Setup Start करू शकतो."
     );
 
     return;
@@ -2388,17 +2347,10 @@ function(firebaseKey){
   const fixtureReady =
   fixture ? fixture.checked : false;
 
-  const serialText =
+  const serialNo =
   serial
   ? serial.value.trim()
   : "";
-
-  const serialOptions =
-  serialText
-  ? serialText.split(/[,\n]+/).map(v=>v.trim()).filter(Boolean)
-  : [];
-
-  const serialNo = serialOptions[0] || "";
 
 
   if(!toolingReady){
@@ -2445,12 +2397,6 @@ function(firebaseKey){
 
     availableFixtureSerialNo:
     serialNo,
-
-    availableFixtureSerialOptions:
-    serialOptions,
-
-    selectedFixtureSerialNo:
-    "",
 
     toolRemark:
     serialNo,
@@ -3145,7 +3091,7 @@ function(){
 
 
   csvContent +=
-  "Setup ID,Machine Name,Part Name,Part No,Fixture No,Setup Type,Date,Shift,Pallet,Priority,Registered By,Total Status,Total Time\n";
+  "Setup ID,Machine Name,Part Name,Part No,Fixture No,Required Fixture Serial No,Setup Type,Date,Shift,Pallet,Priority,Registered By,Total Status,Total Time\n";
 
 
   list.forEach(s=>{
@@ -3161,6 +3107,8 @@ function(){
       `"${s.partNo||""}"`,
 
       `"${s.fixtureNo||""}"`,
+
+      `"${s.fixtureSerialNo||""}"`,
 
       s.setupType||"",
 
@@ -3289,7 +3237,7 @@ function(filterKey){
 
     tbody.innerHTML=
     `<tr>
-      <td colspan="11"
+      <td colspan="10"
       class="p-6 text-slate-400 font-semibold text-center">
       No registered setup machines found.
       </td>
@@ -3537,40 +3485,6 @@ function(filterKey){
       </td>
 
 
-      <td class="text-left text-xs bg-amber-50">
-
-      ${
-        s.setupType==='Short'
-        ? `<span class="text-slate-400 italic">Not Required (Short)</span>`
-        : (()=>{
-          const opts = Array.isArray(s.availableFixtureSerialOptions) && s.availableFixtureSerialOptions.length
-            ? s.availableFixtureSerialOptions
-            : (s.availableFixtureSerialNo ? [s.availableFixtureSerialNo] : []);
-          const selected = s.selectedFixtureSerialNo || "";
-          if(!opts.length && !selected){
-            return `<span class="text-orange-600 font-bold">Waiting Tool Room</span>`;
-          }
-          return `
-            <div class="font-bold text-amber-800 mb-1">Available Fixture No.</div>
-            <div class="space-y-1">
-              ${opts.map((no,i)=>`
-                <label class="flex items-center gap-1.5 cursor-pointer">
-                  <input type="radio" name="fixture_pick_${s.firebaseKey}" value="${no}" ${selected===no?'checked':''} class="w-4 h-4">
-                  <span>${no}</span>
-                </label>`).join('')}
-            </div>
-            <input id="manual_fixture_${s.firebaseKey}" type="text" value="" placeholder="नसेल तर दुसरा No. टाका" class="w-full mt-1 p-1.5 border rounded text-[10px]">
-            <button onclick="saveSetterFixtureSelection('${s.firebaseKey}')" class="mt-1 bg-amber-600 text-white px-2 py-1 rounded text-[10px] font-bold">
-              <i class="fas fa-check mr-1"></i>SELECT FIXTURE
-            </button>
-            ${selected ? `<div class="mt-1 text-[10px] text-green-700 font-bold">Selected: ${selected}</div>` : ''}
-          `;
-        })()
-      }
-
-      </td>
-
-
       <td
       onclick="openWorkflowModal('${s.firebaseKey}')"
       class="machine-click bg-indigo-50 text-indigo-700 font-bold">
@@ -3761,10 +3675,8 @@ function(){
 
     <br>
 
-    <b>Requested Serial:</b>
+    <b>Required Serial:</b>
     ${s.fixtureSerialNo||'-'}
-<br>
-<b>Selected Fixture:</b> ${s.selectedFixtureSerialNo||s.availableFixtureSerialNo||'-'}
 
     </td>
 
@@ -3814,7 +3726,7 @@ function(){
     ${ready?'disabled':''}
     onchange="updateToolRemarkInput('${s.firebaseKey}',this.value)"
     class="w-full p-2 border rounded text-xs font-bold bg-amber-50"
-    placeholder="Fixture No. उदा. FX-101, FX-102">
+    placeholder="Available Fixture Serial No.">
 
     </td>
 
@@ -5468,4 +5380,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+</html>

@@ -3,30 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SUTOM - Setup Time Online Monitor</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<title>SUTOM - Setup Time Monitor</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
 <style>
 *{
   box-sizing:border-box;
 }
 
 body{
-  background:#0b0f19;
-  color:#f1f5f9;
-  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:#f1f5f9;
 }
 
 @keyframes pulse-red{
   0%,100%{
-    background:#450a0a;
+    background:#fee2e2;
     border-color:#ef4444;
   }
   50%{
-    background:#7f1d1d;
+    background:#fca5a5;
     border-color:#dc2626;
   }
 }
@@ -43,6 +44,9 @@ body{
   width:100%;
   font-size:12px;
   font-weight:800;
+}
+
+.firebase-live-bar.live{
   background:#052e16;
   color:#4ade80;
   border-top:1px solid #166534;
@@ -50,43 +54,42 @@ body{
 }
 
 .excel-table-container{
-  border:1px solid #1e293b;
-  border-radius:12px;
+  border:2px solid #047857;
+  border-radius:8px;
   overflow:hidden;
-  background:#0f172a;
-  box-shadow:0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  background:white;
 }
 
 .excel-table{
   border-collapse:collapse;
   width:100%;
   font-size:11px;
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
 }
 
 .excel-table th{
-  background:#1e293b;
-  color:#38bdf8;
-  border-bottom:2px solid #334155;
-  padding:10px 8px;
+  background:#065f46;
+  color:white;
+  border:1px solid #047857;
+  padding:8px 6px;
   font-weight:700;
   text-align:center;
   white-space:nowrap;
 }
 
 .excel-table td{
-  border-bottom:1px solid #1e293b;
-  padding:8px;
+  border:1px solid #d1d5db;
+  padding:6px 6px;
   text-align:center;
   vertical-align:middle;
-  color:#cbd5e1;
 }
 
 .excel-table tr:nth-child(even){
-  background:#111827;
+  background:#f0fdf4;
 }
 
 .excel-table tr:hover{
-  background:#1e293b !important;
+  background:#dcfce7;
 }
 
 .machine-click{
@@ -95,7 +98,8 @@ body{
 }
 
 .machine-click:hover{
-  background:#334155 !important;
+  background:#bfdbfe !important;
+  transform:scale(1.01);
 }
 
 .workflow-table{
@@ -105,36 +109,35 @@ body{
 }
 
 .workflow-table th{
-  background:#1e293b;
-  color:#38bdf8;
-  padding:10px;
+  background:#0f172a;
+  color:white;
+  padding:8px 4px;
   border:1px solid #334155;
   text-align:center;
   white-space:nowrap;
 }
 
 .workflow-table td{
-  padding:8px;
-  border:1px solid #1e293b;
+  padding:6px 4px;
+  border:1px solid #cbd5e1;
   text-align:center;
-  color:#cbd5e1;
   word-break:break-word;
 }
 
 .workflow-table tr:nth-child(even){
-  background:#111827;
+  background:#f8fafc;
 }
 
 .stage-start{
-  background:#1e3a8a;
-  color:#93c5fd;
+  background:#dbeafe;
+  color:#1d4ed8;
   font-family:monospace;
   font-weight:700;
 }
 
 .stage-end{
-  background:#064e3b;
-  color:#86efac;
+  background:#dcfce7;
+  color:#15803d;
   font-family:monospace;
   font-weight:700;
 }
@@ -149,12 +152,14 @@ body{
   font-weight:700;
 }
 
+/* ================= NEW DEPARTMENT ICON CARDS ================= */
+
 .dept-card{
-  background:#111827;
+  background:white;
   border-radius:16px;
   padding:16px;
-  border:1px solid #1f2937;
-  box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);
+  border:2px solid #e2e8f0;
+  box-shadow:0 5px 15px rgba(15,23,42,.08);
   cursor:pointer;
   transition:.2s;
   position:relative;
@@ -163,8 +168,7 @@ body{
 
 .dept-card:hover{
   transform:translateY(-2px);
-  border-color:#3b82f6;
-  box-shadow:0 15px 30px -5px rgba(59, 130, 246, 0.2);
+  box-shadow:0 8px 20px rgba(15,23,42,.14);
 }
 
 .dept-card .icon-box{
@@ -188,7 +192,23 @@ body{
   font-size:11px;
   font-weight:800;
   margin-top:5px;
-  color:#94a3b8;
+}
+
+.notification-dot{
+  position:absolute;
+  top:10px;
+  right:10px;
+  min-width:22px;
+  height:22px;
+  border-radius:999px;
+  background:#dc2626;
+  color:white;
+  font-size:10px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 5px;
 }
 
 .action-ready{
@@ -197,1314 +217,4511 @@ body{
 
 @keyframes actionPulse{
   0%,100%{
-    box-shadow:0 0 0 0 rgba(239, 68, 68, 0.5);
+    box-shadow:0 0 0 0 rgba(220,38,38,.35);
   }
   50%{
-    box-shadow:0 0 0 8px rgba(239, 68, 68, 0);
+    box-shadow:0 0 0 7px rgba(220,38,38,0);
   }
 }
 
-.custom-input {
-  background: #1e293b;
-  border: 1px solid #334155;
-  color: white;
+.ready-box{
+  background:#dcfce7;
+  border:1px solid #86efac;
 }
-.custom-input:focus {
-  border-color: #3b82f6;
-  outline: none;
+
+.pending-box{
+  background:#fef3c7;
+  border:1px solid #fcd34d;
 }
+
+.info-box{
+  background:#dbeafe;
+  border:1px solid #93c5fd;
+}
+
+.running-box{
+  background:#e0e7ff;
+  border:1px solid #a5b4fc;
+}
+
+.approve-box{
+  background:#f3e8ff;
+  border:1px solid #d8b4fe;
+}
+
+@media(max-width:768px){
+  .workflow-table{
+    font-size:10px;
+  }
+
+  .workflow-table th,
+  .workflow-table td{
+    padding:5px 2px;
+  }
+
+  .excel-table{
+    font-size:10px;
+  }
+}
+
+/* =========================================================
+   SUTOM PREMIUM COMPACT UI - DESIGN REFRESH
+   Firebase / workflow logic remains unchanged.
+   ========================================================= */
+:root{--bg:#050b14;--panel:#091321;--panel2:#0d1827;--line:#203149;--red:#ff2438;--red2:#c9142b;--text:#f5f7fb;--muted:#91a0b5;--green:#18d889;--blue:#2495ff;}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);}
+body{font-family:Inter,Segoe UI,Arial,sans-serif;background:radial-gradient(circle at 75% 0%,#152237 0,#07101d 38%,#040a12 100%);}
+button,input,select{font-family:inherit}
+.sutom-header{height:78px;background:rgba(4,10,18,.97);border-bottom:1px solid #24344c;display:flex;align-items:center;justify-content:space-between;padding:8px 18px;position:sticky;top:0;z-index:50;box-shadow:0 8px 25px rgba(0,0,0,.35)}
+.sutom-brand{display:flex;align-items:center;gap:10px;min-width:230px}
+.sutom-logo{width:48px;height:48px;border-radius:50%;position:relative;border:3px solid #ef233c;background:#070c14;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(255,36,56,.22)}
+.sutom-logo:before{content:'';position:absolute;width:24px;height:24px;border:3px solid #dce5f2;border-radius:50%}
+.sutom-logo:after{content:'⌁';font-size:22px;color:#dce5f2;transform:rotate(-30deg);position:absolute;top:8px;left:17px}
+.sutom-brand-title{font-size:31px;font-weight:900;line-height:.9;letter-spacing:-1px;color:#f4f7fb}.sutom-brand-title b{color:#f1283d}.sutom-brand-sub{font-size:11px;color:#d3dbe6;margin-top:5px}.sutom-brand-sub b{color:#ff3348}
+.sutom-company{display:flex;align-items:center;gap:9px;font-size:12px;color:#e9eef6}.sutom-company i{font-size:28px;color:#cbd5e1}.sutom-company small{display:block;color:#93a0b4;font-size:10px;margin-top:1px}
+.sutom-head-actions{display:flex;align-items:center;gap:7px}.sutom-pill{border:1px solid #26364d;background:#0b1524;color:#e9eef6;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}.sutom-pill.live{border-color:#00b96b;color:#54f0a9;background:#061b13}.sutom-pill.live i{font-size:7px}.sutom-user{display:flex;align-items:center;gap:7px;padding-left:5px}.sutom-user-avatar{width:36px;height:36px;border-radius:50%;background:#f5f7fb;color:#111827;display:flex;align-items:center;justify-content:center;font-size:19px}.sutom-user-name{font-size:11px;font-weight:800}.sutom-user-dept{font-size:9px;color:#8d9bb0;margin-top:2px}
+#dashboardSection{display:flex!important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
+.sutom-sidebar{width:176px;flex:0 0 176px;background:#06101b;border-right:1px solid #203047;padding:18px 10px;display:flex;flex-direction:column;gap:7px;min-height:calc(100vh - 78px);position:sticky;top:78px;height:calc(100vh - 78px)}
+.sutom-nav-btn{width:100%;border:0;background:transparent;color:#c6d0df;text-align:left;padding:11px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:11px}.sutom-nav-btn i{width:18px;text-align:center;font-size:15px}.sutom-nav-btn:hover,.sutom-nav-btn.active{background:linear-gradient(90deg,#d92338,#8d1325);color:white;box-shadow:0 6px 18px rgba(255,36,56,.16)}.sutom-side-bottom{margin-top:auto;border-top:1px solid #1b2b40;padding-top:10px;color:#66758a;font-size:9px;text-align:center;line-height:1.5}
+#dashboardSection>main{padding:16px 18px 28px!important;overflow-y:auto!important;width:calc(100% - 176px);max-width:none}
+#tab-setter{max-width:1500px;margin:0 auto}.setter-hero{height:158px;border:1px solid #6e1422;border-radius:15px;background:linear-gradient(90deg,rgba(12,16,24,.93),rgba(30,12,19,.75)),radial-gradient(circle at 75% 45%,#7d1825,#101522 55%);position:relative;overflow:hidden;padding:28px 30px;box-shadow:0 12px 30px rgba(0,0,0,.28)}.setter-hero:after{content:'⚙';position:absolute;right:10%;top:-24px;font-size:175px;color:rgba(255,44,59,.07);transform:rotate(18deg)}.setter-hero h2{font-size:34px;line-height:1;font-weight:950;margin:0;color:#f5f7fb}.setter-hero h2 span{color:#ff2d42}.setter-hero p{margin:9px 0 0;color:#c3cfdf;font-size:14px}.setter-hero .hero-time{position:absolute;right:24px;top:36px;border:1px solid #682033;border-radius:13px;padding:10px 16px;background:rgba(7,10,16,.55);text-align:right;min-width:170px}.hero-time .date{font-size:10px;color:#b9c3d0}.hero-time .time{font-size:21px;font-weight:800;margin-top:3px}
+.setter-topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.setter-title-mobile{font-size:12px;color:#90a0b4}.setter-action-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.compact-action{border:1px solid #33465f;background:#0b1625;color:#dce6f4;border-radius:8px;padding:7px 10px;font-size:10px;font-weight:800;display:inline-flex;align-items:center;gap:5px;cursor:pointer}.compact-action:hover{border-color:#ef233c}.compact-action.red{background:#c81e31;border-color:#ec3144;color:white}.compact-action.blue{background:#1467b7;border-color:#238cff;color:white}.compact-action.green{background:#086f45;border-color:#16c784;color:white}
+.setter-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:12px 0}.metric-card{background:linear-gradient(145deg,#0a1421,#07101b);border:1px solid #263950;border-radius:11px;padding:10px 12px;min-height:76px;position:relative;overflow:hidden;cursor:pointer}.metric-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#2994ff}.metric-card.ready:before{background:#19d889}.metric-card.running:before{background:#ffb91f}.metric-card.approved:before{background:#a34cff}.metric-card.correction:before{background:#ff3348}.metric-card .metric-label{font-size:9px;color:#9baabd;font-weight:800;text-transform:uppercase}.metric-card .metric-num{font-size:26px;font-weight:950;margin-top:4px;color:#f4f7fb}.metric-card .metric-sub{font-size:9px;color:#718197;margin-top:1px}
+.setter-list-panel{background:rgba(5,13,23,.82);border:1px solid #25364d;border-radius:14px;padding:10px}.setter-list-head{display:flex;justify-content:space-between;align-items:center;padding:3px 3px 9px;border-bottom:1px solid #1e2d40}.setter-list-head h3{font-size:14px;margin:0;font-weight:900}.setter-list-head p{font-size:9px;color:#73839a;margin:3px 0 0}.setter-list-head .row-count{font-size:9px;color:#8eeec2;background:#0b2a20;border:1px solid #175a42;border-radius:7px;padding:5px 8px}
+.setter-machine-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;padding-top:9px}.machine-card{background:linear-gradient(155deg,#0c1827,#07111d);border:1px solid #25384f;border-radius:11px;padding:9px;min-width:0;position:relative;box-shadow:0 7px 16px rgba(0,0,0,.16)}.machine-card.running{border-top:2px solid #18d889}.machine-card.ready{border-top:2px solid #2b8fff}.machine-card.correction{border-top:2px solid #ff3449}.machine-card.approved{border-top:2px solid #a34cff}.machine-card .mc-top{display:flex;align-items:center;justify-content:space-between;gap:5px}.machine-card .mc-icon{width:28px;height:28px;border-radius:8px;background:#083a2a;color:#1be08b;display:flex;align-items:center;justify-content:center;font-size:13px}.machine-card.ready .mc-icon{background:#092d50;color:#2e99ff}.machine-card.correction .mc-icon{background:#45121a;color:#ff4052}.machine-card.approved .mc-icon{background:#32124f;color:#bb6cff}.status-chip{font-size:8px;font-weight:900;padding:4px 6px;border-radius:9px;background:#0c7550;color:#b9ffdf;white-space:nowrap}.ready .status-chip{background:#146bc0;color:#e4f2ff}.correction .status-chip{background:#cc263b;color:#fff}.approved .status-chip{background:#7431ae;color:#fff}.mc-menu{color:#8795a8;font-size:13px}.mc-machine{font-size:18px;font-weight:950;margin-top:7px;line-height:1}.mc-row{display:flex;justify-content:space-between;gap:6px;margin-top:6px;font-size:9px;color:#b4c0cf}.mc-row b{color:#eef3fa}.mc-pallet{font-size:9px;color:#86b6d9;margin-top:5px}.priority-row{display:flex;justify-content:space-between;align-items:center;margin-top:6px}.priority{font-size:8px;color:#a9b6c6}.priority b{display:inline-block;background:#b88310;color:#fff4bd;border-radius:7px;padding:3px 6px;margin-left:4px}.shift-row{display:flex;gap:5px;align-items:center;font-size:9px;color:#d3dce8;margin-top:7px}.shift-row i{font-size:12px;color:#ffd12a}.progress{display:flex;align-items:center;gap:3px;margin:8px 0 4px}.progress span{height:6px;width:6px;border-radius:50%;background:#33475d;border:1px solid #5a6b7f}.progress span.done{background:#18d889;border-color:#18d889}.progress span.active{background:#ffbf24;border-color:#ffbf24}.progress-line{height:1px;background:#31445a;flex:1}.stage-text{text-align:center;font-size:8px;color:#9dacbf;margin-bottom:7px}.mc-action{width:100%;border:1px solid #e32b3e;background:transparent;color:#f5c4ca;border-radius:7px;padding:5px;font-size:9px;font-weight:800;cursor:pointer}.mc-action:hover{background:#bd1c2e;color:white}.fixture-box{margin-top:6px;background:#1c1710;border:1px solid #63471c;border-radius:7px;padding:6px;font-size:8px}.fixture-box .fixture-title{color:#f2c66c;font-weight:900;margin-bottom:4px}.fixture-option{display:flex;align-items:center;gap:4px;color:#dce3ed;margin:2px 0}.fixture-option input{width:12px;height:12px}.fixture-manual{width:100%;margin-top:3px;background:#07111d;color:#fff;border:1px solid #45566c;border-radius:4px;padding:4px;font-size:8px}.fixture-save{margin-top:4px;background:#a46a0b;color:white;border:0;border-radius:4px;padding:4px 6px;font-size:8px;font-weight:800}
+#setupFormCard{background:#0a1523!important;color:#e9eef6;border:1px solid #29415c!important;padding:14px!important}.setup-form-label{color:#aebbd0}.setup-form-input{background:#07111d!important;color:#f5f7fb!important;border-color:#30455e!important}
+#setupFormCard label{color:#aebbd0}.setter-empty{padding:30px;text-align:center;color:#73839a;font-size:11px}
+/* Keep other department screens compact and consistent */
+.tab-content{scroll-margin-top:88px}.dept-card{border-radius:11px!important;padding:11px!important}.dept-card .icon-box{width:38px!important;height:38px!important;font-size:16px!important;margin-bottom:7px!important}.dept-card .count{font-size:22px!important}
+@media(max-width:1100px){.setter-machine-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.setter-metrics{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto}.sutom-company{display:none}.sutom-head-actions .sutom-pill:not(.live){display:none}}
+@media(max-width:768px){
+  .sutom-header{height:64px;padding:6px 9px}.sutom-brand{min-width:auto;gap:7px}.sutom-logo{width:39px;height:39px}.sutom-logo:before{width:20px;height:20px}.sutom-logo:after{font-size:18px;top:7px;left:14px}.sutom-brand-title{font-size:23px}.sutom-brand-sub{font-size:8px;margin-top:3px}.sutom-user-name{font-size:9px}.sutom-user-dept{font-size:7px}.sutom-user-avatar{width:30px;height:30px;font-size:15px}.sutom-pill.live{font-size:0;padding:7px 8px}.sutom-pill.live i{font-size:8px;margin:0}.sutom-pill.live span{display:none}
+  #dashboardSection{min-height:calc(100vh - 64px)!important}.sutom-sidebar{display:none}#dashboardSection>main{width:100%;padding:8px 8px 18px!important}.setter-topbar{margin-bottom:7px}.setter-title-mobile{display:none}.setter-action-row{width:100%;justify-content:space-between}.compact-action{flex:1;justify-content:center;padding:6px 5px;font-size:8px}.setter-hero{height:112px;padding:18px 14px;border-radius:11px}.setter-hero h2{font-size:24px}.setter-hero p{font-size:10px;margin-top:6px}.setter-hero .hero-time{right:10px;top:52px;min-width:120px;padding:5px 8px}.hero-time .date{font-size:7px}.hero-time .time{font-size:13px}.setter-metrics{grid-template-columns:repeat(5,minmax(86px,1fr));gap:5px;margin:7px 0;overflow-x:auto;padding-bottom:2px}.metric-card{min-height:64px;padding:7px 8px}.metric-card .metric-label{font-size:7px}.metric-card .metric-num{font-size:19px}.metric-card .metric-sub{font-size:7px}.setter-list-panel{padding:7px;border-radius:10px}.setter-list-head h3{font-size:11px}.setter-list-head p{font-size:7px}.setter-list-head .row-count{font-size:7px;padding:4px 5px}.setter-machine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:6px}.machine-card{padding:7px;border-radius:9px}.machine-card .mc-icon{width:24px;height:24px;font-size:11px}.status-chip{font-size:6.5px;padding:3px 5px}.mc-menu{font-size:10px}.mc-machine{font-size:15px;margin-top:5px}.mc-row{font-size:7.5px;margin-top:4px}.mc-pallet,.priority,.shift-row,.stage-text{font-size:7px}.priority b{padding:2px 4px}.shift-row{margin-top:5px}.progress{margin:6px 0 3px}.mc-action{padding:4px;font-size:7.5px}.fixture-box{padding:5px}.fixture-box .fixture-title,.fixture-option,.fixture-manual,.fixture-save{font-size:7px}.fixture-manual{padding:3px}.fixture-save{padding:3px 5px}
+  #setupFormCard form{grid-template-columns:1fr!important}.sutom-brand-title{white-space:nowrap}
+}
+
 </style>
 </head>
-<body class="min-h-screen">
 
-<!-- ================= HEADER ================= -->
-<header class="bg-slate-950 text-white shadow-xl sticky top-0 z-50 border-b border-slate-800">
-<div class="p-3 px-4 md:px-6 flex flex-wrap justify-between items-center gap-2">
-<div class="flex items-center space-x-3">
-<div class="w-10 h-10 bg-gradient-to-tr from-red-600 to-red-500 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg border border-red-400">
-<i class="fas fa-cogs"></i>
-</div>
-<div>
-<h1 class="text-xl font-black tracking-wider text-white flex items-center gap-2">
-SUTOM <span class="text-xs font-normal text-red-400 bg-red-950/80 px-2 py-0.5 rounded border border-red-800">Setup Time Online Monitor</span>
-</h1>
-<p class="text-[10px] text-slate-400">
-Brembo Brake India Pvt. Ltd. • Chakan
-</p>
-</div>
-</div>
+<body class="font-sans min-h-screen">
 
-<div class="flex flex-wrap items-center gap-3 text-xs">
-<div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center">
-<i class="fas fa-calendar-alt text-red-500 mr-2"></i>
-<span id="topLiveShift" class="font-bold text-slate-300">Shift: A</span>
-</div>
-<div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center">
-<i class="fas fa-clock text-emerald-400 mr-2"></i>
-<span id="topLiveTime" class="font-mono font-bold text-slate-300">00:00:00</span>
-</div>
-<div id="userInfo" class="hidden items-center space-x-2">
-<span id="userBadge" class="bg-slate-800 border border-slate-700 text-sky-400 text-xs px-3 py-1.5 rounded-lg font-bold uppercase"></span>
-<button onclick="handleLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-bold shadow transition">
-Logout
-</button>
-</div>
-</div>
-</div>
-<div class="firebase-live-bar">
-<i class="fas fa-circle text-green-400 mr-2 animate-pulse"></i>
-<span>FIREBASE LIVE SYNC ACTIVE • S1 → S2 → S3 → S4</span>
-</div>
+<!-- ================= COMPACT PREMIUM HEADER ================= -->
+<header class="sutom-header">
+  <div class="sutom-brand">
+    <div class="sutom-logo" aria-hidden="true"></div>
+    <div>
+      <div class="sutom-brand-title">SUTOM</div>
+      <div class="sutom-brand-sub">Setup Time <b>Online Monitor</b></div>
+    </div>
+  </div>
+
+  <div class="sutom-company">
+    <i class="fas fa-industry"></i>
+    <div><b>Brembo Brake India Pvt. Ltd.</b><small>Chakan</small></div>
+  </div>
+
+  <div class="sutom-head-actions">
+    <div class="sutom-pill live"><i class="fas fa-circle"></i><span>FIREBASE LIVE</span></div>
+    <div class="sutom-user">
+      <div class="sutom-user-avatar"><i class="fas fa-user"></i></div>
+      <div><div id="headerUserName" class="sutom-user-name">User</div><div id="headerUserDept" class="sutom-user-dept">Department</div></div>
+    </div>
+    <div id="userInfo" class="hidden"></div>
+  </div>
 </header>
 
 <!-- ================= LOGIN ================= -->
-<div id="authSection" class="flex justify-center items-center py-20 px-4">
-<div class="bg-slate-900 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-800">
-<div class="flex flex-col items-center mb-6">
-<div class="w-16 h-16 bg-red-600 text-white font-black text-3xl rounded-2xl flex items-center justify-center shadow-lg mb-3 border-2 border-red-400">
+
+<div id="authSection"
+class="flex justify-center items-center py-10 px-4">
+
+<div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border">
+
+<div class="flex flex-col items-center mb-5">
+
+<div class="w-16 h-16 bg-emerald-600 text-white font-black text-3xl rounded-2xl flex items-center justify-center shadow-lg mb-2 border-2 border-emerald-400">
 S
 </div>
-<h2 class="text-2xl font-black text-white">Department Login</h2>
-<p class="text-xs text-slate-400 mt-1">SUTOM Workflow System</p>
+
+<h2 class="text-2xl font-bold text-slate-800">
+Department Login
+</h2>
+
+<p class="text-xs text-slate-500 mt-1">
+SUTOM Workflow System
+</p>
+
 </div>
+
 <form onsubmit="handleLogin(event)" class="space-y-4">
+
 <div>
-<label class="block text-xs font-bold text-slate-300 mb-1">Employee Name</label>
-<input type="text" id="loginName" required class="w-full p-3 custom-input rounded-xl text-sm" placeholder="Enter name">
+<label class="block text-xs font-bold mb-1">
+Employee Name
+</label>
+
+<input
+type="text"
+id="loginName"
+required
+class="w-full p-2.5 border rounded-lg text-sm"
+placeholder="Enter name">
 </div>
+
 <div>
-<label class="block text-xs font-bold text-slate-300 mb-1">Employee ID</label>
-<input type="text" id="loginId" required class="w-full p-3 custom-input rounded-xl text-sm" placeholder="Enter ID">
+<label class="block text-xs font-bold mb-1">
+Employee ID
+</label>
+
+<input
+type="text"
+id="loginId"
+required
+class="w-full p-2.5 border rounded-lg text-sm"
+placeholder="Enter ID">
 </div>
+
 <div>
-<label class="block text-xs font-bold text-slate-300 mb-1">Select Department</label>
-<select id="loginDept" required class="w-full p-3 custom-input rounded-xl text-sm">
+
+<label class="block text-xs font-bold mb-1">
+Select Department
+</label>
+
+<select
+id="loginDept"
+required
+class="w-full p-2.5 border rounded-lg text-sm bg-white">
+
 <option value="">-- Choose Department --</option>
-<option value="setter">1. SETTER / HMC</option>
-<option value="toolroom">2. TOOL ROOM</option>
-<option value="stdroom">3. CMM / STD ROOM</option>
-<option value="quality">4. QUALITY</option>
-<option value="supervisor">5. SUPERVISOR / HOD</option>
+
+<option value="setter">
+1. SETTER / HMC
+</option>
+
+<option value="toolroom">
+2. TOOL ROOM
+</option>
+
+<option value="stdroom">
+3. CMM / STD ROOM
+</option>
+
+<option value="quality">
+4. QUALITY
+</option>
+
+<option value="supervisor">
+5. SUPERVISOR / HOD
+</option>
+
 </select>
+
 </div>
-<button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
+
+<button
+type="submit"
+class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md">
+
 Access Dashboard
+
 </button>
+
 </form>
 </div>
 </div>
+
 
 <!-- ================= DASHBOARD ================= -->
-<div id="dashboardSection" class="hidden flex-col min-h-[calc(100vh-65px)]">
-<main class="flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
+<div id="dashboardSection" class="hidden">
+
+  <aside class="sutom-sidebar">
+    <button class="sutom-nav-btn active" onclick="showDepartmentTab(window.currentUser?.dept||'setter')"><i class="fas fa-home"></i> Dashboard</button>
+    <button class="sutom-nav-btn" onclick="openSetterModule('register')"><i class="fas fa-plus-square"></i> Register Setup</button>
+    <button class="sutom-nav-btn" onclick="document.querySelector('.setter-list-panel')?.scrollIntoView({behavior:'smooth'})"><i class="fas fa-diagram-project"></i> Workflow</button>
+    <button class="sutom-nav-btn" onclick="exportSetterDataToExcel()"><i class="fas fa-chart-column"></i> Reports</button>
+    <button class="sutom-nav-btn" onclick="if(confirm('सर्व setup data reset करायचा आहे का?')) handleResetAllData()"><i class="fas fa-gear"></i> Settings</button>
+    <div class="sutom-side-bottom">SUTOM<br><b>Setup Time Online Monitor</b><br><br>Precision &nbsp; | &nbsp; Efficiency</div>
+  </aside>
+
+  <main class="flex-1">
 
 <!-- ================= SETTER ================= -->
-<div id="tab-setter" class="tab-content space-y-6 hidden">
-<div class="bg-slate-900 text-white p-5 rounded-2xl shadow-xl border border-slate-800 flex justify-between items-center flex-wrap gap-4">
-<div>
-<h2 class="text-xl font-black text-red-500 tracking-wide">SETTER CONTROL & MULTI-SAMPLE WORKFLOW</h2>
-<p class="text-xs text-slate-400 mt-1">फक्त रजिस्टर मशिन शो होत आहेत. क्लिक केल्यावर संपूर्ण डिटेल्स दिसतील.</p>
-</div>
-<div class="flex gap-2 flex-wrap">
-<button onclick="exportSetterDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center shadow transition">
-<i class="fas fa-file-excel mr-2 text-sm"></i> Download Excel
-</button>
-<button onclick="openSetterModule('register')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition">
-<i class="fas fa-plus mr-1"></i> Register New Setup
-</button>
-<button onclick="handleResetAllData()" class="bg-slate-800 hover:bg-red-950 text-red-400 border border-red-900/50 text-xs font-bold px-3 py-2.5 rounded-xl transition">
-<i class="fas fa-trash-alt"></i>
-</button>
-</div>
+<div id="tab-setter" class="tab-content hidden">
+
+  <div class="setter-topbar">
+    <div class="setter-title-mobile">Setter Dashboard</div>
+    <div class="setter-action-row">
+      <button onclick="exportSetterDataToExcel()" class="compact-action green"><i class="fas fa-file-excel"></i> Download Excel</button>
+      <button onclick="openSetterModule('register')" class="compact-action blue"><i class="fas fa-plus"></i> Register Setup</button>
+    </div>
+  </div>
+
+  <section class="setter-hero">
+    <h2><span>SETTER</span> DASHBOARD</h2>
+    <p>Monitor <b>•</b> Track <b>•</b> Improve</p>
+    <div class="hero-time">
+      <div id="heroDate" class="date">Today</div>
+      <div id="heroTime" class="time">00:00:00</div>
+    </div>
+  </section>
+
+  <div class="setter-metrics">
+    <div onclick="openSetterModule('all')" class="metric-card"><div class="metric-label">Total Setups</div><div id="metric-all" class="metric-num">0</div><div class="metric-sub">Machines Registered</div></div>
+    <div onclick="openSetterModule('ready')" class="metric-card ready"><div class="metric-label">Ready For Setup</div><div id="metric-ready" class="metric-num">0</div><div class="metric-sub">Waiting for Setup</div></div>
+    <div onclick="openSetterModule('running')" class="metric-card running"><div class="metric-label">Running Setup</div><div id="metric-running" class="metric-num">0</div><div class="metric-sub">In Progress</div></div>
+    <div onclick="openSetterModule('approved')" class="metric-card approved"><div class="metric-label">SOP Approved</div><div id="metric-approved" class="metric-num">0</div><div class="metric-sub">Completed</div></div>
+    <div onclick="openSetterModule('correction')" class="metric-card correction"><div class="metric-label">Correction</div><div id="metric-correction" class="metric-num">0</div><div class="metric-sub">In Correction</div></div>
+  </div>
+
+  <!-- REGISTER FORM -->
+  <div id="setupFormCard" class="bg-white rounded-xl shadow border hidden">
+    <div class="flex justify-between items-center border-b pb-3 mb-5">
+      <h3 class="text-md font-bold text-blue-800">REGISTER NEW SETUP</h3>
+      <button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">Close</button>
+    </div>
+    <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div><label class="block text-xs font-bold mb-1">MACHINE NAME</label><select id="machineName" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold"><option value="">-- SELECT MACHINE --</option></select></div>
+      <div><label class="block text-xs font-bold mb-1">PART NAME</label><input type="text" id="partName" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part Name"></div>
+      <div><label class="block text-xs font-bold mb-1">PART NUMBER</label><input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No"></div>
+      <div><label class="block text-xs font-bold mb-1">FIXTURE NUMBER</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Number"></div>
+      <div><label class="block text-xs font-bold mb-1">FIXTURE SERIAL NO.</label><input type="text" id="fixtureSerialNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Serial No"></div>
+      <div><label class="block text-xs font-bold mb-1">SETUP TYPE</label><select id="setupType" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold"><option value="">-- SELECT TYPE --</option><option value="Short">Short</option><option value="Long">Long</option></select></div>
+      <div><label class="block text-xs font-bold mb-1">DATE</label><input type="date" id="setupDate" required class="w-full p-2 border rounded-lg text-sm"></div>
+      <div><label class="block text-xs font-bold mb-1">SHIFT</label><select id="setupShift" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold"><option value="Shift A">Shift A</option><option value="Shift B">Shift B</option><option value="Shift C">Shift C</option></select></div>
+      <div><label class="block text-xs font-bold mb-1">PALLET</label><select id="pallet" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold"><option value="">-- SELECT --</option><option value="Pallet A">PALLET A</option><option value="Pallet B">PALLET B</option></select></div>
+      <div><label class="block text-xs font-bold mb-1">PRIORITY</label><select id="priority" required class="w-full p-2 border rounded-lg text-sm bg-slate-50 font-bold"><option value="">-- SELECT --</option></select></div>
+      <div class="lg:col-span-4 flex justify-end"><button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow"><i class="fas fa-play mr-2"></i> REGISTER SETUP</button></div>
+    </form>
+  </div>
+
+  <section class="setter-list-panel">
+    <div class="setter-list-head">
+      <div><h3>REGISTERED SETUP MACHINES</h3><p>Click on a machine to view workflow details</p></div>
+      <span id="excelRowCount" class="row-count">Rows: 0</span>
+    </div>
+    <div id="setterExcelTableBody" class="setter-machine-grid"></div>
+  </section>
+
 </div>
 
-<!-- METRICS -->
-<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-<div onclick="openSetterModule('all')" class="dept-card border-l-4 border-l-blue-500">
-<p class="text-[10px] text-slate-400 font-bold uppercase">Total Setups</p>
-<h3 id="metric-all" class="count text-blue-400 mt-1">0</h3>
-</div>
-<div onclick="openSetterModule('ready')" class="dept-card border-l-4 border-l-emerald-500">
-<p class="text-[10px] text-slate-400 font-bold uppercase">Ready For Setup</p>
-<h3 id="metric-ready" class="count text-emerald-400 mt-1">0</h3>
-</div>
-<div onclick="openSetterModule('running')" class="dept-card border-l-4 border-l-indigo-500">
-<p class="text-[10px] text-slate-400 font-bold uppercase">Running Setup</p>
-<h3 id="metric-running" class="count text-indigo-400 mt-1">0</h3>
-</div>
-<div onclick="openSetterModule('correction')" class="dept-card border-l-4 border-l-orange-500">
-<p class="text-[10px] text-slate-400 font-bold uppercase">Correction</p>
-<h3 id="metric-correction" class="count text-orange-400 mt-1">0</h3>
-</div>
-<div onclick="openSetterModule('approved')" class="dept-card border-l-4 border-l-purple-500">
-<p class="text-[10px] text-slate-400 font-bold uppercase">SOP Approved</p>
-<h3 id="metric-approved" class="count text-purple-400 mt-1">0</h3>
-</div>
-</div>
+<!-- ===================================================== -->
+<!-- ================= TOOL ROOM ========================== -->
+<!-- ===================================================== -->
 
-<!-- REGISTER FORM -->
-<div id="setupFormCard" class="bg-slate-900 p-6 rounded-2xl shadow-2xl border border-slate-800 hidden">
-<div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-5">
-<h3 class="text-md font-bold text-sky-400">REGISTER NEW SETUP FORM</h3>
-<button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-400 bg-slate-800 px-3 py-1.5 rounded-lg hover:bg-slate-700">Close</button>
-</div>
-<form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">MACHINE NAME</label>
-<select id="machineName" required class="w-full p-2.5 custom-input rounded-xl text-sm font-bold">
-<option value="">-- SELECT MACHINE --</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">PART NAME</label>
-<input type="text" id="partName" required class="w-full p-2.5 custom-input rounded-xl text-sm" placeholder="Part Name">
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">PART NUMBER</label>
-<input type="text" id="partNo" required class="w-full p-2.5 custom-input rounded-xl text-sm" placeholder="Part No">
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">FIXTURE NUMBER</label>
-<input type="text" id="fixtureNo" required class="w-full p-2.5 custom-input rounded-xl text-sm" placeholder="Fixture Number">
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">FIXTURE SERIAL NO.</label>
-<input type="text" id="fixtureSerialNo" required class="w-full p-2.5 custom-input rounded-xl text-sm" placeholder="Fixture Serial No">
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">SETUP TYPE</label>
-<select id="setupType" required class="w-full p-2.5 custom-input rounded-xl text-sm font-bold">
-<option value="">-- SELECT TYPE --</option>
-<option value="Short">Short</option>
-<option value="Long">Long</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">DATE</label>
-<input type="date" id="setupDate" required class="w-full p-2.5 custom-input rounded-xl text-sm">
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">SHIFT</label>
-<select id="setupShift" required class="w-full p-2.5 custom-input rounded-xl text-sm font-bold">
-<option value="Shift A">Shift A</option>
-<option value="Shift B">Shift B</option>
-<option value="Shift C">Shift C</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">PALLET</label>
-<select id="pallet" required class="w-full p-2.5 custom-input rounded-xl text-sm font-bold">
-<option value="">-- SELECT --</option>
-<option value="Pallet A">PALLET A</option>
-<option value="Pallet B">PALLET B</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-bold text-slate-300 mb-1">PRIORITY</label>
-<select id="priority" required class="w-full p-2.5 custom-input rounded-xl text-sm font-bold">
-<option value="">-- SELECT --</option>
-</select>
-</div>
-<div class="lg:col-span-4 flex justify-end mt-2">
-<button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
-<i class="fas fa-play mr-2"></i> REGISTER SETUP & START WORKFLOW
-</button>
-</div>
-</form>
-</div>
+<div
+id="tab-toolroom"
+class="tab-content hidden space-y-6">
 
-<!-- SETUP TABLE -->
-<div class="excel-table-container">
-<div class="bg-slate-900 text-white p-4 px-5 flex justify-between items-center border-b border-slate-800">
-<h3 class="font-bold text-sm text-slate-200">REGISTERED SETUP MACHINES</h3>
-<span class="text-xs bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg font-mono text-emerald-400" id="excelRowCount">Rows: 0</span>
-</div>
-<div class="overflow-x-auto max-h-[600px]">
-<table class="excel-table">
-<thead>
-<tr>
-<th>#</th>
-<th>SETUP ID</th>
-<th>MACHINE / PART<br><span class="text-[9px] text-slate-400">CLICK FOR DETAILS & TIME</span></th>
-<th>SETUP TYPE</th>
-<th>PALLET</th>
-<th>PRIORITY</th>
-<th>TOOL / FIXTURE STATUS</th>
-<th>WORKFLOW</th>
-<th>CURRENT STATUS</th>
-<th>ACTION</th>
-</tr>
-</thead>
-<tbody id="setterExcelTableBody">
-<tr><td colspan="10" class="p-6 text-slate-500 font-semibold">Loading...</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
+<!-- TOOL ROOM ICONS -->
 
-<!-- ================= TOOL ROOM ================= -->
-<div id="tab-toolroom" class="tab-content hidden space-y-6">
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div onclick="setToolroomFilter('ready')" class="dept-card border-l-4 border-l-emerald-500">
-<div class="icon-box bg-emerald-950 text-emerald-400 border border-emerald-800"><i class="fas fa-check-double"></i></div>
-<div class="count text-emerald-400" id="toolReadyCount">0</div>
-<div class="label">READY TOOLING & FIXTURE</div>
-<p class="text-[10px] text-slate-400 mt-1">Tooling + Fixture + Available Serial Number Ready</p>
+
+<div
+onclick="setToolroomFilter('ready')"
+class="dept-card ready-box">
+
+<div class="icon-box bg-green-600 text-white">
+<i class="fas fa-check-double"></i>
 </div>
-<div onclick="setToolroomFilter('pending')" class="dept-card border-l-4 border-l-amber-500">
-<div class="icon-box bg-amber-950 text-amber-400 border border-amber-800"><i class="fas fa-hourglass-half"></i></div>
-<div class="count text-amber-400" id="toolPendingCount">0</div>
-<div class="label">PENDING TOOLING AND FIXTURE</div>
-<p class="text-[10px] text-slate-400 mt-1">Tool Room pending setups</p>
+
+<div class="count text-green-700"
+id="toolReadyCount">
+0
 </div>
+
+<div class="label text-green-800">
+READY TOOLING & FIXTURE
 </div>
-<div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
-<div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-<h2 class="text-lg font-bold text-white flex items-center"><i class="fas fa-tools text-blue-500 mr-2"></i> Tool Room Setup Preparation</h2>
-<span class="text-xs text-slate-400">Long Setup साठी Tooling & Fixture Ready करा.</span>
+
+<p class="text-[10px] text-green-700 mt-1">
+Tooling + Fixture + Available Serial Number Ready
+</p>
+
 </div>
+
+
+<div
+onclick="setToolroomFilter('pending')"
+class="dept-card pending-box">
+
+<div class="icon-box bg-yellow-500 text-white">
+<i class="fas fa-hourglass-half"></i>
+</div>
+
+<div class="count text-yellow-700"
+id="toolPendingCount">
+0
+</div>
+
+<div class="label text-yellow-800">
+PENDING TOOLING AND FIXTURE
+</div>
+
+<p class="text-[10px] text-yellow-700 mt-1">
+Tool Room pending setups
+</p>
+
+</div>
+
+</div>
+
+
+<div class="bg-white p-6 rounded-xl shadow border">
+
+<div class="flex justify-between items-center border-b pb-3 mb-4">
+
+<h2 class="text-lg font-bold text-slate-800">
+
+<i class="fas fa-tools text-blue-600 mr-2"></i>
+
+Tool Room Setup Preparation
+
+</h2>
+
+<span class="text-xs text-slate-500">
+Long Setup साठी Tooling & Fixture Ready करा.
+</span>
+
+</div>
+
+
 <div class="overflow-x-auto">
-<table class="w-full text-sm text-left border border-slate-800">
-<thead class="bg-slate-950 text-slate-300">
+
+<table class="w-full text-sm text-left border">
+
+<thead class="bg-slate-100">
+
 <tr>
-<th class="p-3 border-b border-slate-800">Machine / Part Number</th>
-<th class="p-3 border-b border-slate-800">Fixture Details</th>
-<th class="p-3 border-b border-slate-800 text-center">TOOLING READY</th>
-<th class="p-3 border-b border-slate-800 text-center">FIXTURE READY</th>
-<th class="p-3 border-b border-slate-800">AVAILABLE FIXTURE SERIAL NO.</th>
-<th class="p-3 border-b border-slate-800">Status</th>
-<th class="p-3 border-b border-slate-800">Action</th>
+
+<th class="p-3 border">
+Machine / Part Number
+</th>
+
+<th class="p-3 border">
+Fixture Details
+</th>
+
+<th class="p-3 border">
+TOOLING READY
+</th>
+
+<th class="p-3 border">
+FIXTURE READY
+</th>
+
+<th class="p-3 border">
+AVAILABLE FIXTURE SERIAL NO.
+</th>
+
+<th class="p-3 border">
+Status
+</th>
+
+<th class="p-3 border">
+Action
+</th>
+
 </tr>
+
 </thead>
-<tbody id="toolroomTable" class="text-slate-300"></tbody>
+
+<tbody id="toolroomTable"></tbody>
+
 </table>
-</div>
-</div>
+
 </div>
 
-<!-- ================= CMM ROOM ================= -->
-<div id="tab-stdroom" class="tab-content hidden space-y-6">
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================= CMM ROOM ============================ -->
+<!-- ===================================================== -->
+
+<div
+id="tab-stdroom"
+class="tab-content hidden space-y-6">
+
+<!-- CMM ICONS -->
+
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div onclick="setCmmFilter('registered')" class="dept-card border-l-4 border-l-blue-500">
-<div class="icon-box bg-blue-950 text-blue-400 border border-blue-800"><i class="fas fa-clipboard-list"></i></div>
-<div class="count text-blue-400" id="cmmRegisteredCount">0</div>
-<div class="label">REGISTERED SETUP</div>
-<p class="text-[10px] text-slate-400 mt-1">CMM ला notification मिळालेले setup</p>
+
+<div
+onclick="setCmmFilter('registered')"
+class="dept-card info-box">
+
+<div class="icon-box bg-blue-600 text-white">
+<i class="fas fa-clipboard-list"></i>
 </div>
-<div onclick="setCmmFilter('running')" class="dept-card border-l-4 border-l-indigo-500">
-<div class="icon-box bg-indigo-950 text-indigo-400 border border-indigo-800"><i class="fas fa-microscope"></i></div>
-<div class="count text-indigo-400" id="cmmRunningCount">0</div>
-<div class="label">RUNNING SETUP</div>
-<p class="text-[10px] text-slate-400 mt-1">1st Sample submit झाल्यावर CMM Running मध्ये setup show होईल</p>
+
+<div class="count text-blue-700"
+id="cmmRegisteredCount">
+0
 </div>
+
+<div class="label text-blue-800">
+REGISTERED SETUP
 </div>
-<div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
-<div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-<h2 class="text-lg font-bold text-white flex items-center"><i class="fas fa-microscope text-purple-500 mr-2"></i> CMM ROOM / STD ROOM</h2>
-<span class="text-xs text-slate-400">Setter complete झाल्यावर CMM Action उपलब्ध होईल.</span>
+
+<p class="text-[10px] text-blue-700 mt-1">
+CMM ला notification मिळालेले setup
+</p>
+
 </div>
+
+
+<div
+onclick="setCmmFilter('running')"
+class="dept-card running-box">
+
+<div class="icon-box bg-indigo-600 text-white">
+<i class="fas fa-microscope"></i>
+</div>
+
+<div class="count text-indigo-700"
+id="cmmRunningCount">
+0
+</div>
+
+<div class="label text-indigo-800">
+RUNNING SETUP
+</div>
+
+<p class="text-[10px] text-indigo-700 mt-1">
+1st Sample submit झाल्यावर CMM Running मध्ये setup show होईल
+</p>
+
+</div>
+
+</div>
+
+
+<div class="bg-white p-6 rounded-xl shadow border">
+
+<div class="flex justify-between items-center border-b pb-3 mb-4">
+
+<h2 class="text-lg font-bold text-slate-800">
+
+<i class="fas fa-microscope text-purple-600 mr-2"></i>
+
+CMM ROOM / STD ROOM
+
+</h2>
+
+<span class="text-xs text-slate-500">
+Setter complete झाल्यावर CMM Action उपलब्ध होईल.
+</span>
+
+</div>
+
+
 <div class="overflow-x-auto">
-<table class="w-full text-sm text-left border border-slate-800">
-<thead class="bg-slate-950 text-slate-300">
+
+<table class="w-full text-sm text-left border">
+
+<thead class="bg-slate-100">
+
 <tr>
-<th class="p-3 border-b border-slate-800">Machine / Part</th>
-<th class="p-3 border-b border-slate-800">Sample</th>
-<th class="p-3 border-b border-slate-800">Start Time</th>
-<th class="p-3 border-b border-slate-800">End Time</th>
-<th class="p-3 border-b border-slate-800">Total</th>
-<th class="p-3 border-b border-slate-800">Action</th>
+
+<th class="p-3 border">
+Machine / Part
+</th>
+
+<th class="p-3 border">
+Sample
+</th>
+
+<th class="p-3 border">
+Start Time
+</th>
+
+<th class="p-3 border">
+End Time
+</th>
+
+<th class="p-3 border">
+Total
+</th>
+
+<th class="p-3 border">
+Action
+</th>
+
 </tr>
+
 </thead>
-<tbody id="stdroomTable" class="text-slate-300"></tbody>
+
+<tbody id="stdroomTable"></tbody>
+
 </table>
-</div>
-</div>
+
 </div>
 
-<!-- ================= QUALITY ================= -->
-<div id="tab-quality" class="tab-content hidden space-y-6">
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ================= QUALITY ============================== -->
+<!-- ===================================================== -->
+
+<div
+id="tab-quality"
+class="tab-content hidden space-y-6">
+
+<!-- QUALITY ICONS -->
+
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div onclick="setQualityFilter('approve')" class="dept-card border-l-4 border-l-purple-500">
-<div class="icon-box bg-purple-950 text-purple-400 border border-purple-800"><i class="fas fa-file-signature"></i></div>
-<div class="count text-purple-400" id="qualityApproveCount">0</div>
-<div class="label">SOP APPROVE</div>
-<p class="text-[10px] text-slate-400 mt-1">SOP Approved झालेले setup</p>
+
+<div
+onclick="setQualityFilter('approve')"
+class="dept-card approve-box">
+
+<div class="icon-box bg-purple-600 text-white">
+<i class="fas fa-file-signature"></i>
 </div>
-<div onclick="setQualityFilter('pending')" class="dept-card border-l-4 border-l-orange-500">
-<div class="icon-box bg-orange-950 text-orange-400 border border-orange-800"><i class="fas fa-clipboard-check"></i></div>
-<div class="count text-orange-400" id="qualityPendingCount">0</div>
-<div class="label">SOP PENDING</div>
-<p class="text-[10px] text-slate-400 mt-1">Work Start/End नंतरही pending; Approve किंवा Correction पर्यंत इथेच</p>
+
+<div class="count text-purple-700"
+id="qualityApproveCount">
+0
 </div>
+
+<div class="label text-purple-800">
+SOP APPROVE
 </div>
-<div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
-<div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-<h2 class="text-lg font-bold text-white flex items-center"><i class="fas fa-clipboard-check text-emerald-500 mr-2"></i> QUALITY INSPECTION</h2>
-<span class="text-xs text-slate-400">CMM End notification नंतर Quality Action उपलब्ध होईल.</span>
+
+<p class="text-[10px] text-purple-700 mt-1">
+SOP Approved झालेले setup
+</p>
+
 </div>
-<div id="qualityTableArea" class="overflow-x-auto text-slate-300"></div>
+
+
+<div
+onclick="setQualityFilter('pending')"
+class="dept-card pending-box">
+
+<div class="icon-box bg-orange-500 text-white">
+<i class="fas fa-clipboard-check"></i>
 </div>
+
+<div class="count text-orange-700"
+id="qualityPendingCount">
+0
 </div>
+
+<div class="label text-orange-800">
+SOP PENDING
+</div>
+
+<p class="text-[10px] text-orange-700 mt-1">
+Work Start/End नंतरही pending; Approve किंवा Correction पर्यंत इथेच
+</p>
+
+</div>
+
+</div>
+
+
+<div class="bg-white p-6 rounded-xl shadow border">
+
+<div class="flex justify-between items-center border-b pb-3 mb-4">
+
+<h2 class="text-lg font-bold text-slate-800">
+
+<i class="fas fa-clipboard-check text-green-600 mr-2"></i>
+
+QUALITY INSPECTION
+
+</h2>
+
+<span class="text-xs text-slate-500">
+CMM End notification नंतर Quality Action उपलब्ध होईल.
+</span>
+
+</div>
+
+<div id="qualityTableArea"
+class="overflow-x-auto">
+</div>
+
+</div>
+
+</div>
+
 
 <!-- ================= SUPERVISOR ================= -->
-<div id="tab-supervisor" class="tab-content hidden space-y-6">
-<div class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
-<h2 class="text-lg font-bold mb-4 border-b border-slate-800 pb-2 text-white flex items-center"><i class="fas fa-chart-line text-emerald-500 mr-2"></i> Supervisor / HOD - Complete Workflow Summary</h2>
+
+<div
+id="tab-supervisor"
+class="tab-content hidden space-y-6">
+
+<div class="bg-white p-6 rounded-xl shadow border">
+
+<h2 class="text-lg font-bold mb-4 border-b pb-2 text-slate-800">
+
+<i class="fas fa-chart-line text-emerald-600 mr-2"></i>
+
+Supervisor / HOD - Complete Workflow Summary
+
+</h2>
+
+
 <div class="overflow-x-auto">
-<table class="w-full text-xs text-left border border-slate-800">
-<thead class="bg-slate-950 text-slate-300">
+
+<table class="w-full text-xs text-left border">
+
+<thead class="bg-slate-200">
+
 <tr>
-<th class="p-2.5 border-b border-slate-800">Machine</th>
-<th class="p-2.5 border-b border-slate-800">Part</th>
-<th class="p-2.5 border-b border-slate-800">Setup Type</th>
-<th class="p-2.5 border-b border-slate-800">Pallet</th>
-<th class="p-2.5 border-b border-slate-800">Priority</th>
-<th class="p-2.5 border-b border-slate-800">Tool Room</th>
-<th class="p-2.5 border-b border-slate-800">Workflow Path</th>
-<th class="p-2.5 border-b border-slate-800">Total Actual Time</th>
+
+<th class="p-2 border">Machine</th>
+<th class="p-2 border">Part</th>
+<th class="p-2 border">Setup Type</th>
+<th class="p-2 border">Pallet</th>
+<th class="p-2 border">Priority</th>
+<th class="p-2 border">Tool Room</th>
+<th class="p-2 border">Workflow Path</th>
+<th class="p-2 border">Total Actual Time</th>
+
 </tr>
+
 </thead>
-<tbody id="hodTable" class="text-slate-300"></tbody>
+
+<tbody id="hodTable"></tbody>
+
 </table>
+
 </div>
 </div>
 </div>
+
+
 </main>
 </div>
 
+
 <!-- ================= WORKFLOW MODAL ================= -->
-<div id="workflowModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-[60] p-2 md:p-6 flex items-center justify-center">
-<div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-7xl mx-auto shadow-2xl modal-scroll">
-<div class="sticky top-0 bg-slate-950 text-white p-4 z-10 flex justify-between items-start gap-3 border-b border-slate-800">
+
+<div
+id="workflowModal"
+class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] p-2 md:p-6">
+
+<div
+class="bg-white rounded-2xl w-full max-w-7xl mx-auto shadow-2xl modal-scroll">
+
+<div
+class="sticky top-0 bg-slate-900 text-white p-3 md:p-4 z-10 flex justify-between items-start gap-3">
+
 <div>
-<h2 id="workflowTitle" class="text-md md:text-xl font-black text-sky-400">Machine Workflow</h2>
-<p id="workflowSubtitle" class="text-xs text-slate-400 mt-1"></p>
+
+<h2
+id="workflowTitle"
+class="text-md md:text-xl font-black text-emerald-400">
+Machine Workflow
+</h2>
+
+<p
+id="workflowSubtitle"
+class="text-xs text-slate-300 mt-1">
+</p>
+
 </div>
-<button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold text-xs transition"><i class="fas fa-times"></i></button>
+
+<button
+onclick="closeWorkflowModal()"
+class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold text-xs">
+
+<i class="fas fa-times"></i>
+
+</button>
+
 </div>
-<div class="p-4 md:p-6 overflow-x-auto">
+
+<div class="p-2 md:p-6 overflow-x-auto">
+
 <div id="workflowContent"></div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 
 <!-- ================= ALERT ================= -->
-<div id="alertModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden z-[100] p-4">
-<div class="bg-slate-900 rounded-2xl max-w-md w-full p-6 text-center border-2 border-red-500 alert-active shadow-2xl">
-<div class="w-16 h-16 bg-red-950/80 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-black border border-red-800"><i class="fas fa-bell"></i></div>
-<h3 id="alertTitle" class="text-xl font-black text-red-500">WORKFLOW NOTIFICATION</h3>
-<p id="alertMessage" class="text-sm my-4 font-bold text-slate-300">Details</p>
-<button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition">OK</button>
+
+<div
+id="alertModal"
+class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-[100] p-4">
+
+<div
+class="bg-white rounded-2xl max-w-md w-full p-6 text-center border-4 border-red-500 alert-active shadow-2xl">
+
+<div
+class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-black">
+
+<i class="fas fa-bell"></i>
+
+</div>
+
+<h3
+id="alertTitle"
+class="text-xl font-black text-red-600">
+WORKFLOW NOTIFICATION
+</h3>
+
+<p
+id="alertMessage"
+class="text-sm my-4 font-bold text-slate-700">
+Details
+</p>
+
+<button
+onclick="acknowledgeAlert()"
+class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">
+OK
+</button>
+
 </div>
 </div>
+
 
 <script>
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
-  authDomain: "sutom-multi-dashboard.firebaseapp.com",
-  databaseURL: "https://sutom-multi-dashboard-default-rtdb.firebaseio.com",
-  projectId: "sutom-multi-dashboard",
-  storageBucket: "sutom-multi-dashboard.firebasestorage.app",
-  messagingSenderId: "202116185102",
-  appId: "1:202116185102:web:28efd6421d0215d58ed05f"
+
+apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
+
+authDomain: "sutom-multi-dashboard.firebaseapp.com",
+
+databaseURL:
+"https://sutom-multi-dashboard-default-rtdb.firebaseio.com",
+
+projectId: "sutom-multi-dashboard",
+
+storageBucket:
+"sutom-multi-dashboard.firebasestorage.app",
+
+messagingSenderId: "202116185102",
+
+appId:
+"1:202116185102:web:28efd6421d0215d58ed05f"
+
 };
 
+
 firebase.initializeApp(firebaseConfig);
-const dbRef = firebase.database().ref("setups");
+
+const dbRef =
+firebase.database().ref("setups");
+
 
 window.allSetups = [];
+
 window.currentExcelFilter = "all";
+
 window.currentUser = null;
+
 let alertInterval = null;
+
+
+/* ================= FILTERS ================= */
 
 window.toolroomFilter = "all";
 window.cmmFilter = "all";
 window.qualityFilter = "all";
 
+
+/* ================= MACHINE LIST ================= */
+
 const MACHINE_LIST = [];
-for(let i=1;i<=15;i++){ MACHINE_LIST.push("M"+i); }
-for(let i=1;i<=35;i++){ MACHINE_LIST.push("EN"+i); }
-[3,8,11,13,15,25,27,28].forEach(n=>{ MACHINE_LIST.push("MK"+n); });
+
+for(let i=1;i<=15;i++){
+  MACHINE_LIST.push("M"+i);
+}
+
+for(let i=1;i<=35;i++){
+  MACHINE_LIST.push("EN"+i);
+}
+
+[3,8,11,13,15,25,27,28].forEach(n=>{
+  MACHINE_LIST.push("MK"+n);
+});
+
 
 function loadMachineList(){
-  const select = document.getElementById("machineName");
+
+  const select =
+  document.getElementById("machineName");
+
   if(!select) return;
-  select.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
+
+  select.innerHTML =
+  `<option value="">-- SELECT MACHINE --</option>`;
+
   MACHINE_LIST.forEach(machine=>{
-    select.innerHTML += `<option value="${machine}">${machine}</option>`;
+
+    select.innerHTML +=
+    `<option value="${machine}">
+      ${machine}
+    </option>`;
+
   });
 }
 
+
 function loadPriority(){
-  const select = document.getElementById("priority");
+
+  const select =
+  document.getElementById("priority");
+
   if(!select) return;
-  select.innerHTML = `<option value="">-- SELECT --</option>`;
+
+  select.innerHTML =
+  `<option value="">-- SELECT --</option>`;
+
   for(let i=1;i<=10;i++){
-    select.innerHTML += `<option value="${i}">Priority ${i}</option>`;
+
+    select.innerHTML +=
+    `<option value="${i}">
+      Priority ${i}
+    </option>`;
+
   }
 }
 
+
+/* ================= LIVE TIME ================= */
+
 function updateLiveTime(){
+
   const now = new Date();
-  const t = document.getElementById("topLiveTime");
-  const sh = document.getElementById("topLiveShift");
-  if(t){ t.textContent = now.toLocaleTimeString(); }
-  const m = now.getHours()*60 + now.getMinutes();
-  let sn = (m>=465 && m<975)? "Shift A" : (m>=975 && m<1440)? "Shift B" : "Shift C";
-  if(sh){ sh.textContent = "Shift: "+sn; }
+
+  const t =
+  document.getElementById("topLiveTime");
+
+  const sh =
+  document.getElementById("topLiveShift");
+
+  if(t){
+    t.textContent =
+    now.toLocaleTimeString();
+  }
+
+  const m =
+  now.getHours()*60 +
+  now.getMinutes();
+
+  let sn =
+  (m>=465 && m<975)
+  ? "Shift A"
+  : (m>=975 && m<1440)
+  ? "Shift B"
+  : "Shift C";
+
+  if(sh){
+    sh.textContent =
+    "Shift: "+sn;
+  }
+  const ht=document.getElementById("heroTime");
+  const hd=document.getElementById("heroDate");
+  if(ht) ht.textContent=now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
+  if(hd) hd.textContent=now.toLocaleDateString("en-IN",{weekday:"long",day:"2-digit",month:"short",year:"numeric"});
 }
 
 setInterval(updateLiveTime,1000);
+
 updateLiveTime();
 
+
+/* ================= START ================= */
+
 window.addEventListener("DOMContentLoaded",()=>{
+
   loadMachineList();
   loadPriority();
-  const u = localStorage.getItem("sutom_user");
+
+  const u =
+  localStorage.getItem("sutom_user");
+
   if(u){
+
     try{
-      window.currentUser = JSON.parse(u);
+
+      window.currentUser =
+      JSON.parse(u);
+
       loadDashboard(window.currentUser);
+
     }catch{
+
       localStorage.removeItem("sutom_user");
+
     }
+
   }
-  const dateInput = document.getElementById("setupDate");
+
+  const dateInput =
+  document.getElementById("setupDate");
+
   if(dateInput){
-    dateInput.value = new Date().toISOString().split("T")[0];
+
+    dateInput.value =
+    new Date().toISOString().split("T")[0];
+
   }
+
 
   dbRef.on("value",snapshot=>{
-    const data = snapshot.val();
+
+    const data =
+    snapshot.val();
+
     if(data){
-      window.allSetups = Object.values(data).map(x=>x).sort((a,b)=>(b.timestampRegistered||0)-(a.timestampRegistered||0));
+
+      window.allSetups =
+      Object.values(data)
+      .map(x=>x)
+      .sort(
+        (a,b)=>
+        (b.timestampRegistered||0) -
+        (a.timestampRegistered||0)
+      );
+
     }else{
+
       window.allSetups=[];
+
     }
+
     window.renderAllViews();
+
     checkDepartmentNotifications();
+
   });
+
 });
 
+
+/* ================= LOGIN ================= */
+
 function handleLogin(e){
+
   e.preventDefault();
+
   window.currentUser={
-    name: document.getElementById("loginName").value.trim(),
-    id: document.getElementById("loginId").value.trim(),
-    dept: document.getElementById("loginDept").value
+
+    name:
+    document.getElementById("loginName").value.trim(),
+
+    id:
+    document.getElementById("loginId").value.trim(),
+
+    dept:
+    document.getElementById("loginDept").value
+
   };
-  localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
+
+  localStorage.setItem(
+    "sutom_user",
+    JSON.stringify(window.currentUser)
+  );
+
   loadDashboard(window.currentUser);
 }
 
+
 function loadDashboard(user){
-  document.getElementById("authSection").classList.add("hidden");
-  document.getElementById("dashboardSection").classList.remove("hidden");
-  document.getElementById("dashboardSection").classList.add("flex");
-  document.getElementById("userInfo").classList.remove("hidden");
-  document.getElementById("userInfo").classList.add("flex");
-  document.getElementById("userBadge").textContent = `${user.name} (${user.dept.toUpperCase()})`;
+
+  document.getElementById("authSection")
+  .classList.add("hidden");
+
+  document.getElementById("dashboardSection")
+  .classList.remove("hidden");
+
+  document.getElementById("dashboardSection")
+  .classList.add("flex");
+
+  document.getElementById("userInfo")
+  .classList.remove("hidden");
+
+  document.getElementById("userInfo")
+  .classList.add("flex");
+
+  const hu=document.getElementById("headerUserName");
+  const hd=document.getElementById("headerUserDept");
+  if(hu) hu.textContent=user.name||"User";
+  if(hd) hd.textContent=(user.dept||"").toUpperCase();
+
   showDepartmentTab(user.dept);
+
 }
+
 
 function handleLogout(){
+
   localStorage.removeItem("sutom_user");
+
   window.currentUser=null;
-  document.getElementById("authSection").classList.remove("hidden");
-  document.getElementById("dashboardSection").classList.add("hidden");
-  document.getElementById("userInfo").classList.add("hidden");
+
+  document.getElementById("authSection")
+  .classList.remove("hidden");
+
+  document.getElementById("dashboardSection")
+  .classList.add("hidden");
+
+  document.getElementById("userInfo")
+  .classList.add("hidden");
+  const hu=document.getElementById("headerUserName");
+  const hd=document.getElementById("headerUserDept");
+  if(hu) hu.textContent="User";
+  if(hd) hd.textContent="Department";
+
 }
+
+
+/* ================= TABS ================= */
 
 function showDepartmentTab(deptId){
-  document.querySelectorAll(".tab-content").forEach(el=>el.classList.add("hidden"));
-  const tab = document.getElementById("tab-"+deptId);
-  if(tab){ tab.classList.remove("hidden"); }
+
+  document
+  .querySelectorAll(".tab-content")
+  .forEach(el=>
+    el.classList.add("hidden")
+  );
+
+  const tab =
+  document.getElementById("tab-"+deptId);
+
+  if(tab){
+
+    tab.classList.remove("hidden");
+
+  }
+
   window.renderAllViews();
+
 }
+
+
+/* ================= SETUP FORM ================= */
 
 function toggleSetupForm(show){
-  const card = document.getElementById("setupFormCard");
+
+  const card =
+  document.getElementById("setupFormCard");
+
   if(!card) return;
-  if(show) card.classList.remove("hidden");
-  else card.classList.add("hidden");
+
+  if(show)
+    card.classList.remove("hidden");
+  else
+    card.classList.add("hidden");
+
 }
+
 
 function openSetterModule(key){
+
   if(key==="register"){
+
     toggleSetupForm(true);
-    document.getElementById("setupFormCard").scrollIntoView({behavior:"smooth"});
+
+    document
+    .getElementById("setupFormCard")
+    .scrollIntoView({
+      behavior:"smooth"
+    });
+
   }else{
-    window.currentExcelFilter = key;
+
+    window.currentExcelFilter =
+    key;
+
     window.renderSetterExcelTable(key);
+
   }
+
 }
 
+
+/* ================= SAMPLE ================= */
+
 function emptySample(){
+
   return {
-    setterStart:null, setterEnd:null, cutTime:null,
-    cmmStart:null, cmmEnd:null,
-    qualityStart:null, qualityEnd:null, result:null
+
+    setterStart:null,
+    setterEnd:null,
+    cutTime:null,
+
+    cmmStart:null,
+    cmmEnd:null,
+
+    qualityStart:null,
+    qualityEnd:null,
+
+    result:null
+
   };
+
 }
+
+
+/* ================= DOUBLE SUBMIT ================= */
 
 let isSubmitting=false;
 
+
 function handleSetterSubmit(e){
+
   e.preventDefault();
+
   if(isSubmitting) return;
+
   isSubmitting=true;
-  const submitBtn = document.getElementById("submitBtn");
+
+  const submitBtn =
+  document.getElementById("submitBtn");
+
   if(submitBtn){
+
     submitBtn.disabled=true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
+
+    submitBtn.innerHTML =
+    '<i class="fas fa-spinner fa-spin mr-2"></i> Submitting...';
+
   }
 
-  const now = new Date();
-  const newKey = dbRef.push().key;
-  const setupId = "ST-"+Date.now().toString().slice(-6);
-  const setupType = document.getElementById("setupType").value;
-  const machineName = document.getElementById("machineName").value;
-  const isShort = setupType==="Short";
+
+  const now =
+  new Date();
+
+  const newKey =
+  dbRef.push().key;
+
+  const setupId =
+  "ST-"+Date.now().toString().slice(-6);
+
+  const setupType =
+  document.getElementById("setupType").value;
+
+  const machineName =
+  document.getElementById("machineName").value;
+
+  const isShort =
+  setupType==="Short";
+
 
   const newItem={
+
     firebaseKey:newKey,
+
     id:setupId,
+
     machineName:machineName,
-    partName: document.getElementById("partName").value.trim(),
-    partNo: document.getElementById("partNo").value.trim(),
-    fixtureNo: document.getElementById("fixtureNo").value.trim(),
-    fixtureSerialNo: document.getElementById("fixtureSerialNo").value.trim(),
+
+    partName:
+    document.getElementById("partName").value.trim(),
+
+    partNo:
+    document.getElementById("partNo").value.trim(),
+
+    fixtureNo:
+    document.getElementById("fixtureNo").value.trim(),
+
+    fixtureSerialNo:
+    document.getElementById("fixtureSerialNo").value.trim(),
+
     setupType:setupType,
-    setupDate: document.getElementById("setupDate").value,
-    shift: document.getElementById("setupShift").value,
-    pallet: document.getElementById("pallet").value,
-    priority: document.getElementById("priority").value,
+
+    setupDate:
+    document.getElementById("setupDate").value,
+
+    shift:
+    document.getElementById("setupShift").value,
+
+    pallet:
+    document.getElementById("pallet").value,
+
+    priority:
+    document.getElementById("priority").value,
+
     toolRemark:"",
+
     toolingReady:isShort,
     fixtureReady:isShort,
-    availableFixtureSerialNo: isShort ? document.getElementById("fixtureSerialNo").value.trim() : "",
-    availableFixtureSerialOptions: isShort ? [document.getElementById("fixtureSerialNo").value.trim()] : [],
-    selectedFixtureSerialNo: isShort ? document.getElementById("fixtureSerialNo").value.trim() : "",
-    registeredBy: window.currentUser ? window.currentUser.name : "",
-    registeredById: window.currentUser ? window.currentUser.id : "",
-    timestampRegistered: now.getTime(),
-    timeRegistered: now.toLocaleTimeString(),
-    toolStart: isShort ? "N/A (Short)" : null,
-    toolEnd: isShort ? "N/A (Short)" : null,
+
+    availableFixtureSerialNo:
+    isShort
+    ? document.getElementById("fixtureSerialNo").value.trim()
+    : "",
+
+    availableFixtureSerialOptions:
+    isShort
+    ? [document.getElementById("fixtureSerialNo").value.trim()]
+    : [],
+
+    selectedFixtureSerialNo:
+    isShort
+    ? document.getElementById("fixtureSerialNo").value.trim()
+    : "",
+
+    registeredBy:
+    window.currentUser
+    ? window.currentUser.name
+    : "",
+
+    registeredById:
+    window.currentUser
+    ? window.currentUser.id
+    : "",
+
+    timestampRegistered:
+    now.getTime(),
+
+    timeRegistered:
+    now.toLocaleTimeString(),
+
+    toolStart:
+    isShort
+    ? "N/A (Short)"
+    : null,
+
+    toolEnd:
+    isShort
+    ? "N/A (Short)"
+    : null,
+
     setupStarted:false,
+
     sampleCount:1,
-    s1:emptySample(), s2:emptySample(), s3:emptySample(), s4:emptySample(),
-    qualityStatus: isShort ? "REGISTERED - SETTER PENDING" : "TOOL ROOM PENDING",
-    stage: isShort ? "Setter Pending" : "Tool Room Pending",
+
+    s1:emptySample(),
+    s2:emptySample(),
+    s3:emptySample(),
+    s4:emptySample(),
+
+    qualityStatus:
+    isShort
+    ? "REGISTERED - SETTER PENDING"
+    : "TOOL ROOM PENDING",
+
+    stage:
+    isShort
+    ? "Setter Pending"
+    : "Tool Room Pending",
+
     timeSopDone:null,
+
     totalTimeSpent:"Pending",
+
+
+    /* ================= NOTIFICATION SYSTEM ================= */
+
     notifications:{
-      toolroom:{ notified:true, read:false, actionReady:!isShort },
-      cmm:{ notified:true, read:false, actionReady:false },
-      setter:{ notified:false, read:false, actionReady:isShort },
-      quality:{ notified:false, read:false, actionReady:false }
+
+      toolroom:{
+        notified:true,
+        read:false,
+        actionReady:!isShort
+      },
+
+      cmm:{
+        notified:true,
+        read:false,
+        actionReady:false
+      },
+
+      setter:{
+        notified:false,
+        read:false,
+        actionReady:isShort
+      },
+
+      quality:{
+        notified:false,
+        read:false,
+        actionReady:false
+      }
+
     }
+
   };
 
-  dbRef.child(newKey).set(newItem).then(()=>{
-    triggerAlert("DEPARTMENT NOTIFICATION", `Setup ${setupId} registered. Tool Room आणि CMM Room ला notification पाठवले आहे.`);
-    document.getElementById("setterForm").reset();
-    document.getElementById("setupDate").value = new Date().toISOString().split("T")[0];
+
+  dbRef
+  .child(newKey)
+  .set(newItem)
+  .then(()=>{
+
+    triggerAlert(
+      "DEPARTMENT NOTIFICATION",
+      `Setup ${setupId} registered. Tool Room आणि CMM Room ला notification पाठवले आहे.`
+    );
+
+    document
+    .getElementById("setterForm")
+    .reset();
+
+    document
+    .getElementById("setupDate")
+    .value =
+    new Date()
+    .toISOString()
+    .split("T")[0];
+
     toggleSetupForm(false);
-  }).catch(err=>{
-    alert("Firebase Error: "+err.message);
-  }).finally(()=>{
+
+  })
+  .catch(err=>{
+
+    alert(
+      "Firebase Error: "+
+      err.message
+    );
+
+  })
+  .finally(()=>{
+
     isSubmitting=false;
+
     if(submitBtn){
+
       submitBtn.disabled=false;
-      submitBtn.innerHTML = '<i class="fas fa-play mr-2"></i> REGISTER SETUP & START WORKFLOW';
+
+      submitBtn.innerHTML =
+      '<i class="fas fa-play mr-2"></i> REGISTER SETUP & START WORKFLOW';
+
     }
+
   });
+
 }
+
+
+/* ================= TIME ================= */
 
 function currentTime(){
-  return new Date().toLocaleTimeString("en-IN", {hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:true});
+
+  return new Date()
+  .toLocaleTimeString(
+    "en-IN",
+    {
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit",
+      hour12:true
+    }
+  );
+
 }
+
 
 function parseTimeToday(time){
-  if(!time || time.includes("N/A")) return null;
-  const d = new Date();
-  const match = time.match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
+
+  if(
+    !time ||
+    time.includes("N/A")
+  )
+  return null;
+
+  const d =
+  new Date();
+
+  const match =
+  time.match(
+    /(\d+):(\d+):(\d+)\s*(AM|PM)?/i
+  );
+
   if(!match) return null;
-  let h = parseInt(match[1]);
-  const m = parseInt(match[2]);
-  const s = parseInt(match[3]);
-  const ap = match[4];
+
+  let h =
+  parseInt(match[1]);
+
+  const m =
+  parseInt(match[2]);
+
+  const s =
+  parseInt(match[3]);
+
+  const ap =
+  match[4];
+
   if(ap){
-    if(ap.toUpperCase()==="PM" && h<12) h+=12;
-    if(ap.toUpperCase()==="AM" && h===12) h=0;
+
+    if(
+      ap.toUpperCase()==="PM" &&
+      h<12
+    )
+      h+=12;
+
+    if(
+      ap.toUpperCase()==="AM" &&
+      h===12
+    )
+      h=0;
+
   }
+
   d.setHours(h,m,s,0);
+
   return d;
+
 }
+
 
 function durationMinutes(start,end){
-  if(!start || !end || start.includes("N/A") || end.includes("N/A")) return "0 min";
-  const a = parseTimeToday(start);
-  const b = parseTimeToday(end);
-  if(!a || !b) return "-";
-  let diff = Math.floor((b-a)/60000);
-  if(diff<0) diff+=1440;
+
+  if(
+    !start ||
+    !end ||
+    start.includes("N/A") ||
+    end.includes("N/A")
+  )
+    return "0 min";
+
+  const a =
+  parseTimeToday(start);
+
+  const b =
+  parseTimeToday(end);
+
+  if(!a || !b)
+    return "-";
+
+  let diff =
+  Math.floor((b-a)/60000);
+
+  if(diff<0)
+    diff+=1440;
+
   return diff+" min";
+
 }
+
 
 function totalSetupMinutes(s){
-  if(!s.timestampRegistered) return "-";
-  if(s.qualityStatus!=="SOP DONE" || !s.timeSopDone) return "-";
-  const end = parseTimeToday(s.timeSopDone);
-  if(!end) return "-";
-  const start = new Date(s.timestampRegistered);
-  let diff = Math.floor((end-start)/60000);
-  if(diff<0) return "-";
+
+  if(!s.timestampRegistered)
+    return "-";
+
+  if(
+    s.qualityStatus!=="SOP DONE" ||
+    !s.timeSopDone
+  )
+    return "-";
+
+  const end =
+  parseTimeToday(s.timeSopDone);
+
+  if(!end)
+    return "-";
+
+  const start =
+  new Date(s.timestampRegistered);
+
+  let diff =
+  Math.floor((end-start)/60000);
+
+  if(diff<0)
+    return "-";
+
   return diff+" min";
+
 }
+
+
+/* ================= SAMPLE GET ================= */
 
 function getSample(s,n){
-  if(!s["s"+n]){ s["s"+n] = emptySample(); }
+
+  if(!s["s"+n]){
+
+    s["s"+n] =
+    emptySample();
+
+  }
+
   return s["s"+n];
+
 }
 
-window.setterStartSetup = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ===================================================== */
+/* ================= WORKFLOW ACTIONS ================== */
+/* ===================================================== */
+
+
+/* ================= SETTER FIXTURE SELECTION ================= */
+
+window.saveSetterFixtureSelection =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(x=>x.firebaseKey===firebaseKey);
+
   if(!s) return;
-  if(s.setupType==="Long" && !(s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo)){
-    alert("Tooling आणि Fixture Ready होऊन Available Fixture No. अपडेट झाल्यानंतरच Setter Setup Start करू शकतो.");
+
+  const checked =
+  document.querySelector(`input[name="fixture_pick_${firebaseKey}"]:checked`);
+
+  const manual =
+  document.getElementById(`manual_fixture_${firebaseKey}`);
+
+  const selected =
+  checked ? checked.value.trim() : (manual ? manual.value.trim() : "");
+
+  if(!selected){
+    alert("Available Fixture No. मधून एक Fixture select करा किंवा Manual Fixture No. टाका.");
     return;
   }
-  const n = s.sampleCount||1;
+
+  dbRef.child(firebaseKey).update({
+    selectedFixtureSerialNo:selected,
+    availableFixtureSerialNo:selected,
+    toolRemark:selected,
+    "notifications/setter/read":true
+  }).then(()=>{
+    triggerAlert(
+      "FIXTURE SELECTED",
+      `${s.machineName} - ${s.partName} साठी Fixture No. ${selected} Setter ने select केला.`
+    );
+  });
+
+};
+
+
+/* ================= SETTER START ================= */
+
+window.setterStartSetup =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
+  if(!s) return;
+
+
+  /* LONG SETUP MUST HAVE TOOL ROOM READY */
+
+  if(
+    s.setupType==="Long" &&
+    !(
+      s.toolingReady &&
+      s.fixtureReady &&
+      (s.selectedFixtureSerialNo || s.availableFixtureSerialNo)
+    )
+  ){
+
+    alert(
+      "Tooling आणि Fixture Ready असून Available Fixture No. select/input केल्यानंतरच Setter Setup Start करू शकतो."
+    );
+
+    return;
+
+  }
+
+
+  const n =
+  s.sampleCount||1;
+
   const updates={
+
     setupStarted:true,
-    stage:`Sample #${n} - SETTER`,
-    qualityStatus:`Sample #${n} SETTER RUNNING`,
-    "notifications/setter/read":true,
-    "notifications/setter/actionReady":false
+
+    stage:
+    `Sample #${n} - SETTER`,
+
+    qualityStatus:
+    `Sample #${n} SETTER RUNNING`,
+
+    "notifications/setter/read":
+    true,
+
+    "notifications/setter/actionReady":
+    false
+
   };
-  const sample = getSample(s,n);
-  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
-  dbRef.child(firebaseKey).update(updates);
+
+
+  const sample =
+  getSample(s,n);
+
+  if(!sample.setterStart){
+
+    updates[`s${n}/setterStart`] =
+    currentTime();
+
+  }
+
+
+  dbRef
+  .child(firebaseKey)
+  .update(updates);
+
 };
 
-window.setterEndSample = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ================= SETTER END ================= */
+
+window.setterEndSample =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  const n = s.sampleCount||1;
-  const sample = getSample(s,n);
+
+
+  const n =
+  s.sampleCount||1;
+
+  const sample =
+  getSample(s,n);
+
   const updates={};
-  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
-  updates[`s${n}/setterEnd`] = currentTime();
-  updates[`s${n}/cutTime`] = currentTime();
-  updates.stage = `Sample #${n} - CMM Pending`;
-  updates.qualityStatus = `Sample #${n} CMM PENDING`;
-  updates["notifications/cmm/notified"] = true;
-  updates["notifications/cmm/read"] = false;
-  updates["notifications/cmm/actionReady"] = true;
-  dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("CMM ROOM", `Sample #${n} completed by Setter. ${s.machineName} CMM Room ला पाठवा. CMM Action आता available आहे.`);
+
+
+  if(!sample.setterStart){
+
+    updates[`s${n}/setterStart`] =
+    currentTime();
+
+  }
+
+
+  updates[`s${n}/setterEnd`] =
+  currentTime();
+
+  updates[`s${n}/cutTime`] =
+  currentTime();
+
+  updates.stage =
+  `Sample #${n} - CMM Pending`;
+
+  updates.qualityStatus =
+  `Sample #${n} CMM PENDING`;
+
+
+  /* CMM ACTION READY */
+
+  updates["notifications/cmm/notified"] =
+  true;
+
+  updates["notifications/cmm/read"] =
+  false;
+
+  updates["notifications/cmm/actionReady"] =
+  true;
+
+
+  dbRef
+  .child(firebaseKey)
+  .update(updates)
+  .then(()=>{
+
+    triggerAlert(
+      "CMM ROOM",
+      `Sample #${n} completed by Setter. ${s.machineName} CMM Room ला पाठवा. CMM Action आता available आहे.`
+    );
+
   });
+
 };
 
-window.toolRoomStart = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ===================================================== */
+/* ================= TOOL ROOM ========================== */
+/* ===================================================== */
+
+
+/* TOOL START */
+
+window.toolRoomStart =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  dbRef.child(firebaseKey).update({
-    toolStart: currentTime(),
-    stage: "Tool Room Running",
-    qualityStatus: "TOOL ROOM RUNNING",
-    "notifications/toolroom/read": true
+
+
+  dbRef
+  .child(firebaseKey)
+  .update({
+
+    toolStart:
+    currentTime(),
+
+    stage:
+    "Tool Room Running",
+
+    qualityStatus:
+    "TOOL ROOM RUNNING",
+
+    "notifications/toolroom/read":
+    true
+
   });
+
 };
 
-window.toolRoomEnd = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
-  if(!s) return;
-  const tooling = document.getElementById("tooling_"+firebaseKey);
-  const fixture = document.getElementById("fixture_"+firebaseKey);
-  const serial = document.getElementById("remark_"+firebaseKey);
-  const toolingReady = tooling ? tooling.checked : false;
-  const fixtureReady = fixture ? fixture.checked : false;
-  const serialNo = serial ? serial.value.trim() : "";
 
-  if(!toolingReady){ alert("Tooling Ready confirm करा."); return; }
-  if(!fixtureReady){ alert("Fixture Ready confirm करा."); return; }
-  if(!serialNo){ alert("Available Fixture Serial Number टाका."); return; }
+/* TOOL ROOM END / READY */
+
+window.toolRoomEnd =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
+  if(!s) return;
+
+
+  const tooling =
+  document.getElementById(
+    "tooling_"+firebaseKey
+  );
+
+  const fixture =
+  document.getElementById(
+    "fixture_"+firebaseKey
+  );
+
+  const serial =
+  document.getElementById(
+    "remark_"+firebaseKey
+  );
+
+
+  const toolingReady =
+  tooling ? tooling.checked : false;
+
+  const fixtureReady =
+  fixture ? fixture.checked : false;
+
+  const serialText =
+  serial
+  ? serial.value.trim()
+  : "";
+
+  const serialOptions =
+  serialText
+  ? serialText.split(/[,\n]+/).map(v=>v.trim()).filter(Boolean)
+  : [];
+
+  const serialNo = serialOptions[0] || "";
+
+
+  if(!toolingReady){
+
+    alert(
+      "Tooling Ready confirm करा."
+    );
+
+    return;
+
+  }
+
+
+  if(!fixtureReady){
+
+    alert(
+      "Fixture Ready confirm करा."
+    );
+
+    return;
+
+  }
+
+
+  if(!serialNo){
+
+    alert(
+      "Available Fixture Serial Number टाका."
+    );
+
+    return;
+
+  }
+
 
   const updates={
-    toolEnd: currentTime(),
+
+    toolEnd:
+    currentTime(),
+
     toolingReady:true,
+
     fixtureReady:true,
-    availableFixtureSerialNo: serialNo,
-    toolRemark: serialNo,
-    stage: "Ready For Setter",
-    qualityStatus: "READY FOR SETUP",
-    "notifications/setter/notified": true,
-    "notifications/setter/read": false,
-    "notifications/setter/actionReady": true,
-    "notifications/toolroom/actionReady": false
+
+    availableFixtureSerialNo:
+    serialNo,
+
+    availableFixtureSerialOptions:
+    serialOptions,
+
+    selectedFixtureSerialNo:
+    "",
+
+    toolRemark:
+    serialNo,
+
+    stage:
+    "Ready For Setter",
+
+    qualityStatus:
+    "READY FOR SETUP",
+
+    /* SETTER NOTIFICATION */
+
+    "notifications/setter/notified":
+    true,
+
+    "notifications/setter/read":
+    false,
+
+    "notifications/setter/actionReady":
+    true,
+
+    /* TOOL ROOM DONE */
+
+    "notifications/toolroom/actionReady":
+    false
+
   };
 
-  dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("SETTER NOTIFICATION", `Tooling & Fixture READY. Available Fixture Serial No: ${serialNo}. ${s.machineName} साठी Setter Setup Start करू शकतो.`);
+
+  dbRef
+  .child(firebaseKey)
+  .update(updates)
+  .then(()=>{
+
+    triggerAlert(
+      "SETTER NOTIFICATION",
+      `Tooling & Fixture READY. Available Fixture Serial No: ${serialNo}. ${s.machineName} साठी Setter Setup Start करू शकतो.`
+    );
+
   });
+
 };
 
-window.updateToolRemarkInput = function(firebaseKey,val){
-  dbRef.child(firebaseKey).update({ toolRemark:val });
+
+/* TOOL REMARK */
+
+window.updateToolRemarkInput =
+function(firebaseKey,val){
+
+  dbRef
+  .child(firebaseKey)
+  .update({
+    toolRemark:val
+  });
+
 };
 
-window.cmmStart = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ===================================================== */
+/* ================= CMM ROOM =========================== */
+/* ===================================================== */
+
+window.cmmStart =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  if(!s.notifications || !s.notifications.cmm || !s.notifications.cmm.actionReady){
-    alert("Setter चे काम complete होऊन CMM notification येईपर्यंत Action उपलब्ध नाही.");
+
+
+  /* CMM ACTION GATE */
+
+  if(
+    !s.notifications ||
+    !s.notifications.cmm ||
+    !s.notifications.cmm.actionReady
+  ){
+
+    alert(
+      "Setter चे काम complete होऊन CMM notification येईपर्यंत Action उपलब्ध नाही."
+    );
+
     return;
+
   }
-  const n = s.sampleCount||1;
-  dbRef.child(firebaseKey).update({
-    [`s${n}/cmmStart`]: currentTime(),
-    stage: `Sample #${n} - CMM Running`,
-    qualityStatus: `Sample #${n} CMM RUNNING`,
-    "notifications/cmm/read": true,
-    "notifications/cmm/actionReady": false
+
+
+  const n =
+  s.sampleCount||1;
+
+
+  dbRef
+  .child(firebaseKey)
+  .update({
+
+    [`s${n}/cmmStart`]:
+    currentTime(),
+
+    stage:
+    `Sample #${n} - CMM Running`,
+
+    qualityStatus:
+    `Sample #${n} CMM RUNNING`,
+
+    "notifications/cmm/read":
+    true,
+
+    "notifications/cmm/actionReady":
+    false
+
   });
+
 };
 
-window.cmmEnd = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* CMM END */
+
+window.cmmEnd =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  const n = s.sampleCount||1;
-  const sample = getSample(s,n);
+
+
+  const n =
+  s.sampleCount||1;
+
+  const sample =
+  getSample(s,n);
+
   const updates={};
-  if(!sample.cmmStart){ updates[`s${n}/cmmStart`] = currentTime(); }
-  updates[`s${n}/cmmEnd`] = currentTime();
-  updates.stage = `Sample #${n} - Quality Pending`;
-  updates.qualityStatus = `Sample #${n} QUALITY PENDING`;
-  updates["notifications/quality/notified"] = true;
-  updates["notifications/quality/read"] = false;
-  updates["notifications/quality/actionReady"] = true;
-  dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("QUALITY NOTIFICATION", `Sample #${n} CMM inspection completed. ${s.machineName} Quality Department ला पाठवा.`);
+
+
+  if(!sample.cmmStart){
+
+    updates[`s${n}/cmmStart`] =
+    currentTime();
+
+  }
+
+
+  updates[`s${n}/cmmEnd`] =
+  currentTime();
+
+  updates.stage =
+  `Sample #${n} - Quality Pending`;
+
+  updates.qualityStatus =
+  `Sample #${n} QUALITY PENDING`;
+
+
+  /* QUALITY NOTIFICATION */
+
+  updates["notifications/quality/notified"] =
+  true;
+
+  updates["notifications/quality/read"] =
+  false;
+
+  updates["notifications/quality/actionReady"] =
+  true;
+
+
+  dbRef
+  .child(firebaseKey)
+  .update(updates)
+  .then(()=>{
+
+    triggerAlert(
+      "QUALITY NOTIFICATION",
+      `Sample #${n} CMM inspection completed. ${s.machineName} Quality Department ला पाठवा.`
+    );
+
   });
+
 };
 
-window.qualityStart = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ===================================================== */
+/* ================= QUALITY ============================= */
+/* ===================================================== */
+
+window.qualityStart =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  if(!s.notifications || !s.notifications.quality || !s.notifications.quality.actionReady){
-    alert("CMM inspection complete झाल्यावर Quality Action available होईल.");
+
+
+  if(
+    !s.notifications ||
+    !s.notifications.quality ||
+    !s.notifications.quality.actionReady
+  ){
+
+    alert(
+      "CMM inspection complete झाल्यावर Quality Action available होईल."
+    );
+
     return;
+
   }
-  const n = s.sampleCount||1;
-  dbRef.child(firebaseKey).update({
-    [`s${n}/qualityStart`]: currentTime(),
-    stage: `Sample #${n} - Quality Running`,
-    qualityStatus: `Sample #${n} QUALITY RUNNING`,
-    "notifications/quality/read": true,
-    "notifications/quality/actionReady": false
+
+
+  const n =
+  s.sampleCount||1;
+
+
+  dbRef
+  .child(firebaseKey)
+  .update({
+
+    [`s${n}/qualityStart`]:
+    currentTime(),
+
+    stage:
+    `Sample #${n} - Quality Running`,
+
+    qualityStatus:
+    `Sample #${n} QUALITY RUNNING`,
+
+    "notifications/quality/read":
+    true,
+
+    "notifications/quality/actionReady":
+    false
+
   });
+
 };
 
-window.qualityEnd = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* QUALITY END */
+
+window.qualityEnd =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  const n = s.sampleCount||1;
-  const sample = getSample(s,n);
+
+
+  const n =
+  s.sampleCount||1;
+
+  const sample =
+  getSample(s,n);
+
   const updates={};
-  if(!sample.qualityStart){ updates[`s${n}/qualityStart`] = currentTime(); }
-  updates[`s${n}/qualityEnd`] = currentTime();
-  updates.stage = `Sample #${n} - Quality Decision`;
-  updates.qualityStatus = `Sample #${n} READY FOR DECISION`;
-  dbRef.child(firebaseKey).update(updates);
+
+
+  if(!sample.qualityStart){
+
+    updates[`s${n}/qualityStart`] =
+    currentTime();
+
+  }
+
+
+  updates[`s${n}/qualityEnd`] =
+  currentTime();
+
+  updates.stage =
+  `Sample #${n} - Quality Decision`;
+
+  updates.qualityStatus =
+  `Sample #${n} READY FOR DECISION`;
+
+
+  dbRef
+  .child(firebaseKey)
+  .update(updates);
+
 };
 
-window.qualityApprove = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ================= QUALITY APPROVE ================= */
+
+window.qualityApprove =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  const n = s.sampleCount||1;
-  const doneTime = currentTime();
+
+
+  const n =
+  s.sampleCount||1;
+
+  const doneTime =
+  currentTime();
+
+
   const updates={
-    [`s${n}/result`]: "SOP Approved",
-    qualityStatus: "SOP DONE",
-    stage: "SOP APPROVED",
-    timeSopDone: doneTime
+
+    [`s${n}/result`]:
+    "SOP Approved",
+
+    qualityStatus:
+    "SOP DONE",
+
+    stage:
+    "SOP APPROVED",
+
+    timeSopDone:
+    doneTime
+
   };
-  updates.totalTimeSpent = totalSetupMinutes({...s, qualityStatus:"SOP DONE", timeSopDone:doneTime});
-  dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("SOP APPROVED", `${s.machineName} Sample #${n} approved successfully.`);
+
+
+  updates.totalTimeSpent =
+  totalSetupMinutes({
+    ...s,
+    qualityStatus:"SOP DONE",
+    timeSopDone:doneTime
   });
+
+
+  dbRef
+  .child(firebaseKey)
+  .update(updates)
+  .then(()=>{
+
+    triggerAlert(
+      "SOP APPROVED",
+      `${s.machineName} Sample #${n} approved successfully.`
+    );
+
+  });
+
 };
 
-window.qualityCorrection = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ================= CORRECTION ================= */
+
+window.qualityCorrection =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  const n = s.sampleCount||1;
-  if(n>=4){ alert("4th Sample correction limit reached."); return; }
-  const next = n+1;
+
+
+  const n =
+  s.sampleCount||1;
+
+
+  if(n>=4){
+
+    alert(
+      "4th Sample correction limit reached."
+    );
+
+    return;
+
+  }
+
+
+  const next =
+  n+1;
+
+
   const updates={
-    [`s${n}/result`]: "Correction Required",
-    sampleCount: next,
-    stage: `Sample #${next} - Setter Pending`,
-    qualityStatus: `Sample #${next} CORRECTION REQUIRED`,
-    "notifications/setter/notified": true,
-    "notifications/setter/read": false,
-    "notifications/setter/actionReady": true
+
+    [`s${n}/result`]:
+    "Correction Required",
+
+    sampleCount:
+    next,
+
+    stage:
+    `Sample #${next} - Setter Pending`,
+
+    qualityStatus:
+    `Sample #${next} CORRECTION REQUIRED`,
+
+    /* NEXT SAMPLE SETTER ACTION */
+
+    "notifications/setter/notified":
+    true,
+
+    "notifications/setter/read":
+    false,
+
+    "notifications/setter/actionReady":
+    true
+
   };
-  dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("CORRECTION", `Correction required for ${s.machineName}. Shifted to Sample #${next}. Setter ला notification पाठवले आहे.`);
+
+
+  dbRef
+  .child(firebaseKey)
+  .update(updates)
+  .then(()=>{
+
+    triggerAlert(
+      "CORRECTION",
+      `Correction required for ${s.machineName}. Shifted to Sample #${next}. Setter ला notification पाठवले आहे.`
+    );
+
   });
+
 };
 
-window.updateMetrics = function(){
-  const list = window.allSetups||[];
-  const el=(id,val)=>{ const e = document.getElementById(id); if(e) e.textContent=val; };
-  el("metric-all", list.length);
-  el("metric-ready", list.filter(s=>s.toolingReady && s.fixtureReady && !s.setupStarted).length);
-  el("metric-running", list.filter(s=>s.setupStarted && s.qualityStatus!=="SOP DONE").length);
-  el("metric-correction", list.filter(s=>String(s.qualityStatus||"").includes("CORRECTION")).length);
-  el("metric-approved", list.filter(s=>s.qualityStatus==="SOP DONE").length);
+
+/* ===================================================== */
+/* ================= METRICS ============================= */
+/* ===================================================== */
+
+window.updateMetrics =
+function(){
+
+  const list =
+  window.allSetups||[];
+
+  const el=(id,val)=>{
+
+    const e =
+    document.getElementById(id);
+
+    if(e)
+      e.textContent=val;
+
+  };
+
+
+  el(
+    "metric-all",
+    list.length
+  );
+
+
+  el(
+    "metric-ready",
+    list.filter(
+      s=>
+      s.toolingReady &&
+      s.fixtureReady &&
+      !s.setupStarted
+    ).length
+  );
+
+
+  el(
+    "metric-running",
+    list.filter(
+      s=>
+      s.setupStarted &&
+      s.qualityStatus!=="SOP DONE"
+    ).length
+  );
+
+
+  el(
+    "metric-correction",
+    list.filter(
+      s=>
+      String(
+        s.qualityStatus||""
+      ).includes("CORRECTION")
+    ).length
+  );
+
+
+  el(
+    "metric-approved",
+    list.filter(
+      s=>
+      s.qualityStatus==="SOP DONE"
+    ).length
+  );
+
 };
+
+
+/* ===================================================== */
+/* ================= DEPARTMENT COUNTS =================== */
+/* ===================================================== */
 
 function updateDepartmentCounts(){
-  const list = window.allSetups||[];
-  const longList = list.filter(s=>s.setupType==="Long" || !s.setupType);
-  const readyTool = longList.filter(s=>s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo).length;
-  const pendingTool = longList.length - readyTool;
-  setText("toolReadyCount", readyTool);
-  setText("toolPendingCount", pendingTool);
 
-  const cmmRegistered = list.filter(s=>s.notifications && s.notifications.cmm && s.notifications.cmm.notified && s.qualityStatus!=="SOP DONE").length;
-  const cmmRunning = list.filter(s=>{
-    const n=s.sampleCount||1; const x=getSample(s,n);
-    return (s.notifications && s.notifications.cmm && s.notifications.cmm.notified && x.cmmEnd==null && s.qualityStatus!=="SOP DONE");
-  }).length;
-  setText("cmmRegisteredCount", cmmRegistered);
-  setText("cmmRunningCount", cmmRunning);
+  const list =
+  window.allSetups||[];
 
-  const qApprove = list.filter(s=>s.qualityStatus==="SOP DONE").length;
-  const qPending = list.filter(s=>{
-    return (s.notifications && s.notifications.quality && s.notifications.quality.notified && s.qualityStatus!=="SOP DONE");
-  }).length;
-  setText("qualityApproveCount", qApprove);
-  setText("qualityPendingCount", qPending);
+
+  /* TOOL ROOM */
+
+  const longList =
+  list.filter(
+    s=>
+    s.setupType==="Long" ||
+    !s.setupType
+  );
+
+
+  const readyTool =
+  longList.filter(
+    s=>
+    s.toolingReady &&
+    s.fixtureReady &&
+    s.availableFixtureSerialNo
+  ).length;
+
+
+  const pendingTool =
+  longList.length -
+  readyTool;
+
+
+  setText(
+    "toolReadyCount",
+    readyTool
+  );
+
+  setText(
+    "toolPendingCount",
+    pendingTool
+  );
+
+
+  /* CMM */
+
+  const cmmRegistered =
+  list.filter(
+    s=>
+    s.notifications &&
+    s.notifications.cmm &&
+    s.notifications.cmm.notified &&
+    s.qualityStatus!=="SOP DONE"
+  ).length;
+
+
+  const cmmRunning =
+  list.filter(
+    s=>{
+      const n=s.sampleCount||1;
+      const x=getSample(s,n);
+
+      return (
+        s.notifications &&
+        s.notifications.cmm &&
+        s.notifications.cmm.notified &&
+        x.cmmEnd==null &&
+        s.qualityStatus!=="SOP DONE"
+      );
+    }
+  ).length;
+
+
+  setText(
+    "cmmRegisteredCount",
+    cmmRegistered
+  );
+
+  setText(
+    "cmmRunningCount",
+    cmmRunning
+  );
+
+
+  /* QUALITY */
+
+  const qApprove =
+  list.filter(
+    s=>s.qualityStatus==="SOP DONE"
+  ).length;
+
+
+  const qPending =
+  list.filter(
+    s=>{
+      return (
+        s.notifications &&
+        s.notifications.quality &&
+        s.notifications.quality.notified &&
+        s.qualityStatus!=="SOP DONE"
+      );
+    }
+  ).length;
+
+
+  setText(
+    "qualityApproveCount",
+    qApprove
+  );
+
+  setText(
+    "qualityPendingCount",
+    qPending
+  );
+
 }
 
-function setText(id,val){ const el = document.getElementById(id); if(el) el.textContent=val; }
 
-window.setToolroomFilter = function(filter){ window.toolroomFilter = filter; renderToolroom(); };
-window.setCmmFilter = function(filter){ window.cmmFilter = filter; renderSTDRoom(); };
-window.setQualityFilter = function(filter){ window.qualityFilter = filter; renderQuality(); };
+function setText(id,val){
 
-window.exportSetterDataToExcel = function(){
-  const list = window.allSetups||[];
-  if(list.length===0){ alert("Export करण्यासाठी कोणताही डेटा उपलब्ध नाही!"); return; }
-  let csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "Setup ID,Machine Name,Part Name,Part No,Fixture No,Required Fixture Serial No,Setup Type,Date,Shift,Pallet,Priority,Registered By,Total Status,Total Time\n";
-  list.forEach(s=>{
-    let row=[
-      s.id||"", `"${s.machineName||""}"`, `"${s.partName||""}"`, `"${s.partNo||""}"`,
-      `"${s.fixtureNo||""}"`, `"${s.availableFixtureSerialNo||s.fixtureSerialNo||""}"`,
-      s.setupType||"", s.setupDate||"", s.shift||"", s.pallet||"", s.priority||"",
-      `"${s.registeredBy||""}"`, `"${s.qualityStatus||""}"`, `"${s.totalTimeSpent||"Pending"}"`
-    ];
-    csvContent += row.join(",")+"\n";
-  });
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `SUTOM_Setter_Report_${new Date().toISOString().split('T')[0]}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const el =
+  document.getElementById(id);
+
+  if(el)
+    el.textContent=val;
+
+}
+
+
+/* ===================================================== */
+/* ================= FILTERS ============================= */
+/* ===================================================== */
+
+window.setToolroomFilter =
+function(filter){
+
+  window.toolroomFilter =
+  filter;
+
+  renderToolroom();
+
 };
+
+
+window.setCmmFilter =
+function(filter){
+
+  window.cmmFilter =
+  filter;
+
+  renderSTDRoom();
+
+};
+
+
+window.setQualityFilter =
+function(filter){
+
+  window.qualityFilter =
+  filter;
+
+  renderQuality();
+
+};
+
+
+/* ===================================================== */
+/* ================= EXCEL EXPORT ======================== */
+/* ===================================================== */
+
+window.exportSetterDataToExcel =
+function(){
+
+  const list =
+  window.allSetups||[];
+
+  if(list.length===0){
+
+    alert(
+      "Export करण्यासाठी कोणताही डेटा उपलब्ध नाही!"
+    );
+
+    return;
+
+  }
+
+
+  let csvContent =
+  "data:text/csv;charset=utf-8,";
+
+
+  csvContent +=
+  "Setup ID,Machine Name,Part Name,Part No,Fixture No,Setup Type,Date,Shift,Pallet,Priority,Registered By,Total Status,Total Time\n";
+
+
+  list.forEach(s=>{
+
+    let row=[
+
+      s.id||"",
+
+      `"${s.machineName||""}"`,
+
+      `"${s.partName||""}"`,
+
+      `"${s.partNo||""}"`,
+
+      `"${s.fixtureNo||""}"`,
+
+      s.setupType||"",
+
+      s.setupDate||"",
+
+      s.shift||"",
+
+      s.pallet||"",
+
+      s.priority||"",
+
+      `"${s.registeredBy||""}"`,
+
+      `"${s.qualityStatus||""}"`,
+
+      `"${s.totalTimeSpent||"Pending"}"`
+
+    ];
+
+    csvContent +=
+    row.join(",")+"\n";
+
+  });
+
+
+  const encodedUri =
+  encodeURI(csvContent);
+
+  const link =
+  document.createElement("a");
+
+  link.setAttribute(
+    "href",
+    encodedUri
+  );
+
+  link.setAttribute(
+    "download",
+    `SUTOM_Setter_Report_${new Date().toISOString().split('T')[0]}.csv`
+  );
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  document.body.removeChild(link);
+
+};
+
+
+/* ===================================================== */
+/* ================= SETTER TABLE ======================= */
+/* ===================================================== */
 
 window.renderSetterExcelTable = function(filterKey){
-  const tbody = document.getElementById("setterExcelTableBody");
-  const rowCount = document.getElementById("excelRowCount");
-  if(!tbody) return;
+  const container=document.getElementById("setterExcelTableBody");
+  const rowCount=document.getElementById("excelRowCount");
+  if(!container) return;
+  let list=window.allSetups||[];
+  if(filterKey==="ready") list=list.filter(s=>s.toolingReady&&s.fixtureReady&&!s.setupStarted);
+  else if(filterKey==="running") list=list.filter(s=>s.setupStarted&&s.qualityStatus!=="SOP DONE");
+  else if(filterKey==="correction") list=list.filter(s=>String(s.qualityStatus||"").includes("CORRECTION"));
+  else if(filterKey==="approved") list=list.filter(s=>s.qualityStatus==="SOP DONE");
+  rowCount.textContent=`Rows: ${list.length}`;
+  if(!list.length){container.innerHTML='<div class="setter-empty" style="grid-column:1/-1">No registered setup machines found.</div>';return;}
 
-  let list = window.allSetups||[];
+  container.innerHTML=list.map((s,idx)=>{
+    const n=s.sampleCount||1, x=getSample(s,n);
+    let statusClass="", status="WAITING";
+    if(s.qualityStatus==="SOP DONE"){statusClass="approved";status="SOP APPROVED";}
+    else if(String(s.qualityStatus||"").includes("CORRECTION")){statusClass="correction";status="CORRECTION";}
+    else if(s.setupStarted){statusClass="running";status="RUNNING";}
+    else if(s.toolingReady&&s.fixtureReady){statusClass="ready";status="READY";}
 
-  if(filterKey==="ready"){
-    list = list.filter(s=>s.toolingReady && s.fixtureReady && !s.setupStarted);
-  }else if(filterKey==="running"){
-    list = list.filter(s=>s.setupStarted && s.qualityStatus!=="SOP DONE");
-  }else if(filterKey==="correction"){
-    list = list.filter(s=>String(s.qualityStatus||"").includes("CORRECTION"));
-  }else if(filterKey==="approved"){
-    list = list.filter(s=>s.qualityStatus==="SOP DONE");
-  }
-
-  rowCount.textContent = `Rows: ${list.length}`;
-
-  if(list.length===0){
-    tbody.innerHTML=`<tr><td colspan="10" class="p-6 text-slate-500 font-semibold text-center">No registered setup machines found.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = list.map((s,idx)=>{
-    const n = s.sampleCount||1;
-    const x = getSample(s,n);
     let action="";
-
     if(s.setupType==="Short"){
-      if(!x.setterStart && s.notifications && s.notifications.setter && s.notifications.setter.actionReady){
-        action=`<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg action-ready shadow"><i class="fas fa-play mr-1"></i> Setter Start</button>`;
-      }else if(x.setterStart && !x.setterEnd){
-        action=`<button onclick="setterEndSample('${s.firebaseKey}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow"><i class="fas fa-stop mr-1"></i> Setter End</button>`;
-      }else if(x.setterEnd){
-        action=`<span class="text-[10px] font-bold text-emerald-400">CMM Notification Sent</span>`;
-      }else{
-        action=`<span class="text-[10px] text-amber-400 font-bold">Waiting</span>`;
-      }
+      if(!x.setterStart&&s.notifications?.setter?.actionReady) action=`<button onclick="setterStartSetup('${s.firebaseKey}')" class="mc-action">▶ Setter Start</button>`;
+      else if(x.setterStart&&!x.setterEnd) action=`<button onclick="setterEndSample('${s.firebaseKey}')" class="mc-action">■ Setter End</button>`;
+      else if(x.setterEnd) action=`<button onclick="openWorkflowModal('${s.firebaseKey}')" class="mc-action">View Details →</button>`;
+      else action=`<button onclick="openWorkflowModal('${s.firebaseKey}')" class="mc-action">View Details →</button>`;
     }else{
-      if(!s.toolEnd){
-        action=`<span class="text-[10px] text-amber-400 font-bold">Waiting Tool Room</span>`;
-      }else if(!x.setterStart && s.notifications && s.notifications.setter && s.notifications.setter.actionReady){
-        action=`<button onclick="setterStartSetup('${s.firebaseKey}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg action-ready shadow"><i class="fas fa-play mr-1"></i> Setter Start</button>`;
-      }else if(x.setterStart && !x.setterEnd){
-        action=`<button onclick="setterEndSample('${s.firebaseKey}')" class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow">Setter End</button>`;
-      }else if(x.setterEnd){
-        action=`<span class="text-[10px] font-bold text-emerald-400">CMM Notification Sent</span>`;
-      }else{
-        action=`<span class="text-[10px] text-amber-400 font-bold">Waiting</span>`;
-      }
+      if(!s.toolEnd) action=`<button onclick="openWorkflowModal('${s.firebaseKey}')" class="mc-action">Waiting Tool Room</button>`;
+      else if(!x.setterStart&&s.notifications?.setter?.actionReady) action=`<button onclick="setterStartSetup('${s.firebaseKey}')" class="mc-action">▶ Setter Start</button>`;
+      else if(x.setterStart&&!x.setterEnd) action=`<button onclick="setterEndSample('${s.firebaseKey}')" class="mc-action">■ Setter End</button>`;
+      else action=`<button onclick="openWorkflowModal('${s.firebaseKey}')" class="mc-action">View Details →</button>`;
     }
 
-    const activeFixtureNo = s.availableFixtureSerialNo || s.fixtureSerialNo || '-';
+    const opts=Array.isArray(s.availableFixtureSerialOptions)&&s.availableFixtureSerialOptions.length?s.availableFixtureSerialOptions:(s.availableFixtureSerialNo?[s.availableFixtureSerialNo]:[]);
+    const selected=s.selectedFixtureSerialNo||"";
+    const fixture=(s.setupType==='Short')?'':(!opts.length&&!selected?`<div class="fixture-box"><div class="fixture-title">Waiting Fixture</div></div>`:`<div class="fixture-box"><div class="fixture-title">Available Fixture</div>${opts.map(no=>`<label class="fixture-option"><input type="radio" name="fixture_pick_${s.firebaseKey}" value="${no}" ${selected===no?'checked':''}><span>${no}</span></label>`).join('')}<input id="manual_fixture_${s.firebaseKey}" class="fixture-manual" placeholder="Manual Fixture No."><button onclick="saveSetterFixtureSelection('${s.firebaseKey}')" class="fixture-save">SELECT</button></div>`);
 
-    return `
-    <tr>
-      <td class="font-bold text-slate-400">${idx+1}</td>
-      <td class="font-mono font-bold text-purple-400">${s.id}</td>
-      <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click text-left font-bold text-sky-400 bg-slate-800/40 rounded-lg">
-        <span class="text-sm">${s.machineName}</span><br>
-        <span class="text-[11px] text-slate-300 font-normal">${s.partName}</span><br>
-        <span class="text-[10px] text-slate-400 font-normal">Part No: ${s.partNo}</span><br>
-        <span class="inline-block mt-1 text-[9px] bg-sky-950 text-sky-300 border border-sky-800 px-1.5 py-0.5 rounded font-bold"><i class="fas fa-mouse-pointer mr-1"></i> CLICK → DETAILS</span>
-      </td>
-      <td>
-        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.setupType==='Short'?'bg-amber-950 text-amber-300 border border-amber-800':'bg-sky-950 text-sky-300 border border-sky-800'}">
-          ${s.setupType||'Long'}
-        </span>
-      </td>
-      <td class="font-bold">${s.pallet||"-"}</td>
-      <td>
-        <span class="bg-orange-950 text-orange-300 border border-orange-800 px-2 py-0.5 rounded font-bold text-[10px]">P${s.priority||"-"}</span>
-      </td>
-      <td class="text-left text-xs font-semibold">
-        <span class="text-slate-400 text-[10px]">Req Fix: ${s.fixtureSerialNo||'-'}</span><br>
-        <span class="text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800 block mt-1 text-[10px]">
-          <i class="fas fa-check-circle text-xs mr-1"></i> Avail Fix: <b>${activeFixtureNo}</b>
-        </span>
-      </td>
-      <td onclick="openWorkflowModal('${s.firebaseKey}')" class="machine-click bg-indigo-950/40 text-indigo-300 font-bold rounded-lg border border-indigo-900/40">
-        <i class="fas fa-route text-base"></i><br>
-        <span class="text-[9px]">S1 → S2 → S3 → S4</span>
-      </td>
-      <td class="font-bold">
-        ${
-          s.qualityStatus==="SOP DONE"
-          ? `<div onclick="openSopDetailsModal('${s.firebaseKey}')" class="bg-purple-950 text-purple-300 p-2 rounded-xl cursor-pointer hover:bg-purple-900 border border-purple-800 shadow-sm">
-               <i class="fas fa-check-circle text-purple-400 mr-1"></i><b>SOP APPROVED</b><br>
-               <span class="text-[9px] block text-purple-300/80">Date: ${s.setupDate}</span>
-             </div>`
-          : `<span class="px-2.5 py-1 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-300 text-[10px]">${s.qualityStatus||"-"}</span>`
-        }
-      </td>
-      <td>${action}</td>
-    </tr>
-    `;
+    const done=Math.min(4,n), dots=[1,2,3,4].map(i=>`<span class="${i<done?'done':''} ${i===done?'active':''}"></span>${i<4?'<div class="progress-line"></div>':''}`).join('');
+    return `<article class="machine-card ${statusClass}">
+      <div class="mc-top"><div class="mc-icon"><i class="fas fa-industry"></i></div><span class="status-chip">${status}</span><span class="mc-menu">⋮</span></div>
+      <div class="mc-machine">${s.machineName||'-'}</div>
+      <div class="mc-row"><span>Part</span><b>${s.partName||'-'}</b></div>
+      <div class="mc-row"><span>P/N</span><b>${s.partNo||'-'}</b></div>
+      <div class="mc-pallet">Pallet : <b>${(s.pallet||'-').replace('Pallet ','')}</b></div>
+      <div class="priority-row"><span class="priority">Priority <b>P${s.priority||'-'}</b></span><span style="font-size:7px;color:#748399">${s.id||''}</span></div>
+      <div class="shift-row"><i class="fas fa-${String(s.shift||'').includes('C')?'moon':'sun'}"></i><span>${s.shift||'-'}<br>${s.setupDate||''}</span></div>
+      <div class="progress">${dots}</div><div class="stage-text">${s.setupStarted?`Sample ${n} → Running`:(s.qualityStatus||'Registered')}</div>
+      ${fixture}
+      <div style="margin-top:5px">${action}</div>
+    </article>`;
   }).join("");
 };
 
-window.renderToolroom = function(){
-  const tbody = document.getElementById("toolroomTable");
+/* ===================================================== */
+/* ================= TOOL ROOM RENDER =================== */
+/* ===================================================== */
+
+window.renderToolroom =
+function(){
+
+  const tbody =
+  document.getElementById(
+    "toolroomTable"
+  );
+
   if(!tbody) return;
-  let list = (window.allSetups||[]).filter(s=>s.setupType==="Long" || !s.setupType);
-  if(window.toolroomFilter==="ready"){
-    list = list.filter(s=>s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo);
+
+
+  let list =
+  (window.allSetups||[])
+  .filter(
+    s=>
+    s.setupType==="Long" ||
+    !s.setupType
+  );
+
+
+  if(
+    window.toolroomFilter==="ready"
+  ){
+
+    list =
+    list.filter(
+      s=>
+      s.toolingReady &&
+      s.fixtureReady &&
+      s.availableFixtureSerialNo
+    );
+
   }
-  if(window.toolroomFilter==="pending"){
-    list = list.filter(s=>!(s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo));
+
+
+  if(
+    window.toolroomFilter==="pending"
+  ){
+
+    list =
+    list.filter(
+      s=>
+      !(
+        s.toolingReady &&
+        s.fixtureReady &&
+        s.availableFixtureSerialNo
+      )
+    );
+
   }
+
+
   if(list.length===0){
-    tbody.innerHTML=`<tr><td colspan="7" class="p-6 text-center text-slate-500">No setup found.</td></tr>`;
+
+    tbody.innerHTML=
+    `<tr>
+    <td colspan="7"
+    class="p-6 text-center text-slate-400">
+    No setup found.
+    </td>
+    </tr>`;
+
     return;
+
   }
-  tbody.innerHTML = list.map(s=>{
-    const ready = s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo;
+
+
+  tbody.innerHTML =
+  list.map(s=>{
+
+    const ready =
+    s.toolingReady &&
+    s.fixtureReady &&
+    s.availableFixtureSerialNo;
+
+
     return `
-    <tr class="border-b border-slate-800">
-      <td class="p-3 font-bold text-sky-400">
-        ${s.machineName} - ${s.partName}<br>
-        <span class="text-[11px] font-semibold text-emerald-400">Part No: ${s.partNo||'-'}</span><br>
-        <span class="text-[10px] text-slate-400">${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}</span>
-      </td>
-      <td class="p-3 text-xs text-slate-300">
-        <b>Fixture No:</b> ${s.fixtureNo}<br>
-        <b>Required Serial:</b> ${s.fixtureSerialNo||'-'}
-      </td>
-      <td class="p-3 text-center">
-        <input type="checkbox" id="tooling_${s.firebaseKey}" ${s.toolingReady?'checked':''} ${ready?'disabled':''} class="w-5 h-5 accent-blue-600"><br>
-        <span class="text-[10px] font-bold ${s.toolingReady?'text-emerald-400':'text-amber-400'}">${s.toolingReady?'READY':'PENDING'}</span>
-      </td>
-      <td class="p-3 text-center">
-        <input type="checkbox" id="fixture_${s.firebaseKey}" ${s.fixtureReady?'checked':''} ${ready?'disabled':''} class="w-5 h-5 accent-emerald-600"><br>
-        <span class="text-[10px] font-bold ${s.fixtureReady?'text-emerald-400':'text-amber-400'}">${s.fixtureReady?'READY':'PENDING'}</span>
-      </td>
-      <td class="p-3 text-xs">
-        <input type="text" id="remark_${s.firebaseKey}" value="${s.availableFixtureSerialNo||s.toolRemark||''}" ${ready?'disabled':''} onchange="updateToolRemarkInput('${s.firebaseKey}',this.value)" class="w-full p-2.5 custom-input rounded-xl text-xs font-bold" placeholder="Available Fixture Serial No.">
-      </td>
-      <td class="p-3">
-        ${ready ? `<span class="bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-lg font-bold text-xs inline-block"><i class="fas fa-check-circle mr-1"></i>READY</span>` : `<span class="bg-amber-950 text-amber-400 border border-amber-800 px-2.5 py-1 rounded-lg font-bold text-xs inline-block"><i class="fas fa-hourglass-half mr-1"></i>PENDING</span>`}
-      </td>
-      <td class="p-3">
-        ${ready ? `<span class="text-xs font-bold text-emerald-400"><i class="fas fa-paper-plane mr-1"></i>SETTER NOTIFIED</span>` : !s.toolStart ? `<button onclick="toolRoomStart('${s.firebaseKey}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow transition"><i class="fas fa-play mr-1"></i> START</button>` : `<button onclick="toolRoomEnd('${s.firebaseKey}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow transition"><i class="fas fa-check mr-1"></i> READY & NOTIFY SETTER</button>`}
-      </td>
+
+    <tr class="border-b">
+
+    <td class="p-3 font-bold text-blue-700">
+
+    ${s.machineName} -
+    ${s.partName}
+
+    <br>
+
+    <span
+    class="text-[11px] font-semibold text-emerald-700">
+
+    Part No:
+    ${s.partNo||'-'}
+
+    </span>
+
+    <br>
+
+    <span
+    class="text-[10px] text-slate-500">
+
+    ${s.id} |
+    ${s.pallet||"-"} |
+    Priority ${s.priority||"-"}
+
+    </span>
+
+    </td>
+
+
+    <td class="p-3 text-xs">
+
+    <b>Fixture No:</b>
+    ${s.fixtureNo}
+
+    <br>
+
+    <b>Requested Serial:</b>
+    ${s.fixtureSerialNo||'-'}
+<br>
+<b>Selected Fixture:</b> ${s.selectedFixtureSerialNo||s.availableFixtureSerialNo||'-'}
+
+    </td>
+
+
+    <td class="p-3 text-center">
+
+    <input
+    type="checkbox"
+    id="tooling_${s.firebaseKey}"
+    ${s.toolingReady?'checked':''}
+    ${ready?'disabled':''}
+    class="w-5 h-5 accent-blue-600">
+
+    <br>
+
+    <span class="text-[10px] font-bold">
+    ${s.toolingReady?'READY':'PENDING'}
+    </span>
+
+    </td>
+
+
+    <td class="p-3 text-center">
+
+    <input
+    type="checkbox"
+    id="fixture_${s.firebaseKey}"
+    ${s.fixtureReady?'checked':''}
+    ${ready?'disabled':''}
+    class="w-5 h-5 accent-green-600">
+
+    <br>
+
+    <span class="text-[10px] font-bold">
+    ${s.fixtureReady?'READY':'PENDING'}
+    </span>
+
+    </td>
+
+
+    <td class="p-3 text-xs">
+
+    <input
+    type="text"
+    id="remark_${s.firebaseKey}"
+    value="${s.availableFixtureSerialNo||s.toolRemark||''}"
+    ${ready?'disabled':''}
+    onchange="updateToolRemarkInput('${s.firebaseKey}',this.value)"
+    class="w-full p-2 border rounded text-xs font-bold bg-amber-50"
+    placeholder="Fixture No. उदा. FX-101, FX-102">
+
+    </td>
+
+
+    <td class="p-3">
+
+    ${
+      ready
+
+      ?
+
+      `<span
+      class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold">
+
+      <i class="fas fa-check-circle mr-1"></i>
+      READY
+
+      </span>`
+
+      :
+
+      `<span
+      class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">
+
+      <i class="fas fa-hourglass-half mr-1"></i>
+      PENDING
+
+      </span>`
+
+    }
+
+    </td>
+
+
+    <td class="p-3">
+
+    ${
+      ready
+
+      ?
+
+      `<span
+      class="text-xs font-bold text-green-700">
+
+      <i class="fas fa-paper-plane mr-1"></i>
+      SETTER NOTIFIED
+
+      </span>`
+
+      :
+
+      !s.toolStart
+
+      ?
+
+      `<button
+      onclick="toolRoomStart('${s.firebaseKey}')"
+      class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold">
+
+      <i class="fas fa-play mr-1"></i>
+      START
+
+      </button>`
+
+      :
+
+      `<button
+      onclick="toolRoomEnd('${s.firebaseKey}')"
+      class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">
+
+      <i class="fas fa-check mr-1"></i>
+      READY & NOTIFY SETTER
+
+      </button>`
+
+    }
+
+    </td>
+
     </tr>
+
     `;
+
   }).join("");
+
 };
 
-window.renderSTDRoom = function(){
-  const tbody = document.getElementById("stdroomTable");
+
+/* ===================================================== */
+/* ================= CMM RENDER ========================== */
+/* ===================================================== */
+
+window.renderSTDRoom =
+function(){
+
+  const tbody =
+  document.getElementById(
+    "stdroomTable"
+  );
+
   if(!tbody) return;
-  let list = (window.allSetups||[]).filter(s=>s.qualityStatus!=="SOP DONE");
-  if(window.cmmFilter==="registered"){
-    list = list.filter(s=>s.notifications && s.notifications.cmm && s.notifications.cmm.notified);
+
+
+  let list =
+  (window.allSetups||[])
+  .filter(
+    s=>
+    s.qualityStatus!=="SOP DONE"
+  );
+
+
+  if(
+    window.cmmFilter==="registered"
+  ){
+
+    list =
+    list.filter(
+      s=>
+      s.notifications &&
+      s.notifications.cmm &&
+      s.notifications.cmm.notified
+    );
+
   }
-  if(window.cmmFilter==="running"){
-    list = list.filter(s=>{
-      const n = s.sampleCount||1; const x = getSample(s,n);
-      return (s.notifications && s.notifications.cmm && s.notifications.cmm.notified && x.cmmEnd==null && s.qualityStatus!=="SOP DONE");
-    });
+
+
+  if(
+    window.cmmFilter==="running"
+  ){
+
+    list =
+    list.filter(
+      s=>{
+
+        const n =
+        s.sampleCount||1;
+
+        const x =
+        getSample(s,n);
+
+        return (
+          s.notifications &&
+          s.notifications.cmm &&
+          s.notifications.cmm.notified &&
+          x.cmmEnd==null &&
+          s.qualityStatus!=="SOP DONE"
+        );
+
+      }
+    );
+
   }
+
+
   let html="";
+
+
   list.forEach(s=>{
-    const n = s.sampleCount||1; const x = getSample(s,n);
-    const cmmReady = s.notifications && s.notifications.cmm && s.notifications.cmm.actionReady;
+
+    const n =
+    s.sampleCount||1;
+
+    const x =
+    getSample(s,n);
+
+
+    const cmmReady =
+    s.notifications &&
+    s.notifications.cmm &&
+    s.notifications.cmm.actionReady;
+
+
     html+=`
-    <tr class="border-b border-slate-800">
-      <td class="p-3 font-bold text-sky-400">${s.machineName} - ${s.partName}<br><span class="text-[10px] text-slate-400 font-normal">${s.id} (${s.setupType||'Long'} Setup)</span></td>
-      <td class="p-3 font-bold text-indigo-400">SAMPLE #${n}<br><span class="text-xs text-slate-400 font-normal">Cut: ${x.cutTime||"-"}</span></td>
-      <td class="p-3 small-time text-slate-300">${x.cmmStart||"-"}</td>
-      <td class="p-3 small-time text-slate-300">${x.cmmEnd||"-"}</td>
-      <td class="p-3 font-bold text-sky-400">${durationMinutes(x.cmmStart, x.cmmEnd)}</td>
-      <td class="p-3">
-        ${!cmmReady && !x.cmmStart ? `<span class="text-[10px] text-amber-400 font-bold">WAITING SETTER END</span>` : cmmReady && !x.cmmStart ? `<button onclick="cmmStart('${s.firebaseKey}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-xl font-bold action-ready shadow transition"><i class="fas fa-play mr-1"></i> START</button>` : x.cmmStart && !x.cmmEnd ? `<button onclick="cmmEnd('${s.firebaseKey}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow transition"><i class="fas fa-stop mr-1"></i> ACTION / END</button>` : `<span class="text-xs font-bold text-emerald-400"><i class="fas fa-paper-plane mr-1"></i> QUALITY NOTIFIED</span>`}
-      </td>
+
+    <tr class="border-b">
+
+    <td class="p-3 font-bold text-blue-700">
+
+    ${s.machineName} -
+    ${s.partName}
+
+    <br>
+
+    <span class="text-[10px] text-slate-500">
+
+    ${s.id}
+    (${s.setupType||'Long'} Setup)
+
+    </span>
+
+    </td>
+
+
+    <td class="p-3 font-bold text-indigo-700">
+
+    SAMPLE #${n}
+
+    <br>
+
+    <span class="text-xs text-slate-500">
+
+    Cut:
+    ${x.cutTime||"-"}
+
+    </span>
+
+    </td>
+
+
+    <td class="p-3 small-time">
+
+    ${x.cmmStart||"-"}
+
+    </td>
+
+
+    <td class="p-3 small-time">
+
+    ${x.cmmEnd||"-"}
+
+    </td>
+
+
+    <td class="p-3 font-bold text-blue-700">
+
+    ${durationMinutes(
+      x.cmmStart,
+      x.cmmEnd
+    )}
+
+    </td>
+
+
+    <td class="p-3">
+
+    ${
+      !cmmReady && !x.cmmStart
+
+      ?
+
+      `<span
+      class="text-[10px] text-orange-600 font-bold">
+
+      WAITING SETTER END
+
+      </span>`
+
+      :
+
+      cmmReady && !x.cmmStart
+
+      ?
+
+      `<button
+      onclick="cmmStart('${s.firebaseKey}')"
+      class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold action-ready">
+
+      <i class="fas fa-play mr-1"></i>
+      START
+
+      </button>`
+
+      :
+
+      x.cmmStart && !x.cmmEnd
+
+      ?
+
+      `<button
+      onclick="cmmEnd('${s.firebaseKey}')"
+      class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">
+
+      <i class="fas fa-stop mr-1"></i>
+      ACTION / END
+
+      </button>`
+
+      :
+
+      `<span
+      class="text-xs font-bold text-green-700">
+
+      <i class="fas fa-paper-plane mr-1"></i>
+      QUALITY NOTIFIED
+
+      </span>`
+
+    }
+
+    </td>
+
     </tr>
+
     `;
+
   });
-  tbody.innerHTML = html || `<tr><td colspan="6" class="p-6 text-center text-slate-500">No registered setup found.</td></tr>`;
+
+
+  tbody.innerHTML =
+  html ||
+
+  `<tr>
+  <td colspan="6"
+  class="p-6 text-center text-slate-400">
+
+  No registered setup found.
+
+  </td>
+  </tr>`;
+
 };
 
-window.renderQuality = function(){
-  const area = document.getElementById("qualityTableArea");
+
+/* ===================================================== */
+/* ================= QUALITY RENDER ===================== */
+/* ===================================================== */
+
+window.renderQuality =
+function(){
+
+  const area =
+  document.getElementById(
+    "qualityTableArea"
+  );
+
   if(!area) return;
-  let list = (window.allSetups||[]);
-  if(window.qualityFilter==="approve"){
-    list = list.filter(s=>s.qualityStatus==="SOP DONE");
+
+
+  let list =
+  (window.allSetups||[]);
+
+
+  if(
+    window.qualityFilter==="approve"
+  ){
+
+    list =
+    list.filter(
+      s=>s.qualityStatus==="SOP DONE"
+    );
+
   }
-  if(window.qualityFilter==="pending"){
-    list = list.filter(s=>{
-      return (s.notifications && s.notifications.quality && s.notifications.quality.notified && s.qualityStatus!=="SOP DONE");
-    });
+
+
+  if(
+    window.qualityFilter==="pending"
+  ){
+
+    list =
+    list.filter(
+      s=>{
+        return (
+          s.notifications &&
+          s.notifications.quality &&
+          s.notifications.quality.notified &&
+          s.qualityStatus!=="SOP DONE"
+        );
+      }
+    );
+
   }
+
   if(!window.qualityFilter || window.qualityFilter==="all"){
-    list = list.filter(s=>s.notifications && s.notifications.quality && s.notifications.quality.notified);
+    list = list.filter(
+      s=>s.notifications && s.notifications.quality && s.notifications.quality.notified
+    );
   }
+
+
   let rows="";
+
+
   list.forEach(s=>{
-    const n = s.sampleCount||1; const x = getSample(s,n);
-    const qReady = s.notifications && s.notifications.quality && s.notifications.quality.actionReady;
+
+    const n =
+    s.sampleCount||1;
+
+    const x =
+    getSample(s,n);
+
+
+    const qReady =
+    s.notifications &&
+    s.notifications.quality &&
+    s.notifications.quality.actionReady;
+
     const isApproved = s.qualityStatus==="SOP DONE";
+
+
     rows+=`
-    <tr class="border-b border-slate-800">
-      <td class="p-3 font-bold text-sky-400">${s.machineName} - ${s.partName}<br><span class="text-[10px] text-slate-400 font-normal">${s.id} | P${s.priority||"-"}</span></td>
-      <td class="p-3 font-bold text-indigo-400">SAMPLE #${n}</td>
-      <td class="p-3 small-time text-slate-300">${x.qualityStart||"-"}</td>
-      <td class="p-3 small-time text-slate-300">${x.qualityEnd||"-"}</td>
-      <td class="p-3 font-bold text-sky-400">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
-      <td class="p-3">
-        ${isApproved ? `<span class="text-xs font-bold text-purple-400"><i class="fas fa-check-circle mr-1"></i>SOP APPROVED</span>` : !qReady && !x.qualityStart ? `<span class="text-[10px] text-amber-400 font-bold">WAITING CMM</span>` : qReady && !x.qualityStart ? `<button onclick="qualityStart('${s.firebaseKey}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-xl font-bold action-ready shadow transition"><i class="fas fa-play mr-1"></i> START</button>` : x.qualityStart && !x.qualityEnd ? `<button onclick="qualityEnd('${s.firebaseKey}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow transition"><i class="fas fa-stop mr-1"></i> ACTION / END</button>` : x.qualityEnd && !x.result ? `<div class="flex flex-wrap gap-2 justify-center"><button onclick="qualityApprove('${s.firebaseKey}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow transition"><i class="fas fa-check mr-1"></i> SOP APPROVE</button>${n<4?`<button onclick="qualityCorrection('${s.firebaseKey}')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 rounded-xl font-bold shadow transition"><i class="fas fa-rotate-right mr-1"></i> CORRECTION</button>`:``}</div>` : `<span class="text-xs font-bold text-emerald-400">DONE</span>`}
-      </td>
+
+    <tr class="border-b">
+
+    <td class="p-3 font-bold text-blue-700">
+
+    ${s.machineName} -
+    ${s.partName}
+
+    <br>
+
+    <span class="text-[10px] text-slate-500">
+
+    ${s.id} |
+    P${s.priority||"-"}
+
+    </span>
+
+    </td>
+
+
+    <td class="p-3 font-bold text-indigo-700">
+
+    SAMPLE #${n}
+
+    </td>
+
+
+    <td class="p-3 small-time">
+
+    ${x.qualityStart||"-"}
+
+    </td>
+
+
+    <td class="p-3 small-time">
+
+    ${x.qualityEnd||"-"}
+
+    </td>
+
+
+    <td class="p-3 font-bold text-blue-700">
+
+    ${durationMinutes(
+      x.qualityStart,
+      x.qualityEnd
+    )}
+
+    </td>
+
+
+    <td class="p-3">
+
+    ${
+      isApproved
+
+      ?
+
+      `<span class="text-xs font-bold text-purple-700">
+        <i class="fas fa-check-circle mr-1"></i>SOP APPROVED
+      </span>`
+
+      :
+
+      !qReady &&
+      !x.qualityStart
+
+      ?
+
+      `<span
+      class="text-[10px] text-orange-600 font-bold">
+
+      WAITING CMM
+
+      </span>`
+
+      :
+
+      qReady &&
+      !x.qualityStart
+
+      ?
+
+      `<button
+      onclick="qualityStart('${s.firebaseKey}')"
+      class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold action-ready">
+
+      <i class="fas fa-play mr-1"></i>
+      START
+
+      </button>`
+
+      :
+
+      x.qualityStart &&
+      !x.qualityEnd
+
+      ?
+
+      `<button
+      onclick="qualityEnd('${s.firebaseKey}')"
+      class="bg-green-600 text-white text-xs px-3 py-1.5 rounded font-bold">
+
+      <i class="fas fa-stop mr-1"></i>
+      ACTION / END
+
+      </button>`
+
+      :
+
+      x.qualityEnd &&
+      !x.result
+
+      ?
+
+      `<div class="flex flex-wrap gap-2 justify-center">
+
+      <button
+      onclick="qualityApprove('${s.firebaseKey}')"
+      class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold">
+
+      <i class="fas fa-check mr-1"></i>
+      SOP APPROVE
+
+      </button>
+
+      ${
+        n<4
+
+        ?
+
+        `<button
+        onclick="qualityCorrection('${s.firebaseKey}')"
+        class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold">
+
+        <i class="fas fa-rotate-right mr-1"></i>
+        CORRECTION
+
+        </button>`
+
+        :
+
+        ``
+      }
+
+      </div>`
+
+      :
+
+      `<span
+      class="text-xs font-bold text-green-700">
+
+      DONE
+
+      </span>`
+
+    }
+
+    </td>
+
     </tr>
+
     `;
+
   });
+
+
   area.innerHTML=`
-  <table class="w-full text-sm text-left border border-slate-800">
-  <thead class="bg-slate-950 text-slate-300">
+
+  <table
+  class="w-full text-sm text-left border">
+
+  <thead class="bg-slate-100">
+
   <tr>
-  <th class="p-3 border-b border-slate-800">Machine / Part</th>
-  <th class="p-3 border-b border-slate-800">Sample</th>
-  <th class="p-3 border-b border-slate-800">Start</th>
-  <th class="p-3 border-b border-slate-800">End</th>
-  <th class="p-3 border-b border-slate-800">Total</th>
-  <th class="p-3 border-b border-slate-800">Action</th>
+
+  <th class="p-3 border">
+  Machine / Part
+  </th>
+
+  <th class="p-3 border">
+  Sample
+  </th>
+
+  <th class="p-3 border">
+  Start
+  </th>
+
+  <th class="p-3 border">
+  End
+  </th>
+
+  <th class="p-3 border">
+  Total
+  </th>
+
+  <th class="p-3 border">
+  Action
+  </th>
+
   </tr>
+
   </thead>
-  <tbody>${rows || `<tr><td colspan="6" class="p-6 text-center text-slate-500">No Quality setup found.</td></tr>`}</tbody>
+
+  <tbody>
+
+  ${
+    rows ||
+
+    `<tr>
+    <td colspan="6"
+    class="p-6 text-center text-slate-400">
+    No Quality setup found.
+    </td>
+    </tr>`
+  }
+
+  </tbody>
+
   </table>
+
   `;
+
 };
 
-window.renderSupervisor = function(){
-  const tbody = document.getElementById("hodTable");
+
+/* ===================================================== */
+/* ================= SUPERVISOR ========================= */
+/* ===================================================== */
+
+window.renderSupervisor =
+function(){
+
+  const tbody =
+  document.getElementById(
+    "hodTable"
+  );
+
   if(!tbody) return;
-  tbody.innerHTML = (window.allSetups||[]).map(s=>`
-  <tr class="border-b border-slate-800">
-    <td onclick="openWorkflowModal('${s.firebaseKey}')" class="p-2.5 border-b border-slate-800 font-bold text-sky-400 machine-click">${s.machineName}<br><span class="text-[9px] text-slate-400 font-normal">${s.id}</span></td>
-    <td class="p-2.5 border-b border-slate-800 font-semibold text-slate-300">${s.partName}</td>
-    <td class="p-2.5 border-b border-slate-800"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.setupType==='Short'?'bg-amber-950 text-amber-300 border border-amber-800':'bg-sky-950 text-sky-300 border border-sky-800'}">${s.setupType||'Long'}</span></td>
-    <td class="p-2.5 border-b border-slate-800 text-slate-300">${s.pallet||"-"}</td>
-    <td class="p-2.5 border-b border-slate-800 font-bold text-orange-400">P${s.priority||"-"}</td>
-    <td class="p-2.5 border-b border-slate-800 text-slate-300">${s.setupType==='Short'?'N/A':(s.toolStart||"-")+' → '+(s.toolEnd||"-")}<br><b class="text-sky-400">${durationMinutes(s.toolStart,s.toolEnd)}</b></td>
-    <td onclick="openWorkflowModal('${s.firebaseKey}')" class="p-2.5 border-b border-slate-800 text-[10px] machine-click bg-indigo-950/40 text-indigo-300 font-bold"><i class="fas fa-route"></i><br>WORKFLOW PATH SHOW</td>
-    <td class="p-2.5 border-b border-slate-800 font-black text-red-400">${s.qualityStatus==="SOP DONE"?totalSetupMinutes(s):"Running"}</td>
+
+
+  tbody.innerHTML =
+  (window.allSetups||[])
+  .map(s=>`
+
+  <tr class="border-b">
+
+  <td
+  onclick="openWorkflowModal('${s.firebaseKey}')"
+  class="p-2 border font-bold text-blue-700 machine-click">
+
+  ${s.machineName}
+
+  <br>
+
+  <span class="text-[9px] text-slate-500">
+  ${s.id}
+  </span>
+
+  </td>
+
+
+  <td class="p-2 border font-semibold">
+  ${s.partName}
+  </td>
+
+
+  <td class="p-2 border">
+
+  <span
+  class="px-1.5 py-0.5 rounded text-[10px] font-bold
+  ${s.setupType==='Short'
+  ?'bg-amber-100 text-amber-800'
+  :'bg-blue-100 text-blue-800'}">
+
+  ${s.setupType||'Long'}
+
+  </span>
+
+  </td>
+
+
+  <td class="p-2 border">
+  ${s.pallet||"-"}
+  </td>
+
+
+  <td class="p-2 border font-bold">
+  P${s.priority||"-"}
+  </td>
+
+
+  <td class="p-2 border">
+
+  ${
+    s.setupType==='Short'
+    ?
+    'N/A'
+    :
+    (s.toolStart||"-")+
+    ' → '+
+    (s.toolEnd||"-")
+  }
+
+  <br>
+
+  <b>
+  ${durationMinutes(
+    s.toolStart,
+    s.toolEnd
+  )}
+  </b>
+
+  </td>
+
+
+  <td
+  onclick="openWorkflowModal('${s.firebaseKey}')"
+  class="p-2 border text-[10px] machine-click bg-indigo-50 text-indigo-700 font-bold">
+
+  <i class="fas fa-route"></i>
+  <br>
+  WORKFLOW PATH SHOW
+
+  </td>
+
+
+  <td class="p-2 border font-black text-red-600">
+
+  ${
+    s.qualityStatus==="SOP DONE"
+    ?
+    totalSetupMinutes(s)
+    :
+    "Running"
+  }
+
+  </td>
+
   </tr>
-  `).join("");
+
+  `)
+  .join("");
+
 };
 
-window.openWorkflowModal = function(firebaseKey){
-  if(window.currentUser && window.currentUser.dept!=="setter" && window.currentUser.dept!=="supervisor"){
-    alert("वर्कफ्लो पाहण्याची परवानगी फक्त Setter, Supervisor आणि HOD यांना आहे.");
+
+/* ===================================================== */
+/* ================= WORKFLOW MODAL ===================== */
+/* ===================================================== */
+
+window.openWorkflowModal =
+function(firebaseKey){
+
+  if(
+    window.currentUser &&
+    window.currentUser.dept!=="setter" &&
+    window.currentUser.dept!=="supervisor"
+  ){
+
+    alert(
+      "वर्कफ्लो पाहण्याची परवानगी फक्त Setter, Supervisor आणि HOD यांना आहे."
+    );
+
     return;
+
   }
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  document.getElementById("workflowModal").classList.remove("hidden");
-  document.getElementById("workflowTitle").textContent = `${s.machineName} - COMPLETE SETUP WORKFLOW (${s.setupType||'Long'} Setup)`;
-  document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Part: ${s.partName} | Pallet: ${s.pallet}`;
+
+
+  document
+  .getElementById("workflowModal")
+  .classList.remove("hidden");
+
+
+  document
+  .getElementById("workflowTitle")
+  .textContent =
+  `${s.machineName} - COMPLETE SETUP WORKFLOW (${s.setupType||'Long'} Setup)`;
+
+
+  document
+  .getElementById("workflowSubtitle")
+  .textContent =
+  `Setup ID: ${s.id} | Part: ${s.partName} | Pallet: ${s.pallet}`;
+
+
   let rows="";
+
   let sr=1;
-  rows+=`<tr><td class="font-bold text-slate-400">${sr++}</td><td class="text-left font-bold text-sky-400">SETTER<br><span class="text-[9px] text-slate-400 font-normal">Setup Registration</span></td><td class="stage-start">${s.timeRegistered||"-"}</td><td class="stage-end">${s.setupType==='Short'?'N/A':(s.toolStart||"-")}</td><td class="font-bold text-sky-400">${s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered, s.toolStart)}</td><td><span class="text-emerald-400 font-bold text-[10px]">REGISTERED</span></td></tr>`;
+
+
+  rows+=`
+
+  <tr>
+
+  <td class="font-bold">
+  ${sr++}
+  </td>
+
+  <td class="text-left font-bold">
+  SETTER
+  <br>
+  <span class="text-[9px]">
+  Setup Registration
+  </span>
+  </td>
+
+  <td class="stage-start">
+  ${s.timeRegistered||"-"}
+  </td>
+
+  <td class="stage-end">
+  ${
+    s.setupType==='Short'
+    ?
+    'N/A'
+    :
+    (s.toolStart||"-")
+  }
+  </td>
+
+  <td class="font-bold text-blue-700">
+  ${
+    s.setupType==='Short'
+    ?
+    '0 min'
+    :
+    durationMinutes(
+      s.timeRegistered,
+      s.toolStart
+    )
+  }
+  </td>
+
+  <td>
+
+  <span class="text-green-700 font-bold text-[10px]">
+  REGISTERED
+  </span>
+
+  </td>
+
+  </tr>
+
+  `;
+
+
   if(s.setupType!=='Short'){
-    rows+=`<tr><td class="font-bold text-slate-400">${sr++}</td><td class="text-left font-bold text-sky-400">TOOL ROOM<br><span class="text-[9px] text-slate-400 font-normal">Tooling & Fixture Ready</span></td><td class="stage-start">${s.toolStart||"-"}</td><td class="stage-end">${s.toolEnd||"-"}</td><td class="font-bold text-sky-400">${durationMinutes(s.toolStart, s.toolEnd)}</td><td>${s.toolEnd?`<span class="text-emerald-400 font-bold text-[10px]">READY</span>`:`<span class="text-amber-400 font-bold text-[10px]">PENDING</span>`}</td></tr>`;
+
+    rows+=`
+
+    <tr>
+
+    <td class="font-bold">
+    ${sr++}
+    </td>
+
+    <td class="text-left font-bold">
+
+    TOOL ROOM
+
+    <br>
+
+    <span class="text-[9px]">
+    Tooling & Fixture Ready
+    </span>
+
+    </td>
+
+    <td class="stage-start">
+    ${s.toolStart||"-"}
+    </td>
+
+    <td class="stage-end">
+    ${s.toolEnd||"-"}
+    </td>
+
+    <td class="font-bold text-blue-700">
+    ${durationMinutes(
+      s.toolStart,
+      s.toolEnd
+    )}
+    </td>
+
+    <td>
+
+    ${
+      s.toolEnd
+
+      ?
+
+      `<span
+      class="text-green-700 font-bold text-[10px]">
+      READY
+      </span>`
+
+      :
+
+      `<span
+      class="text-yellow-700 font-bold text-[10px]">
+      PENDING
+      </span>`
+    }
+
+    </td>
+
+    </tr>
+
+    `;
+
   }
+
+
   for(let n=1;n<=4;n++){
-    const x = getSample(s,n);
-    if(!x.setterStart && !x.setterEnd && n>s.sampleCount) continue;
-    let setStatus = x.cutTime ? '<span class="text-emerald-400 font-bold text-[10px]">DONE</span>' : (x.setterStart ? '<span class="text-sky-400 font-bold text-[10px]">RUNNING</span>' : '<span class="text-amber-400 font-bold text-[10px]">PENDING</span>');
-    let cmmStatus = x.cmmEnd ? '<span class="text-emerald-400 font-bold text-[10px]">DONE</span>' : (x.cmmStart ? '<span class="text-sky-400 font-bold text-[10px]">RUNNING</span>' : '<span class="text-amber-400 font-bold text-[10px]">PENDING</span>');
-    let qStatus = x.result ? `<span class="text-emerald-400 font-bold text-[10px]">${x.result}</span>` : (x.qualityStart ? '<span class="text-sky-400 font-bold text-[10px]">RUNNING</span>' : '<span class="text-amber-400 font-bold text-[10px]">PENDING</span>');
-    rows+=`<tr><td rowspan="3" class="font-black text-purple-400 bg-purple-950/60 border border-purple-900/40">S${n}</td><td class="text-left font-bold text-slate-300">SETTER<br><span class="text-[9px] text-slate-400 font-normal">Sample #${n}</span></td><td class="stage-start">${x.setterStart||"-"}</td><td class="stage-end">${x.setterEnd||"-"}</td><td class="font-bold text-sky-400">${durationMinutes(x.setterStart, x.setterEnd)}</td><td>${setStatus}</td></tr><tr><td class="text-left font-bold text-slate-300">CMM ROOM<br><span class="text-[9px] text-slate-400 font-normal">Sample #${n}</span></td><td class="stage-start">${x.cmmStart||"-"}</td><td class="stage-end">${x.cmmEnd||"-"}</td><td class="font-bold text-sky-400">${durationMinutes(x.cmmStart, x.cmmEnd)}</td><td>${cmmStatus}</td></tr><tr><td class="text-left font-bold text-slate-300">QUALITY<br><span class="text-[9px] text-slate-400 font-normal">Sample #${n}</span></td><td class="stage-start">${x.qualityStart||"-"}</td><td class="stage-end">${x.qualityEnd||"-"}</td><td class="font-bold text-sky-400">${durationMinutes(x.qualityStart, x.qualityEnd)}</td><td>${qStatus}</td></tr>`;
+
+    const x =
+    getSample(s,n);
+
+
+    if(
+      !x.setterStart &&
+      !x.setterEnd &&
+      n>s.sampleCount
+    )
+      continue;
+
+
+    let setStatus =
+    x.cutTime
+
+    ?
+
+    '<span class="text-green-700 font-bold text-[10px]">DONE</span>'
+
+    :
+
+    (
+      x.setterStart
+
+      ?
+
+      '<span class="text-blue-700 font-bold text-[10px]">RUNNING</span>'
+
+      :
+
+      '<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>'
+    );
+
+
+    let cmmStatus =
+    x.cmmEnd
+
+    ?
+
+    '<span class="text-green-700 font-bold text-[10px]">DONE</span>'
+
+    :
+
+    (
+      x.cmmStart
+
+      ?
+
+      '<span class="text-blue-700 font-bold text-[10px]">RUNNING</span>'
+
+      :
+
+      '<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>'
+    );
+
+
+    let qStatus =
+    x.result
+
+    ?
+
+    `<span class="text-green-700 font-bold text-[10px]">
+    ${x.result}
+    </span>`
+
+    :
+
+    (
+      x.qualityStart
+
+      ?
+
+      '<span class="text-blue-700 font-bold text-[10px]">RUNNING</span>'
+
+      :
+
+      '<span class="text-yellow-700 font-bold text-[10px]">PENDING</span>'
+    );
+
+
+    rows+=`
+
+    <tr>
+
+    <td rowspan="3"
+    class="font-black text-purple-700 bg-purple-50">
+
+    S${n}
+
+    </td>
+
+    <td class="text-left font-bold">
+
+    SETTER
+
+    <br>
+
+    <span class="text-[9px]">
+    Sample #${n}
+    </span>
+
+    </td>
+
+    <td class="stage-start">
+    ${x.setterStart||"-"}
+    </td>
+
+    <td class="stage-end">
+    ${x.setterEnd||"-"}
+    </td>
+
+    <td class="font-bold text-blue-700">
+
+    ${durationMinutes(
+      x.setterStart,
+      x.setterEnd
+    )}
+
+    </td>
+
+    <td>
+    ${setStatus}
+    </td>
+
+    </tr>
+
+
+    <tr>
+
+    <td class="text-left font-bold">
+
+    CMM ROOM
+
+    <br>
+
+    <span class="text-[9px]">
+    Sample #${n}
+    </span>
+
+    </td>
+
+    <td class="stage-start">
+    ${x.cmmStart||"-"}
+    </td>
+
+    <td class="stage-end">
+    ${x.cmmEnd||"-"}
+    </td>
+
+    <td class="font-bold text-blue-700">
+
+    ${durationMinutes(
+      x.cmmStart,
+      x.cmmEnd
+    )}
+
+    </td>
+
+    <td>
+    ${cmmStatus}
+    </td>
+
+    </tr>
+
+
+    <tr>
+
+    <td class="text-left font-bold">
+
+    QUALITY
+
+    <br>
+
+    <span class="text-[9px]">
+    Sample #${n}
+    </span>
+
+    </td>
+
+    <td class="stage-start">
+    ${x.qualityStart||"-"}
+    </td>
+
+    <td class="stage-end">
+    ${x.qualityEnd||"-"}
+    </td>
+
+    <td class="font-bold text-blue-700">
+
+    ${durationMinutes(
+      x.qualityStart,
+      x.qualityEnd
+    )}
+
+    </td>
+
+    <td>
+    ${qStatus}
+    </td>
+
+    </tr>
+
+    `;
+
   }
-  document.getElementById("workflowContent").innerHTML=`<div class="excel-table-container"><table class="workflow-table"><thead><tr><th>SR.</th><th>DEPARTMENT</th><th>START</th><th>END</th><th>TOTAL</th><th>STATUS</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+
+
+  document
+  .getElementById("workflowContent")
+  .innerHTML=`
+
+  <div class="excel-table-container">
+
+  <table class="workflow-table">
+
+  <thead>
+
+  <tr>
+
+  <th>SR.</th>
+  <th>DEPARTMENT</th>
+  <th>START</th>
+  <th>END</th>
+  <th>TOTAL</th>
+  <th>STATUS</th>
+
+  </tr>
+
+  </thead>
+
+  <tbody>
+
+  ${rows}
+
+  </tbody>
+
+  </table>
+
+  </div>
+
+  `;
+
 };
 
-window.openSopDetailsModal = function(firebaseKey){
-  const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
+
+/* ===================================================== */
+/* ================= SOP DETAILS ======================== */
+/* ===================================================== */
+
+window.openSopDetailsModal =
+function(firebaseKey){
+
+  const s =
+  window.allSetups
+  .find(
+    x=>x.firebaseKey===firebaseKey
+  );
+
   if(!s) return;
-  document.getElementById("workflowModal").classList.remove("hidden");
-  document.getElementById("workflowTitle").textContent = `${s.machineName} - SOP APPROVED DETAILS`;
-  document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Status: Successfully Approved`;
-  document.getElementById("workflowContent").innerHTML=`
-  <div class="bg-purple-950/40 p-4 md:p-6 rounded-2xl border border-purple-900/50 shadow-inner space-y-4 text-slate-300">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-      <div class="bg-slate-900 p-4 rounded-xl shadow border border-slate-800"><p class="text-xs text-slate-400 font-bold">SETUP DATE</p><p class="text-lg font-black text-purple-400 mt-1">${s.setupDate}</p></div>
-      <div class="bg-slate-900 p-4 rounded-xl shadow border border-slate-800"><p class="text-xs text-slate-400 font-bold">PART NAME</p><p class="text-lg font-black text-sky-400 mt-1">${s.partName}</p></div>
-      <div class="bg-slate-900 p-4 rounded-xl shadow border border-slate-800"><p class="text-xs text-slate-400 font-bold">PART NUMBER</p><p class="text-lg font-black text-emerald-400 mt-1">${s.partNo}</p></div>
-    </div>
-    <div class="bg-slate-900 p-4 rounded-xl shadow border border-slate-800 flex flex-wrap justify-between items-center text-sm gap-2">
-      <div><b>Fixture Number:</b> ${s.fixtureNo}</div>
-      <div><b>Fixture Serial No:</b> ${s.fixtureSerialNo||'-'}</div>
-      <div><b>Available Fixture Serial:</b> ${s.availableFixtureSerialNo||'-'}</div>
-      <div><b>Setup Type:</b> ${s.setupType||'Long'}</div>
-      <div><b>Pallet:</b> ${s.pallet}</div>
-      <div><b>Priority:</b> P${s.priority}</div>
-      <div><b>Total Time:</b> <span class="text-red-400 font-bold">${s.totalTimeSpent}</span></div>
-    </div>
-    <div class="text-center pt-2">
-      <button onclick="openWorkflowModal('${s.firebaseKey}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition"><i class="fas fa-route mr-1"></i> View Full Workflow History</button>
-    </div>
+
+
+  document
+  .getElementById("workflowModal")
+  .classList.remove("hidden");
+
+
+  document
+  .getElementById("workflowTitle")
+  .textContent =
+  `${s.machineName} - SOP APPROVED DETAILS`;
+
+
+  document
+  .getElementById("workflowSubtitle")
+  .textContent =
+  `Setup ID: ${s.id} | Status: Successfully Approved`;
+
+
+  document
+  .getElementById("workflowContent")
+  .innerHTML=`
+
+  <div
+  class="bg-purple-50 p-4 md:p-6 rounded-xl border border-purple-300 shadow-inner space-y-4">
+
+  <div
+  class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+
+  <div class="bg-white p-4 rounded-lg shadow border">
+
+  <p class="text-xs text-slate-500 font-bold">
+  SETUP DATE
+  </p>
+
+  <p class="text-lg font-black text-purple-700 mt-1">
+  ${s.setupDate}
+  </p>
+
   </div>
+
+
+  <div class="bg-white p-4 rounded-lg shadow border">
+
+  <p class="text-xs text-slate-500 font-bold">
+  PART NAME
+  </p>
+
+  <p class="text-lg font-black text-blue-700 mt-1">
+  ${s.partName}
+  </p>
+
+  </div>
+
+
+  <div class="bg-white p-4 rounded-lg shadow border">
+
+  <p class="text-xs text-slate-500 font-bold">
+  PART NUMBER
+  </p>
+
+  <p class="text-lg font-black text-emerald-700 mt-1">
+  ${s.partNo}
+  </p>
+
+  </div>
+
+  </div>
+
+
+  <div
+  class="bg-white p-4 rounded-lg shadow border flex flex-wrap justify-between items-center text-sm gap-2">
+
+  <div>
+  <b>Fixture Number:</b>
+  ${s.fixtureNo}
+  </div>
+
+  <div>
+  <b>Fixture Serial No:</b>
+  ${s.fixtureSerialNo||'-'}
+  </div>
+
+  <div>
+  <b>Available Fixture Serial:</b>
+  ${s.availableFixtureSerialNo||'-'}
+  </div>
+
+  <div>
+  <b>Setup Type:</b>
+  ${s.setupType||'Long'}
+  </div>
+
+  <div>
+  <b>Pallet:</b>
+  ${s.pallet}
+  </div>
+
+  <div>
+  <b>Priority:</b>
+  P${s.priority}
+  </div>
+
+  <div>
+  <b>Total Time:</b>
+  <span class="text-red-600 font-bold">
+  ${s.totalTimeSpent}
+  </span>
+  </div>
+
+  </div>
+
+
+  <div class="text-center pt-2">
+
+  <button
+  onclick="openWorkflowModal('${s.firebaseKey}')"
+  class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-xs">
+
+  <i class="fas fa-route mr-1"></i>
+  View Full Workflow History
+
+  </button>
+
+  </div>
+
+  </div>
+
   `;
+
 };
+
+
+/* ================= CLOSE MODAL ================= */
 
 function closeWorkflowModal(){
-  document.getElementById("workflowModal").classList.add("hidden");
+
+  document
+  .getElementById("workflowModal")
+  .classList.add("hidden");
+
 }
+
+
+/* ===================================================== */
+/* ================= RESET ============================== */
+/* ===================================================== */
 
 function handleResetAllData(){
-  if(!confirm("सर्व SUTOM setup data delete करायचा आहे का?")) return;
-  dbRef.remove().then(()=>{ alert("Data deleted."); });
+
+  if(
+    !confirm(
+      "सर्व SUTOM setup data delete करायचा आहे का?"
+    )
+  )
+    return;
+
+
+  dbRef
+  .remove()
+  .then(()=>{
+
+    alert(
+      "Data deleted."
+    );
+
+  });
+
 }
+
+
+/* ===================================================== */
+/* ================= NOTIFICATION CHECK ================= */
+/* ===================================================== */
 
 function checkDepartmentNotifications(){
-  if(!window.currentUser) return;
-  const dept = window.currentUser.dept;
+
+  if(!window.currentUser)
+    return;
+
+
+  const dept =
+  window.currentUser.dept;
+
   let pending=[];
-  (window.allSetups||[]).forEach(s=>{
-    const n = s.notifications||{};
-    if(dept==="toolroom" && n.toolroom && n.toolroom.notified && !n.toolroom.read && s.setupType==="Long"){
-      pending.push(`NEW SETUP: ${s.machineName} - ${s.partName}`);
+
+
+  (window.allSetups||[])
+  .forEach(s=>{
+
+    const n =
+    s.notifications||{};
+
+
+    if(
+      dept==="toolroom" &&
+      n.toolroom &&
+      n.toolroom.notified &&
+      !n.toolroom.read &&
+      s.setupType==="Long"
+    ){
+
+      pending.push(
+        `NEW SETUP: ${s.machineName} - ${s.partName}`
+      );
+
     }
-    if(dept==="stdroom" && n.cmm && n.cmm.notified && !n.cmm.read){
-      pending.push(`CMM NOTIFICATION: ${s.machineName} - ${s.partName}`);
+
+
+    if(
+      dept==="stdroom" &&
+      n.cmm &&
+      n.cmm.notified &&
+      !n.cmm.read
+    ){
+
+      pending.push(
+        `CMM NOTIFICATION: ${s.machineName} - ${s.partName}`
+      );
+
     }
-    if(dept==="setter" && n.setter && n.setter.notified && !n.setter.read){
-      pending.push(`TOOLING & FIXTURE READY: ${s.machineName}`);
+
+
+    if(
+      dept==="setter" &&
+      n.setter &&
+      n.setter.notified &&
+      !n.setter.read
+    ){
+
+      pending.push(
+        `TOOLING & FIXTURE READY: ${s.machineName}`
+      );
+
     }
-    if(dept==="quality" && n.quality && n.quality.notified && !n.quality.read){
-      pending.push(`QUALITY NOTIFICATION: ${s.machineName} - ${s.partName}`);
+
+
+    if(
+      dept==="quality" &&
+      n.quality &&
+      n.quality.notified &&
+      !n.quality.read
+    ){
+
+      pending.push(
+        `QUALITY NOTIFICATION: ${s.machineName} - ${s.partName}`
+      );
+
     }
+
   });
+
+
   if(pending.length>0){
-    triggerAlert("NEW DEPARTMENT NOTIFICATION", pending.join(" | "));
+
+    triggerAlert(
+      "NEW DEPARTMENT NOTIFICATION",
+      pending.join(" | ")
+    );
+
   }
+
 }
 
-window.renderAllViews = function(){
+
+/* ===================================================== */
+/* ================= GLOBAL RENDER ====================== */
+/* ===================================================== */
+
+window.renderAllViews =
+function(){
+
   window.updateMetrics();
+
   window.updateDepartmentCounts();
-  window.renderSetterExcelTable(window.currentExcelFilter);
-  if(!window.currentUser) return;
-  if(window.currentUser.dept==="toolroom") window.renderToolroom();
-  if(window.currentUser.dept==="stdroom") window.renderSTDRoom();
-  if(window.currentUser.dept==="quality") window.renderQuality();
-  if(window.currentUser.dept==="supervisor") window.renderSupervisor();
+
+  window.renderSetterExcelTable(
+    window.currentExcelFilter
+  );
+
+
+  if(!window.currentUser)
+    return;
+
+
+  if(
+    window.currentUser.dept==="toolroom"
+  )
+    window.renderToolroom();
+
+
+  if(
+    window.currentUser.dept==="stdroom"
+  )
+    window.renderSTDRoom();
+
+
+  if(
+    window.currentUser.dept==="quality"
+  )
+    window.renderQuality();
+
+
+  if(
+    window.currentUser.dept==="supervisor"
+  )
+    window.renderSupervisor();
+
 };
 
+
+/* ===================================================== */
+/* ================= ALERT =============================== */
+/* ===================================================== */
+
 function triggerAlert(title,msg){
-  document.getElementById("alertTitle").textContent=title;
-  document.getElementById("alertMessage").textContent=msg;
-  const alertModal = document.getElementById("alertModal");
-  alertModal.classList.remove("hidden");
+
+  document
+  .getElementById("alertTitle")
+  .textContent=title;
+
+
+  document
+  .getElementById("alertMessage")
+  .textContent=msg;
+
+
+  const alertModal =
+  document.getElementById(
+    "alertModal"
+  );
+
+
+  alertModal
+  .classList
+  .remove("hidden");
+
+
   if("vibrate" in navigator){
-    try{ navigator.vibrate([500,200,500,200,500]); }catch(e){}
+
+    try{
+
+      navigator.vibrate([
+        500,
+        200,
+        500,
+        200,
+        500
+      ]);
+
+    }catch(e){}
+
   }
-  if(alertInterval) clearInterval(alertInterval);
-  alertInterval = setInterval(()=>{
-    alertModal.classList.remove("hidden");
+
+
+  if(alertInterval)
+    clearInterval(alertInterval);
+
+
+  alertInterval =
+  setInterval(()=>{
+
+    alertModal
+    .classList
+    .remove("hidden");
+
+
     if("vibrate" in navigator){
-      try{ navigator.vibrate([500,200,500]); }catch(e){}
+
+      try{
+
+        navigator.vibrate([
+          500,
+          200,
+          500
+        ]);
+
+      }catch(e){}
+
     }
+
   },2000);
+
 }
 
+
 function acknowledgeAlert(){
-  if(alertInterval){ clearInterval(alertInterval); alertInterval=null; }
-  document.getElementById("alertModal").classList.add("hidden");
-  if(!window.currentUser) return;
-  const dept = window.currentUser.dept;
-  const field = dept==="toolroom" ? "toolroom" : dept==="stdroom" ? "cmm" : dept==="quality" ? "quality" : dept==="setter" ? "setter" : null;
-  if(!field) return;
-  const updates={};
-  (window.allSetups||[]).forEach(s=>{
-    if(s.notifications && s.notifications[field] && s.notifications[field].notified && !s.notifications[field].read){
-      updates[`${s.firebaseKey}/notifications/${field}/read`]=true;
-    }
-  });
-  if(Object.keys(updates).length){
-    dbRef.parent.update(updates).catch(()=>{});
+
+  if(alertInterval){
+
+    clearInterval(
+      alertInterval
+    );
+
+    alertInterval=null;
+
   }
+
+
+  document
+  .getElementById("alertModal")
+  .classList
+  .add("hidden");
+
+
+  /*
+  Notification read status:
+  फक्त current logged-in department साठी
+  संबंधित notifications Firebase मध्ये read करू.
+  */
+
+  if(!window.currentUser)
+    return;
+
+
+  const dept =
+  window.currentUser.dept;
+
+
+  const field =
+  dept==="toolroom"
+  ? "toolroom"
+  : dept==="stdroom"
+  ? "cmm"
+  : dept==="quality"
+  ? "quality"
+  : dept==="setter"
+  ? "setter"
+  : null;
+
+
+  if(!field)
+    return;
+
+
+  const updates={};
+
+
+  (window.allSetups||[])
+  .forEach(s=>{
+
+    if(
+      s.notifications &&
+      s.notifications[field] &&
+      s.notifications[field].notified &&
+      !s.notifications[field].read
+    ){
+
+      updates[
+        `${s.firebaseKey}/notifications/${field}/read`
+      ]=true;
+
+    }
+
+  });
+
+
+  Object.keys(updates)
+  .forEach(path=>{
+
+    /*
+    Firebase multi-path update
+    */
+  });
+
+
+  if(Object.keys(updates).length){
+
+    dbRef
+    .parent
+    .update(updates)
+    .catch(()=>{});
+
+  }
+
 }
+
 </script>
+
 </body>
-</html>
+  </html>

@@ -11,212 +11,52 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-}
-
-body{
-  background:#f1f5f9;
-}
-
-@keyframes pulse-red{
-  0%,100%{
-    background:#fee2e2;
-    border-color:#ef4444;
-  }
-  50%{
-    background:#fca5a5;
-    border-color:#dc2626;
-  }
-}
-
-.alert-active{
-  animation:pulse-red .8s infinite;
-}
-
-.firebase-live-bar{
-  min-height:32px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  font-size:12px;
-  font-weight:800;
-}
-
-.firebase-live-bar.live{
-  background:#052e16;
-  color:#4ade80;
-  border-top:1px solid #166534;
-  border-bottom:1px solid #166534;
-}
-
-.excel-table-container{
-  border:2px solid #047857;
-  border-radius:8px;
-  overflow:hidden;
-  background:white;
-}
-
-.excel-table{
-  border-collapse:collapse;
-  width:100%;
-  font-size:11px;
-  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-}
-
-.excel-table th{
-  background:#065f46;
-  color:white;
-  border:1px solid #047857;
-  padding:8px 6px;
-  font-weight:700;
-  text-align:center;
-  white-space:nowrap;
-}
-
-.excel-table td{
-  border:1px solid #d1d5db;
-  padding:6px 6px;
-  text-align:center;
-  vertical-align:middle;
-}
-
-.excel-table tr:nth-child(even){
-  background:#f0fdf4;
-}
-
-.excel-table tr:hover{
-  background:#dcfce7;
-}
-
-.machine-click{
-  cursor:pointer;
-  transition:.2s;
-}
-
-.machine-click:hover{
-  background:#bfdbfe !important;
-  transform:scale(1.01);
-}
-
-.workflow-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:11px;
-}
-
-.workflow-table th{
-  background:#0f172a;
-  color:white;
-  padding:8px 4px;
-  border:1px solid #334155;
-  text-align:center;
-  white-space:nowrap;
-}
-
-.workflow-table td{
-  padding:6px 4px;
-  border:1px solid #cbd5e1;
-  text-align:center;
-  word-break:break-word;
-}
-
-.workflow-table tr:nth-child(even){
-  background:#f8fafc;
-}
-
-.stage-start{
-  background:#dbeafe;
-  color:#1d4ed8;
-  font-family:monospace;
-  font-weight:700;
-}
-
-.stage-end{
-  background:#dcfce7;
-  color:#15803d;
-  font-family:monospace;
-  font-weight:700;
-}
-
-.modal-scroll{
-  max-height:90vh;
-  overflow-y:auto;
-}
-
-.small-time{
-  font-family:monospace;
-  font-weight:700;
-}
+*{box-sizing:border-box;}
+body{background:#f1f5f9;}
+@keyframes pulse-red{0%,100%{background:#fee2e2;border-color:#ef4444;}50%{background:#fca5a5;border-color:#dc2626;}}
+.alert-active{animation:pulse-red .8s infinite;}
+.firebase-live-bar{min-height:32px;display:flex;align-items:center;justify-content:center;width:100%;font-size:12px;font-weight:800;}
+.firebase-live-bar.live{background:#052e16;color:#4ade80;border-top:1px solid #166534;border-bottom:1px solid #166534;}
+.excel-table-container{border:2px solid #047857;border-radius:8px;overflow:hidden;background:white;}
+.excel-table{border-collapse:collapse;width:100%;font-size:11px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
+.excel-table th{background:#065f46;color:white;border:1px solid #047857;padding:8px 6px;font-weight:700;text-align:center;white-space:nowrap;}
+.excel-table td{border:1px solid #d1d5db;padding:6px 6px;text-align:center;vertical-align:middle;}
+.excel-table tr:nth-child(even){background:#f0fdf4;}
+.excel-table tr:hover{background:#dcfce7;}
+.machine-click{cursor:pointer;transition:.2s;}
+.machine-click:hover{background:#bfdbfe !important;transform:scale(1.01);}
+.workflow-table{width:100%;border-collapse:collapse;font-size:11px;}
+.workflow-table th{background:#0f172a;color:white;padding:8px 4px;border:1px solid #334155;text-align:center;white-space:nowrap;}
+.workflow-table td{padding:6px 4px;border:1px solid #cbd5e1;text-align:center;word-break:break-word;}
+.workflow-table tr:nth-child(even){background:#f8fafc;}
+.stage-start{background:#dbeafe;color:#1d4ed8;font-family:monospace;font-weight:700;}
+.stage-end{background:#dcfce7;color:#15803d;font-family:monospace;font-weight:700;}
+.modal-scroll{max-height:90vh;overflow-y:auto;}
+.small-time{font-family:monospace;font-weight:700;}
 
 /* ================= DEPARTMENT ICON CARDS ================= */
-
-.dept-card{
-  background:linear-gradient(155deg,#0c1827,#07111d);
-  border-radius:14px;
-  padding:16px;
-  border:1px solid #25384f;
-  box-shadow:0 5px 15px rgba(15,23,42,.2);
-  cursor:pointer;
-  transition:.2s;
-  position:relative;
-  overflow:hidden;
-}
-
-.dept-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 20px rgba(15,23,42,.3);
-  border-color:#3b82f6;
-}
-
-.dept-card .icon-box{
-  width:42px;
-  height:42px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-  margin-bottom:10px;
-}
-
-.dept-card .count{
-  font-size:28px;
-  font-weight:900;
-  line-height:1;
-  color:#f4f7fb;
-}
-
-.dept-card .label{
-  font-size:11px;
-  font-weight:800;
-  margin-top:5px;
-  color:#9baabd;
-  text-transform:uppercase;
-}
-
+.dept-card{background:linear-gradient(155deg,#0c1827,#07111d);border-radius:14px;padding:16px;border:1px solid #25384f;box-shadow:0 5px 15px rgba(15,23,42,.2);cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.dept-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.3);border-color:#3b82f6;}
+.dept-card .icon-box{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px;}
+.dept-card .count{font-size:28px;font-weight:900;line-height:1;color:#f4f7fb;}
+.dept-card .label{font-size:11px;font-weight:800;margin-top:5px;color:#9baabd;text-transform:uppercase;}
 .ready-box{border-top:2px solid #18d889;}
 .ready-box .icon-box{background:#083a2a;color:#1be08b;}
-
 .pending-box{border-top:2px solid #ffb91f;}
 .pending-box .icon-box{background:#3d2f0a;color:#ffb91f;}
-
 .info-box{border-top:2px solid #2b8fff;}
 .info-box .icon-box{background:#092d50;color:#2e99ff;}
-
 .running-box{border-top:2px solid #6366f1;}
 .running-box .icon-box{background:#1e1b4b;color:#818cf8;}
-
 .approve-box{border-top:2px solid #a34cff;}
 .approve-box .icon-box{background:#32124f;color:#bb6cff;}
 
 @media(max-width:768px){
   .workflow-table{font-size:10px;}
-  .workflow-table th,
-  .workflow-table td{padding:5px 2px;}
+  .workflow-table th,.workflow-table td{padding:5px 2px;}
   .excel-table{font-size:10px;}
 }
 
@@ -234,7 +74,6 @@ button,input,select{font-family:inherit}
 .sutom-company{display:flex;align-items:center;gap:9px;font-size:12px;color:#e9eef6}.sutom-company i{font-size:28px;color:#cbd5e1}.sutom-company small{display:block;color:#93a0b4;font-size:10px;margin-top:1px}
 .sutom-head-actions{display:flex;align-items:center;gap:7px}.compact-header-btn{border:1px solid #33465f;background:#0b1625;color:#dce6f4;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:900;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}.compact-header-btn:hover{filter:brightness(1.15)}.compact-header-btn.reset{border-color:#9b1c2d;color:#ff9aa5;background:#210b11}.compact-header-btn.logout{border-color:#5b6b80;color:#f2f5f8;background:#101a28}.sutom-pill{border:1px solid #26364d;background:#0b1524;color:#e9eef6;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}.sutom-pill.live{border-color:#00b96b;color:#54f0a9;background:#061b13}.sutom-pill.live i{font-size:7px}.sutom-user{display:flex;align-items:center;gap:7px;padding-left:5px}.sutom-user-avatar{width:36px;height:36px;border-radius:50%;background:#f5f7fb;color:#111827;display:flex;align-items:center;justify-content:center;font-size:19px}.sutom-user-name{font-size:11px;font-weight:800}.sutom-user-dept{font-size:9px;color:#8d9bb0;margin-top:2px}
 
-/* --- Authentication & Dashboard Visibility Fix --- */
 #dashboardSection{display:none !important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
 #dashboardSection.active-flex{display:flex!important;}
 .hidden-section{display:none !important;}
@@ -314,48 +153,18 @@ button,input,select{font-family:inherit}
 .mc-action:hover{background:#bd1c2e;color:white}
 .fixture-box{margin-top:6px;background:#1c1710;border:1px solid #63471c;border-radius:7px;padding:6px;font-size:8px}
 .fixture-box .fixture-title{color:#f2c66c;font-weight:900;margin-bottom:4px}
-.fixture-option{display:flex;align-items:center;gap:4px;color:#dce3ed;margin:2px 0}
-.fixture-option input{width:12px;height:12px}
-.fixture-save{margin-top:4px;background:#a46a0b;color:white;border:0;border-radius:4px;padding:4px 6px;font-size:8px;font-weight:800;width:100%;cursor:pointer;}
-.fixture-save:hover{background:#c48212;}
-.fixture-serial-display{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-.fixture-serial-item{
-  display:block;
-  width:100%;
-  padding:5px 7px;
-  border-radius:5px;
-  background:#2a2112;
-  border:1px solid #80601f;
-  color:#ffe3a0;
-  font-size:9px;
-  font-weight:900;
-  font-family:monospace;
-  text-align:center;
-  word-break:break-all;
-}
-
+.fixture-serial-display{display:flex;flex-direction:column;gap:4px;}
+.fixture-serial-item{display:block;width:100%;padding:5px 7px;border-radius:5px;background:#2a2112;border:1px solid #80601f;color:#ffe3a0;font-size:9px;font-weight:900;font-family:monospace;text-align:center;word-break:break-all;}
 
 #setupFormCard{background:#0a1523!important;color:#e9eef6;border:1px solid #29415c!important;padding:14px!important}
 #setupFormCard label{color:#aebbd0}
-#setupFormCard input, #setupFormCard select{background:#07111d!important;color:#f5f7fb!important;border-color:#30455e!important}
+#setupFormCard input,#setupFormCard select{background:#07111d!important;color:#f5f7fb!important;border-color:#30455e!important}
 
-/* Themed tables for all departments */
 .dept-table-container{background:rgba(5,13,23,.82);border:1px solid #25364d;border-radius:14px;padding:14px}
 .dept-table{width:100%;border-collapse:collapse;font-size:12px;color:#f5f7fb}
 .dept-table th{background:#0f172a;color:#f5f7fb;padding:10px 8px;border:1px solid #203149;text-align:left;font-weight:800}
 .dept-table td{padding:10px 8px;border:1px solid #203149;background:#091321}
 .dept-table tr:hover td{background:#0d1827}
-
-@media(max-width:1100px){.setter-machine-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.setter-metrics{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto}.sutom-company{display:none}.sutom-head-actions .sutom-pill:not(.live){display:none}}
-@media(max-width:768px){
-  .sutom-header{height:64px;padding:6px 9px}.sutom-brand{min-width:auto;gap:7px}.sutom-logo{width:39px;height:39px}.sutom-logo:before{width:20px;height:20px}.sutom-logo:after{font-size:18px;top:7px;left:14px}.sutom-brand-title{font-size:23px}.sutom-brand-sub{font-size:8px;margin-top:3px}.sutom-user-name{font-size:9px}.sutom-user-dept{font-size:7px}.sutom-user-avatar{width:30px;height:30px;font-size:15px}.sutom-pill.live{font-size:0;padding:7px 8px}.sutom-pill.live i{font-size:8px;margin:0}.sutom-pill.live span{display:none}.compact-header-btn{padding:7px 8px;font-size:0}.compact-header-btn i{font-size:10px}.compact-header-btn span{display:none}
-  #dashboardSection{min-height:calc(100vh - 64px)!important}.sutom-sidebar{display:none}#dashboardSection>main{width:100%;padding:8px 8px 18px!important}.setter-topbar{margin-bottom:7px}.setter-title-mobile{display:none}.setter-action-row{width:100%;justify-content:space-between}.compact-action{flex:1;justify-content:center;padding:6px 5px;font-size:8px}.setter-hero{height:112px;padding:18px 14px;border-radius:11px}.setter-hero h2{font-size:24px}.setter-hero p{font-size:10px;margin-top:6px}.setter-hero .hero-time{right:10px;top:52px;min-width:120px;padding:5px 8px}.hero-time .date{font-size:7px}.hero-time .time{font-size:13px}.setter-metrics{grid-template-columns:repeat(5,minmax(86px,1fr));gap:5px;margin:7px 0;overflow-x:auto;padding-bottom:2px}.metric-card{min-height:64px;padding:7px 8px}.metric-card .metric-label{font-size:7px}.metric-card .metric-num{font-size:19px}.metric-card .metric-sub{font-size:7px}.setter-list-panel{padding:7px;border-radius:10px}.setter-list-head h3{font-size:11px}.setter-list-head p{font-size:7px}.setter-list-head .row-count{font-size:7px;padding:4px 5px}.setter-machine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:6px}.machine-card{padding:7px;border-radius:9px}.machine-card .mc-icon{width:24px;height:24px;font-size:11px}.status-chip{font-size:6.5px;padding:3px 5px}.mc-menu{font-size:10px}.mc-machine{font-size:15px;margin-top:5px}.mc-row{font-size:7.5px;margin-top:4px}.mc-pallet,.priority,.shift-row,.stage-text{font-size:7px}.priority b{padding:2px 4px}.shift-row{margin-top:5px}.progress{margin:6px 0 3px}.mc-action{padding:4px;font-size:7.5px}.fixture-box{padding:5px}.fixture-box .fixture-title,.fixture-option,.fixture-save{font-size:7px}.fixture-save{padding:3px 5px}.fixture-serial-item{font-size:7px;padding:4px 5px}
-  #setupFormCard form{grid-template-columns:1fr!important}.sutom-brand-title{white-space:nowrap}
-}
 </style>
 </head>
 
@@ -426,10 +235,8 @@ button,input,select{font-family:inherit}
   </div>
 </div>
 
-
 <!-- ================= DASHBOARD ================= -->
 <div id="dashboardSection">
-
   <aside class="sutom-sidebar">
     <button class="sutom-nav-btn active" onclick="showDepartmentTab(window.currentUser?.dept||'setter')"><i class="fas fa-home"></i> Dashboard</button>
     <button class="sutom-nav-btn" onclick="openSetterModule('register')"><i class="fas fa-plus-square"></i> Register Setup</button>
@@ -440,202 +247,197 @@ button,input,select{font-family:inherit}
   </aside>
 
   <main class="flex-1">
+    <!-- ================= SETTER ================= -->
+    <div id="tab-setter" class="tab-content hidden">
+      <div class="setter-topbar">
+        <div class="setter-title-mobile">Setter Dashboard</div>
+        <div class="setter-action-row">
+          <button onclick="exportSetterDataToExcel()" class="compact-action green"><i class="fas fa-file-excel"></i> Download Excel</button>
+          <button onclick="openSetterModule('register')" class="compact-action blue"><i class="fas fa-plus"></i> Register Setup</button>
+        </div>
+      </div>
 
-<!-- ================= SETTER ================= -->
-<div id="tab-setter" class="tab-content hidden">
+      <section class="setter-hero">
+        <h2><span>SETTER</span> DASHBOARD</h2>
+        <p>Monitor <b>•</b> Track <b>•</b> Improve</p>
+        <div class="hero-time">
+          <div id="heroDate" class="date">Today</div>
+          <div id="heroTime" class="time">00:00:00</div>
+        </div>
+      </section>
 
-  <div class="setter-topbar">
-    <div class="setter-title-mobile">Setter Dashboard</div>
-    <div class="setter-action-row">
-      <button onclick="exportSetterDataToExcel()" class="compact-action green"><i class="fas fa-file-excel"></i> Download Excel</button>
-      <button onclick="openSetterModule('register')" class="compact-action blue"><i class="fas fa-plus"></i> Register Setup</button>
-    </div>
-  </div>
+      <div class="setter-metrics">
+        <div onclick="openSetterModule('all')" class="metric-card"><div class="metric-label">Total Setups</div><div id="metric-all" class="metric-num">0</div><div class="metric-sub">Machines Registered</div></div>
+        <div onclick="openSetterModule('ready')" class="metric-card ready"><div class="metric-label">Ready For Setup</div><div id="metric-ready" class="metric-num">0</div><div class="metric-sub">Waiting for Setup</div></div>
+        <div onclick="openSetterModule('running')" class="metric-card running"><div class="metric-label">Running Setup</div><div id="metric-running" class="metric-num">0</div><div class="metric-sub">In Progress</div></div>
+        <div onclick="openSetterModule('approved')" class="metric-card approved"><div class="metric-label">SOP Approved</div><div id="metric-approved" class="metric-num">0</div><div class="metric-sub">Completed</div></div>
+        <div onclick="openSetterModule('correction')" class="metric-card correction"><div class="metric-label">Correction</div><div id="metric-correction" class="metric-num">0</div><div class="metric-sub">In Correction</div></div>
+      </div>
 
-  <section class="setter-hero">
-    <h2><span>SETTER</span> DASHBOARD</h2>
-    <p>Monitor <b>•</b> Track <b>•</b> Improve</p>
-    <div class="hero-time">
-      <div id="heroDate" class="date">Today</div>
-      <div id="heroTime" class="time">00:00:00</div>
-    </div>
-  </section>
+      <!-- REGISTER FORM -->
+      <div id="setupFormCard" class="rounded-xl shadow border hidden mb-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-5">
+          <h3 class="text-md font-bold text-red-500">REGISTER NEW SETUP</h3>
+          <button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-400 bg-slate-800 px-2.5 py-1 rounded">Close</button>
+        </div>
+        <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div><label class="block text-xs font-bold mb-1">MACHINE NAME</label><select id="machineName" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT MACHINE --</option></select></div>
+          <div><label class="block text-xs font-bold mb-1">PART NAME</label><input type="text" id="partName" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part Name"></div>
+          <div><label class="block text-xs font-bold mb-1">PART NUMBER</label><input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No"></div>
+          <div><label class="block text-xs font-bold mb-1">FIXTURE NUMBER</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Number"></div>
+          <div><label class="block text-xs font-bold mb-1">FIXTURE SERIAL NO.</label><input type="text" id="fixtureSerialNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Serial No"></div>
+          <div><label class="block text-xs font-bold mb-1">SETUP TYPE</label><select id="setupType" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT TYPE --</option><option value="Short">Short</option><option value="Long">Long</option></select></div>
+          <div><label class="block text-xs font-bold mb-1">DATE</label><input type="date" id="setupDate" required class="w-full p-2 border rounded-lg text-sm"></div>
+          <div><label class="block text-xs font-bold mb-1">SHIFT</label><select id="setupShift" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="Shift A">Shift A</option><option value="Shift B">Shift B</option><option value="Shift C">Shift C</option></select></div>
+          <div><label class="block text-xs font-bold mb-1">PALLET</label><select id="pallet" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT --</option><option value="Pallet A">PALLET A</option><option value="Pallet B">PALLET B</option></select></div>
+          <div><label class="block text-xs font-bold mb-1">PRIORITY</label><select id="priority" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT --</option></select></div>
+          <div class="lg:col-span-4 flex justify-end"><button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow"><i class="fas fa-play mr-2"></i> REGISTER SETUP</button></div>
+        </form>
+      </div>
 
-  <div class="setter-metrics">
-    <div onclick="openSetterModule('all')" class="metric-card"><div class="metric-label">Total Setups</div><div id="metric-all" class="metric-num">0</div><div class="metric-sub">Machines Registered</div></div>
-    <div onclick="openSetterModule('ready')" class="metric-card ready"><div class="metric-label">Ready For Setup</div><div id="metric-ready" class="metric-num">0</div><div class="metric-sub">Waiting for Setup</div></div>
-    <div onclick="openSetterModule('running')" class="metric-card running"><div class="metric-label">Running Setup</div><div id="metric-running" class="metric-num">0</div><div class="metric-sub">In Progress</div></div>
-    <div onclick="openSetterModule('approved')" class="metric-card approved"><div class="metric-label">SOP Approved</div><div id="metric-approved" class="metric-num">0</div><div class="metric-sub">Completed</div></div>
-    <div onclick="openSetterModule('correction')" class="metric-card correction"><div class="metric-label">Correction</div><div id="metric-correction" class="metric-num">0</div><div class="metric-sub">In Correction</div></div>
-  </div>
+      <section class="setter-list-panel">
+        <div class="setter-list-head">
+          <div><h3>REGISTERED SETUP MACHINES</h3><p>Click on a machine to view workflow details</p></div>
+          <span id="excelRowCount" class="row-count">Rows: 0</span>
+        </div>
+        <div id="setterExcelTableBody" class="setter-machine-grid"></div>
+      </section>
+    </div>
 
-  <!-- REGISTER FORM -->
-  <div id="setupFormCard" class="rounded-xl shadow border hidden mb-4">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-5">
-      <h3 class="text-md font-bold text-red-500">REGISTER NEW SETUP</h3>
-      <button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-400 bg-slate-800 px-2.5 py-1 rounded">Close</button>
-    </div>
-    <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div><label class="block text-xs font-bold mb-1">MACHINE NAME</label><select id="machineName" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT MACHINE --</option></select></div>
-      <div><label class="block text-xs font-bold mb-1">PART NAME</label><input type="text" id="partName" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part Name"></div>
-      <div><label class="block text-xs font-bold mb-1">PART NUMBER</label><input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No"></div>
-      <div><label class="block text-xs font-bold mb-1">FIXTURE NUMBER</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Number"></div>
-      <div><label class="block text-xs font-bold mb-1">FIXTURE SERIAL NO.</label><input type="text" id="fixtureSerialNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Serial No"></div>
-      <div><label class="block text-xs font-bold mb-1">SETUP TYPE</label><select id="setupType" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT TYPE --</option><option value="Short">Short</option><option value="Long">Long</option></select></div>
-      <div><label class="block text-xs font-bold mb-1">DATE</label><input type="date" id="setupDate" required class="w-full p-2 border rounded-lg text-sm"></div>
-      <div><label class="block text-xs font-bold mb-1">SHIFT</label><select id="setupShift" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="Shift A">Shift A</option><option value="Shift B">Shift B</option><option value="Shift C">Shift C</option></select></div>
-      <div><label class="block text-xs font-bold mb-1">PALLET</label><select id="pallet" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT --</option><option value="Pallet A">PALLET A</option><option value="Pallet B">PALLET B</option></select></div>
-      <div><label class="block text-xs font-bold mb-1">PRIORITY</label><select id="priority" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT --</option></select></div>
-      <div class="lg:col-span-4 flex justify-end"><button type="submit" id="submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow"><i class="fas fa-play mr-2"></i> REGISTER SETUP</button></div>
-    </form>
-  </div>
+    <!-- ================= TOOL ROOM ========================== -->
+    <div id="tab-toolroom" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div onclick="setToolroomFilter('ready')" class="dept-card ready-box">
+          <div class="icon-box"><i class="fas fa-check-double"></i></div>
+          <div class="count" id="toolReadyCount">0</div>
+          <div class="label">READY TOOLING & FIXTURE</div>
+          <p class="text-[10px] text-slate-400 mt-1">Tooling + Fixture + Available Serial Number Ready</p>
+        </div>
+        <div onclick="setToolroomFilter('pending')" class="dept-card pending-box">
+          <div class="icon-box"><i class="fas fa-hourglass-half"></i></div>
+          <div class="count" id="toolPendingCount">0</div>
+          <div class="label">PENDING TOOLING AND FIXTURE</div>
+          <p class="text-[10px] text-slate-400 mt-1">Tool Room pending setups</p>
+        </div>
+      </div>
 
-  <section class="setter-list-panel">
-    <div class="setter-list-head">
-      <div><h3>REGISTERED SETUP MACHINES</h3><p>Click on a machine to view workflow details</p></div>
-      <span id="excelRowCount" class="row-count">Rows: 0</span>
+      <div class="dept-table-container">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+          <h2 class="text-lg font-bold text-white"><i class="fas fa-tools text-blue-500 mr-2"></i>Tool Room Setup Preparation</h2>
+          <span class="text-xs text-slate-400">Long Setup साठी Tooling & Fixture Ready करा.</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="dept-table">
+            <thead>
+              <tr>
+                <th>Machine / Part Number</th>
+                <th>Fixture Details</th>
+                <th>TOOLING READY</th>
+                <th>FIXTURE READY</th>
+                <th>AVAILABLE FIXTURE SERIAL NO.</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="toolroomTable"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    <div id="setterExcelTableBody" class="setter-machine-grid"></div>
-  </section>
 
-</div>
+    <!-- ================= CMM ROOM ============================ -->
+    <div id="tab-stdroom" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div onclick="setCmmFilter('registered')" class="dept-card info-box">
+          <div class="icon-box"><i class="fas fa-clipboard-list"></i></div>
+          <div class="count" id="cmmRegisteredCount">0</div>
+          <div class="label">REGISTERED SETUP</div>
+          <p class="text-[10px] text-slate-400 mt-1">CMM ला notification मिळालेले setup</p>
+        </div>
+        <div onclick="setCmmFilter('running')" class="dept-card running-box">
+          <div class="icon-box"><i class="fas fa-microscope"></i></div>
+          <div class="count" id="cmmRunningCount">0</div>
+          <div class="label">RUNNING SETUP</div>
+          <p class="text-[10px] text-slate-400 mt-1">1st Sample submit झाल्यावर CMM Running मध्ये setup show होईल</p>
+        </div>
+      </div>
 
-<!-- ================= TOOL ROOM ========================== -->
-<div id="tab-toolroom" class="tab-content hidden space-y-6">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div onclick="setToolroomFilter('ready')" class="dept-card ready-box">
-      <div class="icon-box"><i class="fas fa-check-double"></i></div>
-      <div class="count" id="toolReadyCount">0</div>
-      <div class="label">READY TOOLING & FIXTURE</div>
-      <p class="text-[10px] text-slate-400 mt-1">Tooling + Fixture + Available Serial Number Ready</p>
+      <div class="dept-table-container">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+          <h2 class="text-lg font-bold text-white"><i class="fas fa-microscope text-indigo-400 mr-2"></i>CMM ROOM / STD ROOM</h2>
+          <span class="text-xs text-slate-400">Setter complete झाल्यावर CMM Action उपलब्ध होईल.</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="dept-table">
+            <thead>
+              <tr>
+                <th>Machine / Part</th>
+                <th>Sample</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="stdroomTable"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    <div onclick="setToolroomFilter('pending')" class="dept-card pending-box">
-      <div class="icon-box"><i class="fas fa-hourglass-half"></i></div>
-      <div class="count" id="toolPendingCount">0</div>
-      <div class="label">PENDING TOOLING AND FIXTURE</div>
-      <p class="text-[10px] text-slate-400 mt-1">Tool Room pending setups</p>
-    </div>
-  </div>
 
-  <div class="dept-table-container">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-      <h2 class="text-lg font-bold text-white"><i class="fas fa-tools text-blue-500 mr-2"></i>Tool Room Setup Preparation</h2>
-      <span class="text-xs text-slate-400">Long Setup साठी Tooling & Fixture Ready करा.</span>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="dept-table">
-        <thead>
-          <tr>
-            <th>Machine / Part Number</th>
-            <th>Fixture Details</th>
-            <th>TOOLING READY</th>
-            <th>FIXTURE READY</th>
-            <th>AVAILABLE FIXTURE SERIAL NO.</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="toolroomTable"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+    <!-- ================= QUALITY ============================== -->
+    <div id="tab-quality" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div onclick="setQualityFilter('approve')" class="dept-card approve-box">
+          <div class="icon-box"><i class="fas fa-file-signature"></i></div>
+          <div class="count" id="qualityApproveCount">0</div>
+          <div class="label">SOP APPROVE</div>
+          <p class="text-[10px] text-slate-400 mt-1">SOP Approved झालेले setup</p>
+        </div>
+        <div onclick="setQualityFilter('pending')" class="dept-card pending-box">
+          <div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
+          <div class="count" id="qualityPendingCount">0</div>
+          <div class="label">SOP PENDING</div>
+          <p class="text-[10px] text-slate-400 mt-1">Work Start/End ನಂತರही pending; Approve किंवा Correction पर्यंत इथेच</p>
+        </div>
+      </div>
 
-<!-- ================= CMM ROOM ============================ -->
-<div id="tab-stdroom" class="tab-content hidden space-y-6">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div onclick="setCmmFilter('registered')" class="dept-card info-box">
-      <div class="icon-box"><i class="fas fa-clipboard-list"></i></div>
-      <div class="count" id="cmmRegisteredCount">0</div>
-      <div class="label">REGISTERED SETUP</div>
-      <p class="text-[10px] text-slate-400 mt-1">CMM ला notification मिळालेले setup</p>
+      <div class="dept-table-container">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+          <h2 class="text-lg font-bold text-white"><i class="fas fa-clipboard-check text-emerald-400 mr-2"></i>QUALITY INSPECTION</h2>
+          <span class="text-xs text-slate-400">CMM End notification ನಂತರ Quality Action उपलब्ध होईल.</span>
+        </div>
+        <div id="qualityTableArea" class="overflow-x-auto"></div>
+      </div>
     </div>
-    <div onclick="setCmmFilter('running')" class="dept-card running-box">
-      <div class="icon-box"><i class="fas fa-microscope"></i></div>
-      <div class="count" id="cmmRunningCount">0</div>
-      <div class="label">RUNNING SETUP</div>
-      <p class="text-[10px] text-slate-400 mt-1">1st Sample submit झाल्यावर CMM Running मध्ये setup show होईल</p>
-    </div>
-  </div>
 
-  <div class="dept-table-container">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-      <h2 class="text-lg font-bold text-white"><i class="fas fa-microscope text-indigo-400 mr-2"></i>CMM ROOM / STD ROOM</h2>
-      <span class="text-xs text-slate-400">Setter complete झाल्यावर CMM Action उपलब्ध होईल.</span>
+    <!-- ================= SUPERVISOR ================= -->
+    <div id="tab-supervisor" class="tab-content hidden space-y-6">
+      <div class="dept-table-container">
+        <h2 class="text-lg font-bold mb-4 border-b border-slate-800 pb-2 text-white">
+          <i class="fas fa-chart-line text-emerald-500 mr-2"></i>Supervisor / HOD - Complete Workflow Summary
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="dept-table text-xs">
+            <thead>
+              <tr>
+                <th>Machine</th>
+                <th>Part</th>
+                <th>Setup Type</th>
+                <th>Pallet</th>
+                <th>Priority</th>
+                <th>Tool Room</th>
+                <th>Workflow Path</th>
+                <th>Total Actual Time</th>
+              </tr>
+            </thead>
+            <tbody id="hodTable"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="dept-table">
-        <thead>
-          <tr>
-            <th>Machine / Part</th>
-            <th>Sample</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Total</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="stdroomTable"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ================= QUALITY ============================== -->
-<div id="tab-quality" class="tab-content hidden space-y-6">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div onclick="setQualityFilter('approve')" class="dept-card approve-box">
-      <div class="icon-box"><i class="fas fa-file-signature"></i></div>
-      <div class="count" id="qualityApproveCount">0</div>
-      <div class="label">SOP APPROVE</div>
-      <p class="text-[10px] text-slate-400 mt-1">SOP Approved झालेले setup</p>
-    </div>
-    <div onclick="setQualityFilter('pending')" class="dept-card pending-box">
-      <div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
-      <div class="count" id="qualityPendingCount">0</div>
-      <div class="label">SOP PENDING</div>
-      <p class="text-[10px] text-slate-400 mt-1">Work Start/End ನಂತರही pending; Approve किंवा Correction पर्यंत इथेच</p>
-    </div>
-  </div>
-
-  <div class="dept-table-container">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-      <h2 class="text-lg font-bold text-white"><i class="fas fa-clipboard-check text-emerald-400 mr-2"></i>QUALITY INSPECTION</h2>
-      <span class="text-xs text-slate-400">CMM End notification ನಂತರ Quality Action उपलब्ध होईल.</span>
-    </div>
-    <div id="qualityTableArea" class="overflow-x-auto"></div>
-  </div>
-</div>
-
-<!-- ================= SUPERVISOR ================= -->
-<div id="tab-supervisor" class="tab-content hidden space-y-6">
-  <div class="dept-table-container">
-    <h2 class="text-lg font-bold mb-4 border-b border-slate-800 pb-2 text-white">
-      <i class="fas fa-chart-line text-emerald-500 mr-2"></i>Supervisor / HOD - Complete Workflow Summary
-    </h2>
-    <div class="overflow-x-auto">
-      <table class="dept-table text-xs">
-        <thead>
-          <tr>
-            <th>Machine</th>
-            <th>Part</th>
-            <th>Setup Type</th>
-            <th>Pallet</th>
-            <th>Priority</th>
-            <th>Tool Room</th>
-            <th>Workflow Path</th>
-            <th>Total Actual Time</th>
-          </tr>
-        </thead>
-        <tbody id="hodTable"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
   </main>
 </div>
-
 
 <!-- ================= WORKFLOW MODAL ================= -->
 <div id="workflowModal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] p-2 md:p-6">
@@ -665,7 +467,6 @@ button,input,select{font-family:inherit}
   </div>
 </div>
 
-
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyBVieaz6NJuZ1d4pH0vccDZWeSRTKRO4xA",
@@ -679,6 +480,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const dbRef = firebase.database().ref("setups");
+const messaging = firebase.messaging();
 
 window.allSetups = [];
 window.currentExcelFilter = "all";
@@ -723,6 +525,38 @@ function updateLiveTime(){
 setInterval(updateLiveTime,1000);
 updateLiveTime();
 
+// ================= FCM PUSH NOTIFICATION SETUP =================
+async function initFCM(user) {
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      console.log('Service Worker registered successfully:', registration);
+
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        const token = await messaging.getToken({
+          serviceWorkerRegistration: registration,
+          vapidKey: 'YOUR_PUBLIC_VAPID_KEY_IF_NEEDED' // आवश्यक असल्यास VAPID key टाकावी
+        });
+        if (token && user) {
+          console.log('FCM Device Token:', token);
+          // युजरचा टोकन डेटाबेसमध्ये सेव्ह करणे जेणेकरून बॅकएंडवरून नोटिफिकेशन पाठवता येईल
+          firebase.database().ref(`fcmTokens/${user.id}`).set({
+            token: token,
+            department: user.dept,
+            name: user.name,
+            updatedAt: Date.now()
+          });
+        }
+      } else {
+        console.warn('Notification permission denied.');
+      }
+    } catch (error) {
+      console.error('FCM Registration failed:', error);
+    }
+  }
+}
+
 window.addEventListener("DOMContentLoaded",()=>{
   loadMachineList();
   loadPriority();
@@ -732,6 +566,7 @@ window.addEventListener("DOMContentLoaded",()=>{
     try{
       window.currentUser = JSON.parse(u);
       loadDashboard(window.currentUser);
+      initFCM(window.currentUser);
     }catch{
       localStorage.removeItem("sutom_user");
       showLoginSection();
@@ -766,6 +601,7 @@ function handleLogin(e){
   };
   localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
   loadDashboard(window.currentUser);
+  initFCM(window.currentUser);
 }
 
 function loadDashboard(user){
@@ -797,11 +633,6 @@ function handleLogout(){
   localStorage.removeItem("sutom_user");
   window.currentUser = null;
   showLoginSection();
-  
-  const hu = document.getElementById("headerUserName");
-  const hd = document.getElementById("headerUserDept");
-  if(hu) hu.textContent = "User";
-  if(hd) hd.textContent = "Department";
 }
 
 function showDepartmentTab(deptId){
@@ -831,12 +662,7 @@ function openSetterModule(key){
 }
 
 function emptySample(){
-  return {
-    setterStart:null, setterEnd:null, cutTime:null,
-    cmmStart:null, cmmEnd:null,
-    qualityStart:null, qualityEnd:null,
-    result:null
-  };
+  return { setterStart:null, setterEnd:null, cutTime:null, cmmStart:null, cmmEnd:null, qualityStart:null, qualityEnd:null, result:null };
 }
 
 let isSubmitting = false;
@@ -967,10 +793,7 @@ window.saveSetterFixtureSelection = function(firebaseKey){
   if(!s) return;
   const checked = document.querySelector(`input[name="fixture_pick_${firebaseKey}"]:checked`);
   const selected = checked ? checked.value.trim() : "";
-  if(!selected){
-    alert("कृपया उपलब्ध फिक्स्चर सिरीयल नंबरमधून एक नंबर निवडा.");
-    return;
-  }
+  if(!selected){ alert("कृपया उपलब्ध फिक्स्चर सिरीयल नंबरमधून एक नंबर निवडा."); return; }
   dbRef.child(firebaseKey).update({
     selectedFixtureSerialNo: selected,
     availableFixtureSerialNo: selected,
@@ -1016,7 +839,7 @@ window.setterEndSample = function(firebaseKey){
   updates["notifications/cmm/read"] = false;
   updates["notifications/cmm/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("CMM ROOM", `Sample #${n} completed by Setter. ${s.machineName} CMM Room ला पाठवा. CMM Action आता available आहे.`);
+    triggerAlert("CMM ROOM", `Sample #${n} completed by Setter. ${s.machineName} CMM Room ला पाठवा.`);
   });
 };
 
@@ -1064,7 +887,7 @@ window.toolRoomEnd = function(firebaseKey){
   };
 
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("SETTER NOTIFICATION", `Tooling & Fixture READY. Available Fixture Serial No: ${serialNo}. ${s.machineName} साठी Setter Setup Start करू शकतो.`);
+    triggerAlert("SETTER NOTIFICATION", `Tooling & Fixture READY. Available Fixture Serial No: ${serialNo}.`);
   });
 };
 
@@ -1075,10 +898,6 @@ window.updateToolRemarkInput = function(firebaseKey,val){
 window.cmmStart = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-  if(!s.notifications || !s.notifications.cmm || !s.notifications.cmm.actionReady){
-    alert("Setter चे काम complete होऊन CMM notification येईपर्यंत Action उपलब्ध नाही.");
-    return;
-  }
   const n = s.sampleCount||1;
   dbRef.child(firebaseKey).update({
     [`s${n}/cmmStart`]: currentTime(),
@@ -1103,17 +922,13 @@ window.cmmEnd = function(firebaseKey){
   updates["notifications/quality/read"] = false;
   updates["notifications/quality/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("QUALITY NOTIFICATION", `Sample #${n} CMM inspection completed. ${s.machineName} Quality Department ला पाठवा.`);
+    triggerAlert("QUALITY NOTIFICATION", `Sample #${n} CMM inspection completed.`);
   });
 };
 
 window.qualityStart = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-  if(!s.notifications || !s.notifications.quality || !s.notifications.quality.actionReady){
-    alert("CMM inspection complete झाल्यावर Quality Action available होईल.");
-    return;
-  }
   const n = s.sampleCount||1;
   dbRef.child(firebaseKey).update({
     [`s${n}/qualityStart`]: currentTime(),
@@ -1170,7 +985,7 @@ window.qualityCorrection = function(firebaseKey){
     "notifications/setter/actionReady": true
   };
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("CORRECTION", `Correction required for ${s.machineName}. Shifted to Sample #${next}. Setter ला notification पाठवले आहे.`);
+    triggerAlert("CORRECTION", `Correction required for ${s.machineName}. Shifted to Sample #${next}.`);
   });
 };
 
@@ -1273,11 +1088,6 @@ window.renderSetterExcelTable = function(filterKey){
     }
 
     const opts = Array.isArray(s.availableFixtureSerialOptions) && s.availableFixtureSerialOptions.length ? s.availableFixtureSerialOptions : (s.availableFixtureSerialNo ? [s.availableFixtureSerialNo] : []);
-    const selected = s.selectedFixtureSerialNo || "";
-    
-    // FIX: Setter Dashboard वर Available Fixture मध्ये फक्त Serial Number दाखवायचा.
-    // Radio/Select button काढले आहे. Tool Room ने दिलेला availableFixtureSerialNo/Options
-    // Firebase मधून read-only स्वरूपात display होईल.
     const fixture = (s.setupType==='Short') ? '' :
       (!opts.length ? `<div class="fixture-box"><div class="fixture-title">Waiting Fixture</div></div>` :
       `<div class="fixture-box">
@@ -1305,12 +1115,8 @@ window.renderToolroom = function(){
   const tbody = document.getElementById("toolroomTable");
   if(!tbody) return;
   let list = (window.allSetups||[]).filter(s=>s.setupType==="Long" || !s.setupType);
-  if(window.toolroomFilter==="ready"){
-    list = list.filter(s=>s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo);
-  }
-  if(window.toolroomFilter==="pending"){
-    list = list.filter(s=>!(s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo));
-  }
+  if(window.toolroomFilter==="ready"){ list = list.filter(s=>s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo); }
+  if(window.toolroomFilter==="pending"){ list = list.filter(s=>!(s.toolingReady && s.fixtureReady && s.availableFixtureSerialNo)); }
   if(list.length===0){
     tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No setup found.</td></tr>`;
     return;
@@ -1354,9 +1160,7 @@ window.renderSTDRoom = function(){
   const tbody = document.getElementById("stdroomTable");
   if(!tbody) return;
   let list = (window.allSetups||[]).filter(s=>s.qualityStatus!=="SOP DONE");
-  if(window.cmmFilter==="registered"){
-    list = list.filter(s=>s.notifications && s.notifications.cmm && s.notifications.cmm.notified);
-  }
+  if(window.cmmFilter==="registered"){ list = list.filter(s=>s.notifications && s.notifications.cmm && s.notifications.cmm.notified); }
   if(window.cmmFilter==="running"){
     list = list.filter(s=>{
       const n = s.sampleCount||1;
@@ -1383,7 +1187,7 @@ window.renderSTDRoom = function(){
       <td class="p-3 small-time">${x.cmmEnd||"-"}</td>
       <td class="p-3 font-bold text-blue-400">${durationMinutes(x.cmmStart, x.cmmEnd)}</td>
       <td class="p-3">
-        ${!cmmReady && !x.cmmStart ? `<span class="text-[10px] text-amber-400 font-bold">WAITING SETTER END</span>` : (cmmReady && !x.cmmStart ? `<button onclick="cmmStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold action-ready"><i class="fas fa-play mr-1"></i>START</button>` : (x.cmmStart && !x.cmmEnd ? `<button onclick="cmmEnd('${s.firebaseKey}')" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-stop mr-1"></i>ACTION / END</button>` : `<span class="text-xs font-bold text-emerald-400"><i class="fas fa-paper-plane mr-1"></i>QUALITY NOTIFIED</span>`))}
+        ${!cmmReady && !x.cmmStart ? `<span class="text-[10px] text-amber-400 font-bold">WAITING SETTER END</span>` : (cmmReady && !x.cmmStart ? `<button onclick="cmmStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-play mr-1"></i>START</button>` : (x.cmmStart && !x.cmmEnd ? `<button onclick="cmmEnd('${s.firebaseKey}')" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-stop mr-1"></i>ACTION / END</button>` : `<span class="text-xs font-bold text-emerald-400"><i class="fas fa-paper-plane mr-1"></i>QUALITY NOTIFIED</span>`))}
       </td>
     </tr>`;
   });
@@ -1394,9 +1198,7 @@ window.renderQuality = function(){
   const area = document.getElementById("qualityTableArea");
   if(!area) return;
   let list = (window.allSetups||[]);
-  if(window.qualityFilter==="approve"){
-    list = list.filter(s=>s.qualityStatus==="SOP DONE");
-  }
+  if(window.qualityFilter==="approve"){ list = list.filter(s=>s.qualityStatus==="SOP DONE"); }
   if(window.qualityFilter==="pending"){
     list = list.filter(s=>{
       return (s.notifications && s.notifications.quality && s.notifications.quality.notified && s.qualityStatus!=="SOP DONE");
@@ -1424,7 +1226,7 @@ window.renderQuality = function(){
       <td class="p-3 small-time">${x.qualityEnd||"-"}</td>
       <td class="p-3 font-bold text-blue-400">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
       <td class="p-3">
-        ${isApproved ? `<span class="text-xs font-bold text-purple-400"><i class="fas fa-check-circle mr-1"></i>SOP APPROVED</span>` : (!qReady && !x.qualityStart ? `<span class="text-[10px] text-amber-400 font-bold">WAITING CMM</span>` : (qReady && !x.qualityStart ? `<button onclick="qualityStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold action-ready"><i class="fas fa-play mr-1"></i>START</button>` : (x.qualityStart && !x.qualityEnd ? `<button onclick="qualityEnd('${s.firebaseKey}')" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-stop mr-1"></i>ACTION / END</button>` : (x.qualityEnd && !x.result ? `<div class="flex flex-wrap gap-2 justify-center"><button onclick="qualityApprove('${s.firebaseKey}')" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-check mr-1"></i>SOP APPROVE</button>${n<4?`<button onclick="qualityCorrection('${s.firebaseKey}')" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-rotate-right mr-1"></i>CORRECTION</button>`:``}</div>` : `<span class="text-xs font-bold text-emerald-400">DONE</span>`))))}
+        ${isApproved ? `<span class="text-xs font-bold text-purple-400"><i class="fas fa-check-circle mr-1"></i>SOP APPROVED</span>` : (!qReady && !x.qualityStart ? `<span class="text-[10px] text-amber-400 font-bold">WAITING CMM</span>` : (qReady && !x.qualityStart ? `<button onclick="qualityStart('${s.firebaseKey}')" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-play mr-1"></i>START</button>` : (x.qualityStart && !x.qualityEnd ? `<button onclick="qualityEnd('${s.firebaseKey}')" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-stop mr-1"></i>ACTION / END</button>` : (x.qualityEnd && !x.result ? `<div class="flex flex-wrap gap-2 justify-center"><button onclick="qualityApprove('${s.firebaseKey}')" class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-check mr-1"></i>SOP APPROVE</button>${n<4?`<button onclick="qualityCorrection('${s.firebaseKey}')" class="bg-red-600 text-white text-xs px-3 py-1.5 rounded font-bold"><i class="fas fa-rotate-right mr-1"></i>CORRECTION</button>`:``}</div>` : `<span class="text-xs font-bold text-emerald-400">DONE</span>`))))}
       </td>
     </tr>`;
   });
@@ -1547,16 +1349,7 @@ window.openWorkflowModal = function(firebaseKey){
   document.getElementById("workflowContent").innerHTML = `
   <div class="excel-table-container">
     <table class="workflow-table">
-      <thead>
-        <tr>
-          <th>SR.</th>
-          <th>DEPARTMENT</th>
-          <th>START</th>
-          <th>END</th>
-          <th>TOTAL</th>
-          <th>STATUS</th>
-        </tr>
-      </thead>
+      <thead><tr><th>SR.</th><th>DEPARTMENT</th><th>START</th><th>END</th><th>TOTAL</th><th>STATUS</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>`;
@@ -1651,4 +1444,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-             </html>
+</html>

@@ -234,7 +234,11 @@ button,input,select{font-family:inherit}
 .sutom-company{display:flex;align-items:center;gap:9px;font-size:12px;color:#e9eef6}.sutom-company i{font-size:28px;color:#cbd5e1}.sutom-company small{display:block;color:#93a0b4;font-size:10px;margin-top:1px}
 .sutom-head-actions{display:flex;align-items:center;gap:7px}.compact-header-btn{border:1px solid #33465f;background:#0b1625;color:#dce6f4;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:900;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}.compact-header-btn:hover{filter:brightness(1.15)}.compact-header-btn.reset{border-color:#9b1c2d;color:#ff9aa5;background:#210b11}.compact-header-btn.logout{border-color:#5b6b80;color:#f2f5f8;background:#101a28}.sutom-pill{border:1px solid #26364d;background:#0b1524;color:#e9eef6;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}.sutom-pill.live{border-color:#00b96b;color:#54f0a9;background:#061b13}.sutom-pill.live i{font-size:7px}.sutom-user{display:flex;align-items:center;gap:7px;padding-left:5px}.sutom-user-avatar{width:36px;height:36px;border-radius:50%;background:#f5f7fb;color:#111827;display:flex;align-items:center;justify-content:center;font-size:19px}.sutom-user-name{font-size:11px;font-weight:800}.sutom-user-dept{font-size:9px;color:#8d9bb0;margin-top:2px}
 
-#dashboardSection{display:flex!important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
+/* --- Authentication & Dashboard Visibility Fix --- */
+#dashboardSection{display:none !important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
+#dashboardSection.active-flex{display:flex!important;}
+.hidden-section{display:none !important;}
+
 .sutom-sidebar{width:176px;flex:0 0 176px;background:#06101b;border-right:1px solid #203047;padding:18px 10px;display:flex;flex-direction:column;gap:7px;min-height:calc(100vh - 78px);position:sticky;top:78px;height:calc(100vh - 78px)}
 .sutom-nav-btn{width:100%;border:0;background:transparent;color:#c6d0df;text-align:left;padding:11px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:11px}.sutom-nav-btn i{width:18px;text-align:center;font-size:15px}.sutom-nav-btn:hover,.sutom-nav-btn.active{background:linear-gradient(90deg,#d92338,#8d1325);color:white;box-shadow:0 6px 18px rgba(255,36,56,.16)}.sutom-side-bottom{margin-top:auto;border-top:1px solid #1b2b40;padding-top:10px;color:#66758a;font-size:9px;text-align:center;line-height:1.5}
 #dashboardSection>main{padding:16px 18px 28px!important;overflow-y:auto!important;width:calc(100% - 176px);max-width:none}
@@ -404,7 +408,7 @@ button,input,select{font-family:inherit}
 
 
 <!-- ================= DASHBOARD ================= -->
-<div id="dashboardSection" class="hidden">
+<div id="dashboardSection">
 
   <aside class="sutom-sidebar">
     <button class="sutom-nav-btn active" onclick="showDepartmentTab(window.currentUser?.dept||'setter')"><i class="fas fa-home"></i> Dashboard</button>
@@ -570,14 +574,14 @@ button,input,select{font-family:inherit}
       <div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
       <div class="count" id="qualityPendingCount">0</div>
       <div class="label">SOP PENDING</div>
-      <p class="text-[10px] text-slate-400 mt-1">Work Start/End नंतरही pending; Approve किंवा Correction पर्यंत इथेच</p>
+      <p class="text-[10px] text-slate-400 mt-1">Work Start/End ನಂತರही pending; Approve किंवा Correction पर्यंत इथेच</p>
     </div>
   </div>
 
   <div class="dept-table-container">
     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
       <h2 class="text-lg font-bold text-white"><i class="fas fa-clipboard-check text-emerald-400 mr-2"></i>QUALITY INSPECTION</h2>
-      <span class="text-xs text-slate-400">CMM End notification नंतर Quality Action उपलब्ध होईल.</span>
+      <span class="text-xs text-slate-400">CMM End notification ನಂತರ Quality Action उपलब्ध होईल.</span>
     </div>
     <div id="qualityTableArea" class="overflow-x-auto"></div>
   </div>
@@ -710,7 +714,10 @@ window.addEventListener("DOMContentLoaded",()=>{
       loadDashboard(window.currentUser);
     }catch{
       localStorage.removeItem("sutom_user");
+      showLoginSection();
     }
+  } else {
+    showLoginSection();
   }
 
   const dateInput = document.getElementById("setupDate");
@@ -742,9 +749,11 @@ function handleLogin(e){
 }
 
 function loadDashboard(user){
-  document.getElementById("authSection").classList.add("hidden");
-  document.getElementById("dashboardSection").classList.remove("hidden");
-  document.getElementById("dashboardSection").classList.add("flex");
+  document.getElementById("authSection").classList.add("hidden-section");
+  const dashSec = document.getElementById("dashboardSection");
+  dashSec.classList.remove("hidden-section");
+  dashSec.classList.add("active-flex");
+  
   document.getElementById("userInfo").classList.remove("hidden");
   document.getElementById("userInfo").classList.add("flex");
 
@@ -756,13 +765,18 @@ function loadDashboard(user){
   showDepartmentTab(user.dept);
 }
 
+function showLoginSection(){
+  document.getElementById("authSection").classList.remove("hidden-section");
+  const dashSec = document.getElementById("dashboardSection");
+  dashSec.classList.remove("active-flex");
+  dashSec.classList.add("hidden-section");
+  document.getElementById("userInfo").classList.add("hidden");
+}
+
 function handleLogout(){
   localStorage.removeItem("sutom_user");
   window.currentUser = null;
-  document.getElementById("authSection").classList.remove("hidden");
-  document.getElementById("dashboardSection").classList.add("hidden");
-  document.getElementById("dashboardSection").classList.remove("flex");
-  document.getElementById("userInfo").classList.add("hidden");
+  showLoginSection();
   
   const hu = document.getElementById("headerUserName");
   const hd = document.getElementById("headerUserDept");

@@ -318,6 +318,26 @@ button,input,select{font-family:inherit}
 .fixture-option input{width:12px;height:12px}
 .fixture-save{margin-top:4px;background:#a46a0b;color:white;border:0;border-radius:4px;padding:4px 6px;font-size:8px;font-weight:800;width:100%;cursor:pointer;}
 .fixture-save:hover{background:#c48212;}
+.fixture-serial-display{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.fixture-serial-item{
+  display:block;
+  width:100%;
+  padding:5px 7px;
+  border-radius:5px;
+  background:#2a2112;
+  border:1px solid #80601f;
+  color:#ffe3a0;
+  font-size:9px;
+  font-weight:900;
+  font-family:monospace;
+  text-align:center;
+  word-break:break-all;
+}
+
 
 #setupFormCard{background:#0a1523!important;color:#e9eef6;border:1px solid #29415c!important;padding:14px!important}
 #setupFormCard label{color:#aebbd0}
@@ -333,7 +353,7 @@ button,input,select{font-family:inherit}
 @media(max-width:1100px){.setter-machine-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.setter-metrics{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto}.sutom-company{display:none}.sutom-head-actions .sutom-pill:not(.live){display:none}}
 @media(max-width:768px){
   .sutom-header{height:64px;padding:6px 9px}.sutom-brand{min-width:auto;gap:7px}.sutom-logo{width:39px;height:39px}.sutom-logo:before{width:20px;height:20px}.sutom-logo:after{font-size:18px;top:7px;left:14px}.sutom-brand-title{font-size:23px}.sutom-brand-sub{font-size:8px;margin-top:3px}.sutom-user-name{font-size:9px}.sutom-user-dept{font-size:7px}.sutom-user-avatar{width:30px;height:30px;font-size:15px}.sutom-pill.live{font-size:0;padding:7px 8px}.sutom-pill.live i{font-size:8px;margin:0}.sutom-pill.live span{display:none}.compact-header-btn{padding:7px 8px;font-size:0}.compact-header-btn i{font-size:10px}.compact-header-btn span{display:none}
-  #dashboardSection{min-height:calc(100vh - 64px)!important}.sutom-sidebar{display:none}#dashboardSection>main{width:100%;padding:8px 8px 18px!important}.setter-topbar{margin-bottom:7px}.setter-title-mobile{display:none}.setter-action-row{width:100%;justify-content:space-between}.compact-action{flex:1;justify-content:center;padding:6px 5px;font-size:8px}.setter-hero{height:112px;padding:18px 14px;border-radius:11px}.setter-hero h2{font-size:24px}.setter-hero p{font-size:10px;margin-top:6px}.setter-hero .hero-time{right:10px;top:52px;min-width:120px;padding:5px 8px}.hero-time .date{font-size:7px}.hero-time .time{font-size:13px}.setter-metrics{grid-template-columns:repeat(5,minmax(86px,1fr));gap:5px;margin:7px 0;overflow-x:auto;padding-bottom:2px}.metric-card{min-height:64px;padding:7px 8px}.metric-card .metric-label{font-size:7px}.metric-card .metric-num{font-size:19px}.metric-card .metric-sub{font-size:7px}.setter-list-panel{padding:7px;border-radius:10px}.setter-list-head h3{font-size:11px}.setter-list-head p{font-size:7px}.setter-list-head .row-count{font-size:7px;padding:4px 5px}.setter-machine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:6px}.machine-card{padding:7px;border-radius:9px}.machine-card .mc-icon{width:24px;height:24px;font-size:11px}.status-chip{font-size:6.5px;padding:3px 5px}.mc-menu{font-size:10px}.mc-machine{font-size:15px;margin-top:5px}.mc-row{font-size:7.5px;margin-top:4px}.mc-pallet,.priority,.shift-row,.stage-text{font-size:7px}.priority b{padding:2px 4px}.shift-row{margin-top:5px}.progress{margin:6px 0 3px}.mc-action{padding:4px;font-size:7.5px}.fixture-box{padding:5px}.fixture-box .fixture-title,.fixture-option,.fixture-save{font-size:7px}.fixture-save{padding:3px 5px}
+  #dashboardSection{min-height:calc(100vh - 64px)!important}.sutom-sidebar{display:none}#dashboardSection>main{width:100%;padding:8px 8px 18px!important}.setter-topbar{margin-bottom:7px}.setter-title-mobile{display:none}.setter-action-row{width:100%;justify-content:space-between}.compact-action{flex:1;justify-content:center;padding:6px 5px;font-size:8px}.setter-hero{height:112px;padding:18px 14px;border-radius:11px}.setter-hero h2{font-size:24px}.setter-hero p{font-size:10px;margin-top:6px}.setter-hero .hero-time{right:10px;top:52px;min-width:120px;padding:5px 8px}.hero-time .date{font-size:7px}.hero-time .time{font-size:13px}.setter-metrics{grid-template-columns:repeat(5,minmax(86px,1fr));gap:5px;margin:7px 0;overflow-x:auto;padding-bottom:2px}.metric-card{min-height:64px;padding:7px 8px}.metric-card .metric-label{font-size:7px}.metric-card .metric-num{font-size:19px}.metric-card .metric-sub{font-size:7px}.setter-list-panel{padding:7px;border-radius:10px}.setter-list-head h3{font-size:11px}.setter-list-head p{font-size:7px}.setter-list-head .row-count{font-size:7px;padding:4px 5px}.setter-machine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:6px}.machine-card{padding:7px;border-radius:9px}.machine-card .mc-icon{width:24px;height:24px;font-size:11px}.status-chip{font-size:6.5px;padding:3px 5px}.mc-menu{font-size:10px}.mc-machine{font-size:15px;margin-top:5px}.mc-row{font-size:7.5px;margin-top:4px}.mc-pallet,.priority,.shift-row,.stage-text{font-size:7px}.priority b{padding:2px 4px}.shift-row{margin-top:5px}.progress{margin:6px 0 3px}.mc-action{padding:4px;font-size:7.5px}.fixture-box{padding:5px}.fixture-box .fixture-title,.fixture-option,.fixture-save{font-size:7px}.fixture-save{padding:3px 5px}.fixture-serial-item{font-size:7px;padding:4px 5px}
   #setupFormCard form{grid-template-columns:1fr!important}.sutom-brand-title{white-space:nowrap}
 }
 </style>
@@ -1255,8 +1275,15 @@ window.renderSetterExcelTable = function(filterKey){
     const opts = Array.isArray(s.availableFixtureSerialOptions) && s.availableFixtureSerialOptions.length ? s.availableFixtureSerialOptions : (s.availableFixtureSerialNo ? [s.availableFixtureSerialNo] : []);
     const selected = s.selectedFixtureSerialNo || "";
     
-    // [MODIFIED]: Removed Manual Fixture Input box and Select button. Only radio options and immediate/direct save on click or a simple select button if required, but clicking radio or keeping simple select works. Here we keep radio options with a compact select button.
-    const fixture = (s.setupType==='Short') ? '' : (!opts.length && !selected ? `<div class="fixture-box"><div class="fixture-title">Waiting Fixture</div></div>` : `<div class="fixture-box"><div class="fixture-title">Available Fixture</div>${opts.map(no=>`<label class="fixture-option"><input type="radio" name="fixture_pick_${s.firebaseKey}" value="${no}" ${selected===no?'checked':''}><span>${no}</span></label>`).join('')}<button onclick="saveSetterFixtureSelection('${s.firebaseKey}')" class="fixture-save">SELECT</button></div>`);
+    // FIX: Setter Dashboard वर Available Fixture मध्ये फक्त Serial Number दाखवायचा.
+    // Radio/Select button काढले आहे. Tool Room ने दिलेला availableFixtureSerialNo/Options
+    // Firebase मधून read-only स्वरूपात display होईल.
+    const fixture = (s.setupType==='Short') ? '' :
+      (!opts.length ? `<div class="fixture-box"><div class="fixture-title">Waiting Fixture</div></div>` :
+      `<div class="fixture-box">
+        <div class="fixture-title">Available Fixture Serial No.</div>
+        <div class="fixture-serial-display">${opts.map(no=>`<div class="fixture-serial-item">${no}</div>`).join('')}</div>
+      </div>`);
 
     const done = Math.min(4,n), dots = [1,2,3,4].map(i=>`<span class="${i<done?'done':''} ${i===done?'active':''}"></span>${i<4?'<div class="progress-line"></div>':''}`).join('');
     return `<article class="machine-card ${statusClass}">
@@ -1624,4 +1651,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-</html>
+  </html>

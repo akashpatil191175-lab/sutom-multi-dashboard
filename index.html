@@ -11,7 +11,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
 
 <style>
 *{
@@ -681,77 +680,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const dbRef = firebase.database().ref("setups");
 
-// ================= FCM PUSH NOTIFICATIONS =================
-// Web Push public VAPID key generated in Firebase Console.
-const FCM_VAPID_KEY = "BB7GLqS9RfXRulA0XP1YcDlVDyzceQhaYyJLTRzx8naS2yhbbgXi6ZfOKBAOMCGMmwKZYtQttVre0vRE8MgHyik";
-let fcmMessaging = null;
-let fcmReady = false;
-
-async async function initFCMPush(){
-  try{
-    if(!window.currentUser) return;
-    if(!firebase.messaging) return;
-
-    if(!window.isSecureContext){
-      console.warn("FCM requires HTTPS.");
-      return;
-    }
-
-    const permission = await Notification.requestPermission();
-    if(permission !== "granted"){
-      console.warn("Notification permission was not granted.");
-      return;
-    }
-
-    fcmMessaging = firebase.messaging();
-
-    const swUrl = new URL("firebase-messaging-sw.js", document.baseURI).href;
-    const registration = await navigator.serviceWorker.register(swUrl);
-
-    const token = await fcmMessaging.getToken({
-      vapidKey: FCM_VAPID_KEY,
-      serviceWorkerRegistration: registration
-    });
-
-    if(!token){
-      console.warn("FCM token not available.");
-      return;
-    }
-
-    fcmReady = true;
-    window.fcmToken = token;
-
-    const safeDept = String(window.currentUser.dept || "unknown").replace(/[^a-zA-Z0-9_-]/g,"_");
-    const safeId = String(window.currentUser.id || "unknown").replace(/[^a-zA-Z0-9_-]/g,"_");
-    const tokenKey = token.replace(/[^a-zA-Z0-9_-]/g,"_").slice(0,180);
-
-    // Token is stored only as a registration record. The actual push must be sent
-    // by a trusted Firebase Cloud Function/server, not from browser code.
-    await firebase.database().ref(`fcmTokens/${safeDept}/${safeId}/${tokenKey}`).set({
-      token,
-      employeeId: window.currentUser.id || "",
-      employeeName: window.currentUser.name || "",
-      department: window.currentUser.dept || "",
-      updatedAt: firebase.database.ServerValue.TIMESTAMP,
-      userAgent: navigator.userAgent.slice(0,300)
-    });
-
-    fcmMessaging.onMessage(payload=>{
-      const data = payload?.data || {};
-      const title = data.title || payload?.notification?.title || "SUTOM NOTIFICATION";
-      const message = data.message || payload?.notification?.body || "New workflow notification";
-      triggerAlert(title,message);
-    });
-
-    console.log("FCM PUSH READY", token);
-  }catch(err){
-    console.error("FCM setup error:",err);
-  }
-}
-
-window.initFCMPush = initFCMPush;
-
-
 window.allSetups = [];
 window.currentExcelFilter = "all";
 window.currentUser = null;
@@ -804,7 +732,6 @@ window.addEventListener("DOMContentLoaded",()=>{
     try{
       window.currentUser = JSON.parse(u);
       loadDashboard(window.currentUser);
-      setTimeout(initFCMPush, 700);
     }catch{
       localStorage.removeItem("sutom_user");
       showLoginSection();
@@ -839,7 +766,6 @@ function handleLogin(e){
   };
   localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
   loadDashboard(window.currentUser);
-  setTimeout(initFCMPush, 700);
 }
 
 function loadDashboard(user){
@@ -1725,4 +1651,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+             </html>

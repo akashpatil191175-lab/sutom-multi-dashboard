@@ -1455,15 +1455,17 @@ window.openWorkflowModal = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
   document.getElementById("workflowModal").classList.remove("hidden");
-  document.getElementById("workflowTitle").textContent = `${s.machineName} - COMPLETE SETUP WORKFLOW (${s.setupType||'Long'} Setup)`;
+  
+  // Updated Title as requested: e.g. M1 - Complete Setup Time
+  document.getElementById("workflowTitle").textContent = `${s.machineName} - Complete Setup Time (${s.setupType||'Long'} Setup)`;
   document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Part: ${s.partName} | Pallet: ${s.pallet}`;
 
   let rows = "";
   let sr = 1;
   rows += `
   <tr>
-    <td class="font-bold">${sr++}</td>
-    <td class="text-left font-bold">SETTER<br><span class="text-[9px]">Setup Registration</span></td>
+    <td class="font-bold text-black bg-white">${sr++}</td>
+    <td class="text-left font-bold text-black bg-white">SETTER<br><span class="text-[9px] text-gray-700">Setup Registration</span></td>
     <td class="stage-start">${s.timeRegistered||"-"}</td>
     <td class="stage-end">${s.setupType==='Short'?'N/A':(s.toolStart||"-")}</td>
     <td class="font-bold text-blue-400">${s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered, s.toolStart)}</td>
@@ -1473,8 +1475,8 @@ window.openWorkflowModal = function(firebaseKey){
   if(s.setupType!=='Short'){
     rows += `
     <tr>
-      <td class="font-bold">${sr++}</td>
-      <td class="text-left font-bold">TOOL ROOM<br><span class="text-[9px]">Tooling & Fixture Ready</span></td>
+      <td class="font-bold text-black bg-white">${sr++}</td>
+      <td class="text-left font-bold text-black bg-white">TOOL ROOM<br><span class="text-[9px] text-gray-700">Tooling & Fixture Ready</span></td>
       <td class="stage-start">${s.toolStart||"-"}</td>
       <td class="stage-end">${s.toolEnd||"-"}</td>
       <td class="font-bold text-blue-400">${durationMinutes(s.toolStart, s.toolEnd)}</td>
@@ -1492,22 +1494,22 @@ window.openWorkflowModal = function(firebaseKey){
 
     rows += `
     <tr>
-      <td rowspan="3" class="font-black text-purple-300 bg-purple-950">S${n}</td>
-      <td class="text-left font-bold">SETTER<br><span class="text-[9px]">Sample #${n}</span></td>
+      <td rowspan="3" class="font-black text-black bg-white">S${n}</td>
+      <td class="text-left font-bold text-black bg-white">SETTER<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.setterStart||"-"}</td>
       <td class="stage-end">${x.setterEnd||"-"}</td>
       <td class="font-bold text-blue-400">${durationMinutes(x.setterStart, x.setterEnd)}</td>
       <td>${setStatus}</td>
     </tr>
     <tr>
-      <td class="text-left font-bold">CMM ROOM<br><span class="text-[9px]">Sample #${n}</span></td>
+      <td class="text-left font-bold text-black bg-white">CMM ROOM<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.cmmStart||"-"}</td>
       <td class="stage-end">${x.cmmEnd||"-"}</td>
       <td class="font-bold text-blue-400">${durationMinutes(x.cmmStart, x.cmmEnd)}</td>
       <td>${cmmStatus}</td>
     </tr>
     <tr>
-      <td class="text-left font-bold">QUALITY<br><span class="text-[9px]">Sample #${n}</span></td>
+      <td class="text-left font-bold text-black bg-white">QUALITY<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.qualityStart||"-"}</td>
       <td class="stage-end">${x.qualityEnd||"-"}</td>
       <td class="font-bold text-blue-400">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>

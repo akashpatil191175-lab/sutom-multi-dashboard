@@ -686,36 +686,75 @@ const dbRef = firebase.database().ref("setups");
 const messaging = firebase.messaging();
 const VAPID_KEY = "BB7GLqS9RfXRulA0XP1YcDlVDyzceQhaYyJLTRzx8naS2yhbbgXi6ZfOKBAOMCGMmwKZYtQttVre0vRE8MgHyik";
 
-function initializeFCM() {
-  Notification.requestPermission().then((permission) => {
-    if (permission === 'granted') {
-      console.log('Notification permission granted.');
-      messaging.getToken({ vapidKey: VAPID_KEY }).then((currentToken) => {
-        if (currentToken) {
-          console.log('FCM Token:', currentToken);
-          // Token database मध्ये किंवा localstorage मध्ये सेव्ह करू शकता
-          firebase.database().ref('fcm_tokens').push({
-            token: currentToken,
-            timestamp: Date.now()
-          });
-        } else {
-          console.log('No registration token available. Request permission to generate one.');
-        }
-      }).catch((err) => {
-        console.log('An error occurred while retrieving token. ', err);
-      });
-    } else {
-      console.log('Unable to get permission to notify.');
-    }
-  });
+let activeFCMToken = null;
 
-  // Listen for foreground incoming messages
+async function initializeFCM() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+    console.log('This browser does not support Web Push notifications.');
+    return;
+  }
+
+  try {
+    // Register the SAME service worker file that handles background FCM.
+    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js', { scope: './' });
+    await navigator.serviceWorker.ready;
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      console.log('Notification permission:', permission);
+      return;
+    }
+
+    const currentToken = await messaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if (!currentToken) {
+      console.log('FCM token was not generated.');
+      return;
+    }
+
+    activeFCMToken = currentToken;
+    console.log('FCM token registered.');
+    localStorage.setItem('sutom_fcm_token', currentToken);
+
+    // Keep ONE record per browser/device token. The Cloud Function uses
+    // department to send only the relevant notification to that device.
+    const savedUser = window.currentUser || JSON.parse(localStorage.getItem('sutom_user') || 'null');
+    await firebase.database().ref('fcm_tokens/' + encodeURIComponent(currentToken)).set({
+      token: currentToken,
+      name: savedUser?.name || '',
+      employeeId: savedUser?.id || '',
+      dept: savedUser?.dept || '',
+      updatedAt: firebase.database.ServerValue.TIMESTAMP,
+      userAgent: navigator.userAgent.slice(0, 250)
+    });
+  } catch (err) {
+    console.error('FCM initialization failed:', err);
+  }
+
+  // Foreground message: show the existing in-app alert.
   messaging.onMessage((payload) => {
-    console.log('Message received. ', payload);
-    const title = payload.notification.title || "SUTOM Alert";
-    const body = payload.notification.body || "New update in system.";
+    console.log('Foreground FCM message received:', payload);
+    const title = payload?.notification?.title || payload?.data?.title || 'SUTOM Alert';
+    const body = payload?.notification?.body || payload?.data?.body || 'New update in SUTOM system.';
     triggerAlert(title, body);
   });
+}
+
+async function registerFCMTokenForCurrentUser() {
+  if (!activeFCMToken || !window.currentUser) return;
+  try {
+    await firebase.database().ref('fcm_tokens/' + encodeURIComponent(activeFCMToken)).update({
+      name: window.currentUser.name || '',
+      employeeId: window.currentUser.id || '',
+      dept: window.currentUser.dept || '',
+      updatedAt: firebase.database.ServerValue.TIMESTAMP
+    });
+  } catch (e) {
+    console.log('Could not update FCM user mapping:', e);
+  }
 }
 
 window.allSetups = [];
@@ -766,17 +805,6 @@ window.addEventListener("DOMContentLoaded",()=>{
   loadPriority();
   initializeFCM(); // FCM Initialize call
 
-  // Service Worker Registration for PWA Background support
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./firebase-messaging-sw.js')
-      .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      })
-      .catch((err) => {
-        console.log('Service Worker registration failed:', err);
-      });
-  }
-
   const u = localStorage.getItem("sutom_user");
   if(u){
     try{
@@ -816,6 +844,7 @@ function handleLogin(e){
   };
   localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
   loadDashboard(window.currentUser);
+  registerFCMTokenForCurrentUser();
 }
 
 function loadDashboard(user){

@@ -14,22 +14,6 @@
 <!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
 
-<!-- ================= ONESIGNAL SDK ADDED ================= -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  window.OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "YOUR_ONESIGNAL_APP_ID", // <-- इथे तुमची OneSignal App ID टाका
-      safari_web_id: "",
-      notifyButton: {
-        enable: true,
-      },
-      allowLocalhostAsSecureOrigin: true
-    });
-  });
-</script>
-
 <style>
 *{
   box-sizing:border-box;
@@ -709,12 +693,13 @@ function initializeFCM() {
       messaging.getToken({ vapidKey: VAPID_KEY }).then((currentToken) => {
         if (currentToken) {
           console.log('FCM Token:', currentToken);
+          // Token database मध्ये किंवा localstorage मध्ये सेव्ह करू शकता
           firebase.database().ref('fcm_tokens').push({
             token: currentToken,
             timestamp: Date.now()
           });
         } else {
-          console.log('No registration token available.');
+          console.log('No registration token available. Request permission to generate one.');
         }
       }).catch((err) => {
         console.log('An error occurred while retrieving token. ', err);
@@ -724,6 +709,7 @@ function initializeFCM() {
     }
   });
 
+  // Listen for foreground incoming messages
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
     const title = payload.notification.title || "SUTOM Alert";
@@ -778,8 +764,9 @@ updateLiveTime();
 window.addEventListener("DOMContentLoaded",()=>{
   loadMachineList();
   loadPriority();
-  initializeFCM();
+  initializeFCM(); // FCM Initialize call
 
+  // Service Worker Registration for PWA Background support
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./firebase-messaging-sw.js')
       .then((registration) => {
@@ -1079,7 +1066,7 @@ window.setterEndSample = function(firebaseKey){
   updates["notifications/cmm/read"] = false;
   updates["notifications/cmm/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("CMM ROOM", `Sample #${n} completed by Setter.${s.machineName} CMM Room ला पाठवा. CMM Action आता available आहे.`);
+    triggerAlert("CMM ROOM", `Sample #${n} completed by Setter. ${s.machineName} CMM Room ला पाठवा. CMM Action आता available आहे.`);
   });
 };
 
@@ -1127,7 +1114,7 @@ window.toolRoomEnd = function(firebaseKey){
   };
 
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("SETTER NOTIFICATION", `Tooling & Fixture READY. Available Fixture Serial No: ${serialNo}.${s.machineName} साठी Setter Setup Start करू शकतो.`);
+    triggerAlert("SETTER NOTIFICATION", `Tooling & Fixture READY. Available Fixture Serial No: ${serialNo}. ${s.machineName} साठी Setter Setup Start करू शकतो.`);
   });
 };
 
@@ -1166,7 +1153,7 @@ window.cmmEnd = function(firebaseKey){
   updates["notifications/quality/read"] = false;
   updates["notifications/quality/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("QUALITY NOTIFICATION", `Sample #${n} CMM inspection completed.${s.machineName} Quality Department ला पाठवा.`);
+    triggerAlert("QUALITY NOTIFICATION", `Sample #${n} CMM inspection completed. ${s.machineName} Quality Department ला पाठवा.`);
   });
 };
 
@@ -1351,8 +1338,8 @@ window.renderSetterExcelTable = function(filterKey){
       <div class="mc-row"><span>Part</span><b>${s.partName||'-'}</b></div>
       <div class="mc-row"><span>P/N</span><b>${s.partNo||'-'}</b></div>
       <div class="mc-pallet">Pallet : <b>${(s.pallet||'-').replace('Pallet ','')}</b></div>
-      <div class="priority-row"><span class="priority">Priority <b>P${s.priority\vert{}\vert{}'-'}</b></span><span style="font-size:7px;color:#748399">${s.id||''}</span></div>
-      <div class="shift-row"><i class="fas fa-${String(s.shift||'').includes('C')?'moon':'sun'}"></i><span>${s.shift\vert{}\vert{}'-'}<br>${s.setupDate||''}</span></div>
+      <div class="priority-row"><span class="priority">Priority <b>P${s.priority||'-'}</b></span><span style="font-size:7px;color:#748399">${s.id||''}</span></div>
+      <div class="shift-row"><i class="fas fa-${String(s.shift||'').includes('C')?'moon':'sun'}"></i><span>${s.shift||'-'}<br>${s.setupDate||''}</span></div>
       <div class="progress">${dots}</div><div class="stage-text">${s.setupStarted?`Sample ${n} → Running`:(s.qualityStatus||'Registered')}</div>
       ${fixture}
       <div style="margin-top:5px">${action}</div>
@@ -1379,9 +1366,9 @@ window.renderToolroom = function(){
     return `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} -${s.partName}<br>
+        ${s.machineName} - ${s.partName}<br>
         <span class="text-[11px] font-semibold text-emerald-400">Part No: ${s.partNo||'-'}</span><br>
-        <span class="text-[10px] text-slate-400">${s.id} | ${s.pallet\vert{}\vert{}"-"} \vert{} Priority ${s.priority||"-"}</span>
+        <span class="text-[10px] text-slate-400">${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}</span>
       </td>
       <td class="p-3 text-xs">
         <b>Fixture No:</b> ${s.fixtureNo}<br>
@@ -1431,7 +1418,7 @@ window.renderSTDRoom = function(){
     html += `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} -${s.partName}<br>
+        ${s.machineName} - ${s.partName}<br>
         <span class="text-[10px] text-slate-400">${s.id} (${s.setupType||'Long'} Setup)</span>
       </td>
       <td class="p-3 font-bold text-indigo-400">
@@ -1475,8 +1462,8 @@ window.renderQuality = function(){
     rows += `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} -${s.partName}<br>
-        <span class="text-[10px] text-slate-400">${s.id} \vert{} P${s.priority||"-"}</span>
+        ${s.machineName} - ${s.partName}<br>
+        <span class="text-[10px] text-slate-400">${s.id} | P${s.priority||"-"}</span>
       </td>
       <td class="p-3 font-bold text-indigo-400">SAMPLE #${n}</td>
       <td class="p-3 small-time">${x.qualityStart||"-"}</td>

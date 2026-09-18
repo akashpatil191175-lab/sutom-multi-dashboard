@@ -596,14 +596,14 @@ button,input,select{font-family:inherit}
       <div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
       <div class="count" id="qualityPendingCount">0</div>
       <div class="label">SOP PENDING</div>
-      <p class="text-[10px] text-slate-400 mt-1">Work Start/End ನಂತರही pending; Approve किंवा Correction पर्यंत इथेच</p>
+      <p class="text-[10px] text-slate-400 mt-1">Work Start/End नंतरही pending; Approve किंवा Correction पर्यंत इथेच</p>
     </div>
   </div>
 
   <div class="dept-table-container">
     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
       <h2 class="text-lg font-bold text-white"><i class="fas fa-clipboard-check text-emerald-400 mr-2"></i>QUALITY INSPECTION</h2>
-      <span class="text-xs text-slate-400">CMM End notification ನಂತರ Quality Action उपलब्ध होईल.</span>
+      <span class="text-xs text-slate-400">CMM End notification नंतर Quality Action उपलब्ध होईल.</span>
     </div>
     <div id="qualityTableArea" class="overflow-x-auto"></div>
   </div>
@@ -725,6 +725,95 @@ const DEPARTMENT_WHATSAPP = {
   ]
 };
 
+/* ================= ALERT & WHATSAPP MODAL FUNCTIONS ================= */
+let alertAudioContext = null;
+
+function playAlertSound() {
+  try {
+    if (!alertAudioContext) {
+      alertAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (alertAudioContext.state === 'suspended') {
+      alertAudioContext.resume();
+    }
+    const osc = alertAudioContext.createOscillator();
+    const gain = alertAudioContext.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, alertAudioContext.currentTime); // A5 tone
+    gain.gain.setValueAtTime(0.1, alertAudioContext.currentTime);
+    osc.connect(gain);
+    gain.connect(alertAudioContext.destination);
+    osc.start();
+    osc.stop(alertAudioContext.currentTime + 0.5);
+  } catch(e) {
+    console.log("Audio playback error:", e);
+  }
+}
+
+function triggerAlert(title, message) {
+  const modal = document.getElementById("alertModal");
+  const titleEl = document.getElementById("alertTitle");
+  const msgEl = document.getElementById("alertMessage");
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  if (modal) modal.classList.remove("hidden");
+  playAlertSound();
+}
+
+function acknowledgeAlert() {
+  const modal = document.getElementById("alertModal");
+  if (modal) modal.classList.add("hidden");
+  const box = document.getElementById("whatsappContactButtons");
+  if (box) box.classList.add("hidden");
+  const helpText = document.getElementById("whatsappHelpText");
+  if (helpText) helpText.classList.add("hidden");
+}
+
+/* ================= RESET ALL DATA FUNCTION ================= */
+function handleResetAllData() {
+  dbRef.remove().then(() => {
+    triggerAlert("SYSTEM RESET", "सर्व setup data यशस्वीरीत्या delete / reset झाला आहे.");
+  }).catch(err => {
+    alert("Reset Error: " + err.message);
+  });
+}
+
+/* ================= DEPARTMENT NOTIFICATIONS CHECKER ================= */
+function checkDepartmentNotifications() {
+  if (!window.currentUser || !window.allSetups) return;
+  const userDept = window.currentUser.dept;
+  window.allSetups.forEach(s => {
+    if (s.notifications && s.notifications[userDept]) {
+      const notif = s.notifications[userDept];
+      if (notif.notified && !notif.read) {
+        let msg = `New update for ${s.machineName} - ${s.partName} (${s.id}).`;
+        if (userDept === "toolroom") msg = `Tool Room required for ${s.machineName} -${s.partName}.`;
+        else if (userDept === "setter") msg = `Setup ready for Setter on ${s.machineName}.`;
+        else if (userDept === "stdroom") msg = `CMM inspection ready for ${s.machineName}.`;
+        else if (userDept === "quality") msg = `Quality inspection ready for ${s.machineName}.`;
+
+        triggerAlert("DEPARTMENT ALERT", msg);
+        queueWorkflowWhatsApp(userDept, "SUTOM ALERT", msg, s);
+        
+        // Mark as read in Firebase so it won't repeatedly alert
+        dbRef.child(`${s.firebaseKey}/notifications/${userDept}/read`).set(true);
+      }
+    }
+  });
+}
+
+/* ================= GLOBAL RENDER VIEWS ================= */
+window.renderAllViews = function() {
+  updateMetrics();
+  updateDepartmentCounts();
+  const currentDept = window.currentUser ? window.currentUser.dept : 'setter';
+  if (currentDept === 'setter') renderSetterExcelTable(window.currentExcelFilter || 'all');
+  else if (currentDept === 'toolroom') renderToolroom();
+  else if (currentDept === 'stdroom') renderSTDRoom();
+  else if (currentDept === 'quality') renderQuality();
+  else if (currentDept === 'supervisor') renderSupervisor();
+};
+
 /* ================= WHATSAPP CLICK-TO-CHAT =================
    IMPORTANT: This does NOT send automatically and does NOT use WhatsApp API.
    It opens the selected WhatsApp contact with the message PRE-FILLED.
@@ -757,6 +846,7 @@ function getCurrentShift(){
 function showWhatsAppButtons(dept, title, message){
   pendingWhatsApp = { dept, title, message };
   const box = document.getElementById("whatsappContactButtons");
+  const helpText = document.getElementById("whatsappHelpText");
   if(!box) return;
 
   const contacts = getWhatsAppContacts(dept);
@@ -764,6 +854,7 @@ function showWhatsAppButtons(dept, title, message){
 
   if(!contacts.length){
     box.classList.add("hidden");
+    if (helpText) helpText.classList.add("hidden");
     return;
   }
 
@@ -778,6 +869,7 @@ function showWhatsAppButtons(dept, title, message){
   });
 
   box.classList.remove("hidden");
+  if (helpText) helpText.classList.remove("hidden");
 
   const shiftHeader = document.createElement("div");
   shiftHeader.className = "mb-2 px-3 py-2 rounded-lg bg-emerald-950 border border-emerald-700 text-emerald-300 text-xs font-black";
@@ -1074,7 +1166,7 @@ function handleSetterSubmit(e){
       queueWorkflowWhatsApp(
         "setter",
         "SUTOM - SETUP READY FOR SETTER",
-        `Setup ${setupId}: ${machineName} - ${newItem.partName}. Short Setup registered. Setter Setup Start करू शकतो.`,
+        `Setup ${setupId}: ${machineName} -${newItem.partName}. Short Setup registered. Setter Setup Start करू शकतो.`,
         newItem
       );
       triggerAlert("DEPARTMENT NOTIFICATION", `Setup ${setupId} registered. Setter ला notification पाठवले आहे.`);
@@ -1082,7 +1174,7 @@ function handleSetterSubmit(e){
       queueWorkflowWhatsApp(
         "toolroom",
         "SUTOM - TOOLING & FIXTURE REQUIRED",
-        `Setup ${setupId}: ${machineName} - ${newItem.partName}. Long Setup registered. Tooling & Fixture Ready करा.`,
+        `Setup ${setupId}: ${machineName} -${newItem.partName}. Long Setup registered. Tooling & Fixture Ready करा.`,
         newItem
       );
       triggerAlert("DEPARTMENT NOTIFICATION", `Setup ${setupId} registered. Tool Room ला notification पाठवले आहे.`);
@@ -1202,7 +1294,7 @@ window.setterEndSample = function(firebaseKey){
   updates["notifications/cmm/read"] = false;
   updates["notifications/cmm/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    const msg = `Sample #${n} completed by Setter. ${s.machineName} - ${s.partName} CMM Room ला पाठवा. CMM Action available आहे.`;
+    const msg = `Sample #${n} completed by Setter. ${s.machineName} -${s.partName} CMM Room ला पाठवा. CMM Action available आहे.`;
     queueWorkflowWhatsApp("stdroom","SUTOM - CMM NOTIFICATION",msg,s);
     triggerAlert("CMM ROOM", msg);
   });
@@ -1252,7 +1344,7 @@ window.toolRoomEnd = function(firebaseKey){
   };
 
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    const msg = `Tooling & Fixture READY. Fixture Serial No: ${serialNo}. ${s.machineName} - ${s.partName} साठी Setter Setup Start करू शकतो.`;
+    const msg = `Tooling & Fixture READY. Fixture Serial No: ${serialNo}. ${s.machineName} -${s.partName} साठी Setter Setup Start करू शकतो.`;
     queueWorkflowWhatsApp("setter","SUTOM - SETTER NOTIFICATION",msg,s);
     triggerAlert("SETTER NOTIFICATION", msg);
   });
@@ -1293,7 +1385,7 @@ window.cmmEnd = function(firebaseKey){
   updates["notifications/quality/read"] = false;
   updates["notifications/quality/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    const msg = `Sample #${n} CMM inspection completed. ${s.machineName} - ${s.partName} Quality Department ला पाठवा.`;
+    const msg = `Sample #${n} CMM inspection completed. ${s.machineName} -${s.partName} Quality Department ला पाठवा.`;
     queueWorkflowWhatsApp("quality","SUTOM - QUALITY NOTIFICATION",msg,s);
     triggerAlert("QUALITY NOTIFICATION", msg);
   });
@@ -1362,7 +1454,7 @@ window.qualityCorrection = function(firebaseKey){
     "notifications/setter/actionReady": true
   };
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    const msg = `Correction required for ${s.machineName} - ${s.partName}. Shifted to Sample #${next}. Setter ला पुन्हा Setup/Correction notification.`;
+    const msg = `Correction required for ${s.machineName} -${s.partName}. Shifted to Sample #${next}. Setter ला पुन्हा Setup/Correction notification.`;
     queueWorkflowWhatsApp("setter","SUTOM - CORRECTION NOTIFICATION",msg,s);
     triggerAlert("CORRECTION", msg);
   });
@@ -1482,8 +1574,8 @@ window.renderSetterExcelTable = function(filterKey){
       <div class="mc-row"><span>Part</span><b>${s.partName||'-'}</b></div>
       <div class="mc-row"><span>P/N</span><b>${s.partNo||'-'}</b></div>
       <div class="mc-pallet">Pallet : <b>${(s.pallet||'-').replace('Pallet ','')}</b></div>
-      <div class="priority-row"><span class="priority">Priority <b>P${s.priority||'-'}</b></span><span style="font-size:7px;color:#748399">${s.id||''}</span></div>
-      <div class="shift-row"><i class="fas fa-${String(s.shift||'').includes('C')?'moon':'sun'}"></i><span>${s.shift||'-'}<br>${s.setupDate||''}</span></div>
+      <div class="priority-row"><span class="priority">Priority <b>P${s.priority\vert{}\vert{}'-'}</b></span><span style="font-size:7px;color:#748399">${s.id||''}</span></div>
+      <div class="shift-row"><i class="fas fa-${String(s.shift||'').includes('C')?'moon':'sun'}"></i><span>${s.shift\vert{}\vert{}'-'}<br>${s.setupDate||''}</span></div>
       <div class="progress">${dots}</div><div class="stage-text">${s.setupStarted?`Sample ${n} → Running`:(s.qualityStatus||'Registered')}</div>
       ${fixture}
       <div style="margin-top:5px">${action}</div>
@@ -1510,9 +1602,9 @@ window.renderToolroom = function(){
     return `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} - ${s.partName}<br>
+        ${s.machineName} -${s.partName}<br>
         <span class="text-[11px] font-semibold text-emerald-400">Part No: ${s.partNo||'-'}</span><br>
-        <span class="text-[10px] text-slate-400">${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}</span>
+        <span class="text-[10px] text-slate-400">${s.id} | ${s.pallet\vert{}\vert{}"-"} \vert{} Priority ${s.priority||"-"}</span>
       </td>
       <td class="p-3 text-xs">
         <b>Fixture No:</b> ${s.fixtureNo}<br>
@@ -1562,7 +1654,7 @@ window.renderSTDRoom = function(){
     html += `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} - ${s.partName}<br>
+        ${s.machineName} -${s.partName}<br>
         <span class="text-[10px] text-slate-400">${s.id} (${s.setupType||'Long'} Setup)</span>
       </td>
       <td class="p-3 font-bold text-indigo-400">
@@ -1606,8 +1698,8 @@ window.renderQuality = function(){
     rows += `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} - ${s.partName}<br>
-        <span class="text-[10px] text-slate-400">${s.id} | P${s.priority||"-"}</span>
+        ${s.machineName} -${s.partName}<br>
+        <span class="text-[10px] text-slate-400">${s.id} \vert{} P${s.priority||"-"}</span>
       </td>
       <td class="p-3 font-bold text-indigo-400">SAMPLE #${n}</td>
       <td class="p-3 small-time">${x.qualityStart||"-"}</td>
@@ -1755,108 +1847,6 @@ window.openWorkflowModal = function(firebaseKey){
 function closeWorkflowModal(){
   document.getElementById("workflowModal").classList.add("hidden");
 }
-
-function handleResetAllData(){
-  if(!confirm("सर्व SUTOM setup data delete करायचा आहे का?")) return;
-  dbRef.remove().then(()=>{ alert("Data deleted."); });
-}
-
-function checkDepartmentNotifications(){
-  if(!window.currentUser) return;
-  const dept = window.currentUser.dept;
-  let pending = [];
-  (window.allSetups||[]).forEach(s=>{
-    const n = s.notifications||{};
-    if(dept==="toolroom" && n.toolroom && n.toolroom.notified && !n.toolroom.read && s.setupType==="Long"){
-      pending.push(`NEW SETUP: ${s.machineName} - ${s.partName}`);
-    }
-    if(dept==="stdroom" && n.cmm && n.cmm.notified && !n.cmm.read){
-      pending.push(`CMM NOTIFICATION: ${s.machineName} - ${s.partName}`);
-    }
-    if(dept==="setter" && n.setter && n.setter.notified && !n.setter.read){
-      pending.push(`TOOLING & FIXTURE READY: ${s.machineName}`);
-    }
-    if(dept==="quality" && n.quality && n.quality.notified && !n.quality.read){
-      pending.push(`QUALITY NOTIFICATION: ${s.machineName} - ${s.partName}`);
-    }
-  });
-
-  if(pending.length>0){
-    triggerAlert("NEW DEPARTMENT NOTIFICATION", pending.join(" | "));
-  }
-}
-
-window.renderAllViews = function(){
-  window.updateMetrics();
-  window.updateDepartmentCounts();
-  window.renderSetterExcelTable(window.currentExcelFilter);
-
-  if(!window.currentUser) return;
-  if(window.currentUser.dept==="toolroom") window.renderToolroom();
-  if(window.currentUser.dept==="stdroom") window.renderSTDRoom();
-  if(window.currentUser.dept==="quality") window.renderQuality();
-  if(window.currentUser.dept==="supervisor") window.renderSupervisor();
-};
-
-function triggerAlert(title,msg,whatsappDept=null,whatsappMessage=null){
-  document.getElementById("alertTitle").textContent = title;
-  document.getElementById("alertMessage").textContent = msg;
-  const waBox = document.getElementById("whatsappContactButtons");
-  const waHelp = document.getElementById("whatsappHelpText");
-
-  // If queueWorkflowWhatsApp() was called just before triggerAlert(),
-  // use that pending department/message automatically.
-  if(!whatsappDept && pendingWhatsApp){
-    whatsappDept = pendingWhatsApp.dept;
-    whatsappMessage = pendingWhatsApp.message;
-  }
-
-  if(whatsappDept && whatsappMessage){
-    showWhatsAppButtons(whatsappDept,title,whatsappMessage);
-    if(waHelp) waHelp.classList.remove("hidden");
-  } else {
-    if(waBox){ waBox.innerHTML=""; waBox.classList.add("hidden"); }
-    if(waHelp) waHelp.classList.add("hidden");
-  }
-  const alertModal = document.getElementById("alertModal");
-  alertModal.classList.remove("hidden");
-  if("vibrate" in navigator){
-    try{ navigator.vibrate([500,200,500,200,500]); }catch(e){}
-  }
-  if(alertInterval) clearInterval(alertInterval);
-  alertInterval = setInterval(()=>{
-    alertModal.classList.remove("hidden");
-    if("vibrate" in navigator){
-      try{ navigator.vibrate([500,200,500]); }catch(e){}
-    }
-  },2000);
-}
-
-function acknowledgeAlert(){
-  if(alertInterval){
-    clearInterval(alertInterval);
-    alertInterval = null;
-  }
-  document.getElementById("alertModal").classList.add("hidden");
-  pendingWhatsApp = null;
-
-  if(!window.currentUser) return;
-  const dept = window.currentUser.dept;
-  const field = dept==="toolroom" ? "toolroom" : dept==="stdroom" ? "cmm" : dept==="quality" ? "quality" : dept==="setter" ? "setter" : null;
-  if(!field) return;
-
-  const updates = {};
-  (window.allSetups||[]).forEach(s=>{
-    if(s.notifications && s.notifications[field] && s.notifications[field].notified && !s.notifications[field].read){
-      updates[`${s.firebaseKey}/notifications/${field}/read`] = true;
-    }
-  });
-
-  if(Object.keys(updates).length){
-    dbRef.parent.update(updates).catch(()=>{});
-  }
-}
 </script>
-
 </body>
 </html>

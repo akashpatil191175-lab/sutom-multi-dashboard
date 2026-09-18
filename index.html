@@ -663,6 +663,8 @@ button,input,select{font-family:inherit}
     </div>
     <h3 id="alertTitle" class="text-xl font-black text-red-500">WORKFLOW NOTIFICATION</h3>
     <p id="alertMessage" class="text-sm my-4 font-bold text-slate-300">Details</p>
+    <div id="whatsappContactButtons" class="hidden text-left mb-3 max-h-72 overflow-y-auto"></div>
+    <p id="whatsappHelpText" class="hidden text-xs text-green-300 mb-3">WhatsApp उघडेल आणि message pre-filled असेल. Send तुम्ही स्वतः करायचा आहे.</p>
     <button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">OK</button>
   </div>
 </div>
@@ -685,6 +687,124 @@ const dbRef = firebase.database().ref("setups");
 // Firebase Cloud Messaging (FCM) Initialization
 const messaging = firebase.messaging();
 const VAPID_KEY = "BB7GLqS9RfXRulA0XP1YcDlVDyzceQhaYyJLTRzx8naS2yhbbgXi6ZfOKBAOMCGMmwKZYtQttVre0vRE8MgHyik";
+
+/* ================= DEPARTMENT WHATSAPP CONTACTS =================
+   Contacts from the supplied SUTOM department-wise list.
+   WhatsApp numbers are stored without +91 so they can be used
+   safely with the WhatsApp Cloud API/backend.
+*/
+const DEPARTMENT_WHATSAPP = {
+  setter: [
+    { name:"Pranjay Bhalerao", phone:"9370357998", shift:"C" },
+    { name:"Sagar Shinde", phone:"9767663294", shift:"C" },
+    { name:"Nana More", phone:"9370192643", shift:"B" },
+    { name:"Gawade", phone:"9922562836", shift:"B" },
+    { name:"Siddhu Gauddar", phone:"7758903348", shift:"A" },
+    { name:"Abhijeet Pawale", phone:"8605152175", shift:"A" }
+  ],
+  toolroom: [
+    { name:"Prashant Tarate", phone:"7350090376", shift:"C" },
+    { name:"Chetan Garde", phone:"7350112265", shift:"C" },
+    { name:"Nitesh Kanase", phone:"9665265086", shift:"B" },
+    { name:"Pankaj Wankhede", phone:"9370074789", shift:"B" },
+    { name:"Anil Jadhav", phone:"9689515103", shift:"A" },
+    { name:"Suraj Aher", phone:"8263095317", shift:"A" }
+  ],
+  stdroom: [
+    { name:"Shuvam Manna", phone:"9593130536", shift:"B" },
+    { name:"Prathmesh", phone:"9146610277", shift:"C" },
+    { name:"Omkar Joshi", phone:"9130267902", shift:"A" }
+  ],
+  quality: [
+    { name:"Ramdas Rode", phone:"7020136782", shift:"C" },
+    { name:"Santosh Shippurkar", phone:"9921862590", shift:"C" },
+    { name:"Satyam Tripathi", phone:"9028098447", shift:"A" },
+    { name:"Ravi Sharb dire", phone:"7219589727", shift:"A" },
+    { name:"Aniket Mete", phone:"9271707158", shift:"B" },
+    { name:"Vithal Zambhre", phone:"7972221029", shift:"B" }
+  ]
+};
+
+/* ================= WHATSAPP CLICK-TO-CHAT =================
+   IMPORTANT: This does NOT send automatically and does NOT use WhatsApp API.
+   It opens the selected WhatsApp contact with the message PRE-FILLED.
+   The user must press Send inside WhatsApp.
+*/
+let pendingWhatsApp = null;
+
+function getWhatsAppContacts(dept){
+  return DEPARTMENT_WHATSAPP[dept] || [];
+}
+
+function openWhatsAppContact(phone, message){
+  const cleanPhone = String(phone).replace(/\D/g, "");
+  const url = "https://wa.me/91" + cleanPhone + "?text=" + encodeURIComponent(message || "");
+  window.open(url, "_blank");
+}
+
+function getCurrentShift(){
+  const now = new Date();
+  const minutes = now.getHours()*60 + now.getMinutes();
+
+  // A: 07:45 AM to 04:15 PM
+  // B: 04:15 PM to 12:00 AM
+  // C: 12:00 AM to 07:45 AM
+  if(minutes >= 7*60+45 && minutes < 16*60+15) return "A";
+  if(minutes >= 16*60+15) return "B";
+  return "C";
+}
+
+function showWhatsAppButtons(dept, title, message){
+  pendingWhatsApp = { dept, title, message };
+  const box = document.getElementById("whatsappContactButtons");
+  if(!box) return;
+
+  const contacts = getWhatsAppContacts(dept);
+  box.innerHTML = "";
+
+  if(!contacts.length){
+    box.classList.add("hidden");
+    return;
+  }
+
+  const currentShift = getCurrentShift();
+
+  // Current shift contacts always appear first.
+  // Within the same group, original contact order is preserved.
+  const sortedContacts = contacts.slice().sort((a,b)=>{
+    const aCurrent = a.shift === currentShift ? 0 : 1;
+    const bCurrent = b.shift === currentShift ? 0 : 1;
+    return aCurrent - bCurrent;
+  });
+
+  box.classList.remove("hidden");
+
+  const shiftHeader = document.createElement("div");
+  shiftHeader.className = "mb-2 px-3 py-2 rounded-lg bg-emerald-950 border border-emerald-700 text-emerald-300 text-xs font-black";
+  shiftHeader.innerHTML = `<i class="fas fa-clock mr-1"></i> CURRENT SHIFT: ${currentShift} &nbsp;|&nbsp; A 07:45-16:15 &nbsp; B 16:15-00:00 &nbsp; C 00:00-07:45`;
+  box.appendChild(shiftHeader);
+
+  sortedContacts.forEach((c,index)=>{
+    const btn = document.createElement("button");
+    btn.type = "button";
+    const isCurrent = c.shift === currentShift;
+    btn.className = `w-full ${isCurrent ? "bg-green-600 hover:bg-green-700" : "bg-slate-700 hover:bg-slate-600"} text-white font-bold px-4 py-3 rounded-lg shadow-lg text-left mb-2`;
+    btn.innerHTML = `<i class="fab fa-whatsapp text-lg mr-2"></i>${c.name} <span class="text-xs opacity-80">(Shift ${c.shift}${isCurrent ? " • CURRENT" : ""})</span>`;
+    btn.onclick = ()=>openWhatsAppContact(c.phone, message);
+    box.appendChild(btn);
+  });
+}
+
+function queueWhatsAppNotification(dept, title, message, setup){
+  // Kept as a compatibility wrapper for the existing workflow calls.
+  // Nothing is sent automatically; triggerAlert shows contact buttons.
+  return Promise.resolve();
+}
+
+function queueWorkflowWhatsApp(dept, title, message, setup){
+  showWhatsAppButtons(dept, title, message);
+}
+
 
 function initializeFCM() {
   Notification.requestPermission().then((permission) => {
@@ -942,15 +1062,31 @@ function handleSetterSubmit(e){
     timeSopDone: null,
     totalTimeSpent: "Pending",
     notifications: {
-      toolroom: { notified: true, read: false, actionReady: !isShort },
-      cmm: { notified: true, read: false, actionReady: false },
-      setter: { notified: false, read: false, actionReady: isShort },
+      toolroom: { notified: !isShort, read: false, actionReady: !isShort },
+      cmm: { notified: false, read: false, actionReady: false },
+      setter: { notified: isShort, read: false, actionReady: isShort },
       quality: { notified: false, read: false, actionReady: false }
     }
   };
 
   dbRef.child(newKey).set(newItem).then(()=>{
-    triggerAlert("DEPARTMENT NOTIFICATION", `Setup ${setupId} registered. Tool Room आणि CMM Room ला notification पाठवले आहे.`);
+    if(isShort){
+      queueWorkflowWhatsApp(
+        "setter",
+        "SUTOM - SETUP READY FOR SETTER",
+        `Setup ${setupId}: ${machineName} - ${newItem.partName}. Short Setup registered. Setter Setup Start करू शकतो.`,
+        newItem
+      );
+      triggerAlert("DEPARTMENT NOTIFICATION", `Setup ${setupId} registered. Setter ला notification पाठवले आहे.`);
+    }else{
+      queueWorkflowWhatsApp(
+        "toolroom",
+        "SUTOM - TOOLING & FIXTURE REQUIRED",
+        `Setup ${setupId}: ${machineName} - ${newItem.partName}. Long Setup registered. Tooling & Fixture Ready करा.`,
+        newItem
+      );
+      triggerAlert("DEPARTMENT NOTIFICATION", `Setup ${setupId} registered. Tool Room ला notification पाठवले आहे.`);
+    }
     document.getElementById("setterForm").reset();
     document.getElementById("setupDate").value = new Date().toISOString().split("T")[0];
     toggleSetupForm(false);
@@ -1066,7 +1202,9 @@ window.setterEndSample = function(firebaseKey){
   updates["notifications/cmm/read"] = false;
   updates["notifications/cmm/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("CMM ROOM", `Sample #${n} completed by Setter. ${s.machineName} CMM Room ला पाठवा. CMM Action आता available आहे.`);
+    const msg = `Sample #${n} completed by Setter. ${s.machineName} - ${s.partName} CMM Room ला पाठवा. CMM Action available आहे.`;
+    queueWorkflowWhatsApp("stdroom","SUTOM - CMM NOTIFICATION",msg,s);
+    triggerAlert("CMM ROOM", msg);
   });
 };
 
@@ -1114,7 +1252,9 @@ window.toolRoomEnd = function(firebaseKey){
   };
 
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("SETTER NOTIFICATION", `Tooling & Fixture READY. Available Fixture Serial No: ${serialNo}. ${s.machineName} साठी Setter Setup Start करू शकतो.`);
+    const msg = `Tooling & Fixture READY. Fixture Serial No: ${serialNo}. ${s.machineName} - ${s.partName} साठी Setter Setup Start करू शकतो.`;
+    queueWorkflowWhatsApp("setter","SUTOM - SETTER NOTIFICATION",msg,s);
+    triggerAlert("SETTER NOTIFICATION", msg);
   });
 };
 
@@ -1153,7 +1293,9 @@ window.cmmEnd = function(firebaseKey){
   updates["notifications/quality/read"] = false;
   updates["notifications/quality/actionReady"] = true;
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("QUALITY NOTIFICATION", `Sample #${n} CMM inspection completed. ${s.machineName} Quality Department ला पाठवा.`);
+    const msg = `Sample #${n} CMM inspection completed. ${s.machineName} - ${s.partName} Quality Department ला पाठवा.`;
+    queueWorkflowWhatsApp("quality","SUTOM - QUALITY NOTIFICATION",msg,s);
+    triggerAlert("QUALITY NOTIFICATION", msg);
   });
 };
 
@@ -1220,7 +1362,9 @@ window.qualityCorrection = function(firebaseKey){
     "notifications/setter/actionReady": true
   };
   dbRef.child(firebaseKey).update(updates).then(()=>{
-    triggerAlert("CORRECTION", `Correction required for ${s.machineName}. Shifted to Sample #${next}. Setter ला notification पाठवले आहे.`);
+    const msg = `Correction required for ${s.machineName} - ${s.partName}. Shifted to Sample #${next}. Setter ला पुन्हा Setup/Correction notification.`;
+    queueWorkflowWhatsApp("setter","SUTOM - CORRECTION NOTIFICATION",msg,s);
+    triggerAlert("CORRECTION", msg);
   });
 };
 
@@ -1654,9 +1798,26 @@ window.renderAllViews = function(){
   if(window.currentUser.dept==="supervisor") window.renderSupervisor();
 };
 
-function triggerAlert(title,msg){
+function triggerAlert(title,msg,whatsappDept=null,whatsappMessage=null){
   document.getElementById("alertTitle").textContent = title;
   document.getElementById("alertMessage").textContent = msg;
+  const waBox = document.getElementById("whatsappContactButtons");
+  const waHelp = document.getElementById("whatsappHelpText");
+
+  // If queueWorkflowWhatsApp() was called just before triggerAlert(),
+  // use that pending department/message automatically.
+  if(!whatsappDept && pendingWhatsApp){
+    whatsappDept = pendingWhatsApp.dept;
+    whatsappMessage = pendingWhatsApp.message;
+  }
+
+  if(whatsappDept && whatsappMessage){
+    showWhatsAppButtons(whatsappDept,title,whatsappMessage);
+    if(waHelp) waHelp.classList.remove("hidden");
+  } else {
+    if(waBox){ waBox.innerHTML=""; waBox.classList.add("hidden"); }
+    if(waHelp) waHelp.classList.add("hidden");
+  }
   const alertModal = document.getElementById("alertModal");
   alertModal.classList.remove("hidden");
   if("vibrate" in navigator){
@@ -1677,6 +1838,7 @@ function acknowledgeAlert(){
     alertInterval = null;
   }
   document.getElementById("alertModal").classList.add("hidden");
+  pendingWhatsApp = null;
 
   if(!window.currentUser) return;
   const dept = window.currentUser.dept;

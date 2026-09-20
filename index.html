@@ -13,6 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 *{
@@ -478,7 +479,7 @@ button,input,select{font-family:inherit}
       <button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-400 bg-slate-800 px-2.5 py-1 rounded">Close</button>
     </div>
     <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div><label class="block text-xs font-bold mb-1">MACHINE NAME</label><select id="machineName" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT MACHINE --</option></select></div>
+      <div><label class="block text-xs font-bold mb-1">MACHINE NAME</label><select id="machineName" required onchange="handleMachineSelectChange(this)" class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT MACHINE --</option></select></div>
       <div><label class="block text-xs font-bold mb-1">PART NAME</label><input type="text" id="partName" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part Name"></div>
       <div><label class="block text-xs font-bold mb-1">PART NUMBER</label><input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No"></div>
       <div><label class="block text-xs font-bold mb-1">FIXTURE NUMBER</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Number"></div>
@@ -523,6 +524,7 @@ button,input,select{font-family:inherit}
     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
       <h2 class="text-lg font-bold text-white"><i class="fas fa-tools text-blue-500 mr-2"></i>Tool Room Setup Preparation</h2>
       <span class="text-xs text-slate-400">Long Setup साठी Tooling & Fixture Ready करा.</span>
+      <button onclick="downloadDepartmentExcel('toolroom')" class="compact-action green"><i class="fas fa-file-excel"></i> Tool Room Excel</button>
     </div>
     <div class="overflow-x-auto">
       <table class="dept-table">
@@ -564,6 +566,7 @@ button,input,select{font-family:inherit}
     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
       <h2 class="text-lg font-bold text-white"><i class="fas fa-microscope text-indigo-400 mr-2"></i>CMM ROOM / STD ROOM</h2>
       <span class="text-xs text-slate-400">Setter complete झाल्यावर CMM Action उपलब्ध होईल.</span>
+      <button onclick="downloadDepartmentExcel('stdroom')" class="compact-action green"><i class="fas fa-file-excel"></i> CMM Excel</button>
     </div>
     <div class="overflow-x-auto">
       <table class="dept-table">
@@ -647,7 +650,10 @@ button,input,select{font-family:inherit}
         <h2 id="workflowTitle" class="text-md md:text-xl font-black text-emerald-400">Machine Workflow</h2>
         <p id="workflowSubtitle" class="text-xs text-slate-300 mt-1"></p>
       </div>
-      <button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold text-xs"><i class="fas fa-times"></i></button>
+      <div class="flex items-center gap-2">
+        <button id="workflowExcelBtn" onclick="downloadMachineExcel(window.currentWorkflowFirebaseKey)" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg font-bold text-xs"><i class="fas fa-file-excel mr-1"></i> MACHINE EXCEL</button>
+        <button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold text-xs"><i class="fas fa-times"></i></button>
+      </div>
     </div>
     <div class="p-2 md:p-6 overflow-x-auto">
       <div id="workflowContent"></div>
@@ -840,6 +846,7 @@ function initializeFCM() {
 
 window.allSetups = [];
 window.currentExcelFilter = "all";
+window.currentWorkflowFirebaseKey = null;
 window.currentUser = null;
 let alertInterval = null;
 
@@ -852,13 +859,38 @@ for(let i=1;i<=15;i++){ MACHINE_LIST.push("M"+i); }
 for(let i=1;i<=35;i++){ MACHINE_LIST.push("EN"+i); }
 [3,8,11,13,15,25,27,28].forEach(n=>{ MACHINE_LIST.push("MK"+n); });
 
+function getAllMachineNames(){
+  const fromFirebase=(window.allSetups||[]).map(s=>String(s.machineName||"").trim()).filter(Boolean);
+  return [...new Set([...MACHINE_LIST,...fromFirebase])];
+}
+
 function loadMachineList(){
-  const select = document.getElementById("machineName");
+  const select=document.getElementById("machineName");
   if(!select) return;
-  select.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
-  MACHINE_LIST.forEach(machine=>{
-    select.innerHTML += `<option value="${machine}">${machine}</option>`;
+  const current=select.value;
+  select.innerHTML=`<option value="">-- SELECT MACHINE --</option>`;
+  getAllMachineNames().forEach(machine=>{
+    select.innerHTML+=`<option value="${machine}">${machine}</option>`;
   });
+  select.innerHTML+=`<option value="__NEW_MACHINE__">＋ ADD NEW MACHINE...</option>`;
+  if(current && getAllMachineNames().includes(current)) select.value=current;
+}
+
+function handleMachineSelectChange(select){
+  if(select.value!=="__NEW_MACHINE__") return;
+  const name=prompt("नवीन Machine Name टाका (उदा. M16):","");
+  if(name && name.trim()){
+    const machine=name.trim().toUpperCase();
+    if(!getAllMachineNames().includes(machine)){
+      const option=document.createElement("option");
+      option.value=machine;
+      option.textContent=machine;
+      select.insertBefore(option,select.lastElementChild);
+    }
+    select.value=machine;
+  }else{
+    select.value="";
+  }
 }
 
 function loadPriority(){
@@ -922,6 +954,7 @@ window.addEventListener("DOMContentLoaded",()=>{
     }else{
       window.allSetups=[];
     }
+    loadMachineList();
     window.renderAllViews();
     checkDepartmentNotifications();
   });
@@ -1096,9 +1129,14 @@ function handleSetterSubmit(e){
     registeredBy: window.currentUser ? window.currentUser.name : "",
     registeredById: window.currentUser ? window.currentUser.id : "",
     timestampRegistered: now.getTime(),
-    timeRegistered: now.toLocaleTimeString(),
+    timeRegistered: now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}),
+    registeredDate: now.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}),
     toolStart: isShort ? "N/A (Short)" : null,
+    toolStartTs: isShort ? null : null,
+    toolStartDate: isShort ? now.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}) : null,
     toolEnd: isShort ? "N/A (Short)" : null,
+    toolEndTs: isShort ? null : null,
+    toolEndDate: isShort ? now.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}) : null,
     setupStarted: false,
     sampleCount: 1,
     s1: emptySample(), s2: emptySample(), s3: emptySample(), s4: emptySample(),
@@ -1146,14 +1184,23 @@ function handleSetterSubmit(e){
   });
 }
 
+function currentStamp(){
+  const d = new Date();
+  return {
+    time: d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}),
+    date: d.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}),
+    ts: d.getTime()
+  };
+}
+
 function currentTime(){
-  return new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
+  return currentStamp().time;
 }
 
 function parseTimeToday(time){
-  if(!time || time.includes("N/A")) return null;
+  if(!time || String(time).includes("N/A")) return null;
   const d = new Date();
-  const match = time.match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
+  const match = String(time).match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
   if(!match) return null;
   let h = parseInt(match[1]);
   const m = parseInt(match[2]);
@@ -1167,24 +1214,49 @@ function parseTimeToday(time){
   return d;
 }
 
-function durationMinutes(start,end){
-  if(!start || !end || start.includes("N/A") || end.includes("N/A")) return "0 min";
-  const a = parseTimeToday(start);
-  const b = parseTimeToday(end);
-  if(!a || !b) return "-";
-  let diff = Math.floor((b-a)/60000);
-  if(diff<0) diff+=1440;
-  return diff+" min";
+function durationSeconds(start,end,startTs=null,endTs=null){
+  if(!start || !end || String(start).includes("N/A") || String(end).includes("N/A")) return 0;
+  let diff = (Number(endTs||0)>0 && Number(startTs||0)>0)
+    ? Math.floor((Number(endTs)-Number(startTs))/1000)
+    : null;
+  if(diff===null){
+    const a=parseTimeToday(start), b=parseTimeToday(end);
+    if(!a || !b) return 0;
+    diff=Math.floor((b-a)/1000);
+    if(diff<0) diff+=86400;
+  }
+  return Math.max(0,diff);
+}
+
+function formatDuration(sec){
+  sec=Math.max(0,Number(sec)||0);
+  const h=Math.floor(sec/3600);
+  const m=Math.floor((sec%3600)/60);
+  const s=sec%60;
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+
+function durationExact(start,end,startTs=null,endTs=null){
+  if(!start || !end || String(start).includes("N/A") || String(end).includes("N/A")) return "-";
+  return formatDuration(durationSeconds(start,end,startTs,endTs));
+}
+
+function durationMinutes(start,end,startTs=null,endTs=null){
+  if(!start || !end || String(start).includes("N/A") || String(end).includes("N/A")) return "0 min";
+  return Math.floor(durationSeconds(start,end,startTs,endTs)/60)+" min";
 }
 
 function totalSetupMinutes(s){
   if(!s.timestampRegistered) return "-";
   if(s.qualityStatus!=="SOP DONE" || !s.timeSopDone) return "-";
-  const end = parseTimeToday(s.timeSopDone);
+  const startTs=Number(s.timestampRegistered);
+  const endTs=Number(s.timeSopDoneTs||0);
+  if(endTs>0) return Math.floor(Math.max(0,endTs-startTs)/60000)+" min";
+  const end=parseTimeToday(s.timeSopDone);
   if(!end) return "-";
-  const start = new Date(s.timestampRegistered);
-  let diff = Math.floor((end-start)/60000);
-  if(diff<0) return "-";
+  const start=new Date(s.timestampRegistered);
+  let diff=Math.floor((end-start)/60000);
+  if(diff<0) diff+=1440;
   return diff+" min";
 }
 
@@ -1220,6 +1292,7 @@ window.setterStartSetup = function(firebaseKey){
     return;
   }
   const n = s.sampleCount||1;
+  const stamp = currentStamp();
   const updates = {
     setupStarted: true,
     stage: `Sample #${n} - SETTER`,
@@ -1228,7 +1301,11 @@ window.setterStartSetup = function(firebaseKey){
     "notifications/setter/actionReady": false
   };
   const sample = getSample(s,n);
-  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
+  if(!sample.setterStart){
+    updates[`s${n}/setterStart`] = stamp.time;
+    updates[`s${n}/setterStartTs`] = stamp.ts;
+    updates[`s${n}/setterStartDate`] = stamp.date;
+  }
   dbRef.child(firebaseKey).update(updates);
 };
 
@@ -1237,10 +1314,19 @@ window.setterEndSample = function(firebaseKey){
   if(!s) return;
   const n = s.sampleCount||1;
   const sample = getSample(s,n);
+  const stamp = currentStamp();
   const updates = {};
-  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
-  updates[`s${n}/setterEnd`] = currentTime();
-  updates[`s${n}/cutTime`] = currentTime();
+  if(!sample.setterStart){
+    updates[`s${n}/setterStart`] = stamp.time;
+    updates[`s${n}/setterStartTs`] = stamp.ts;
+    updates[`s${n}/setterStartDate`] = stamp.date;
+  }
+  updates[`s${n}/setterEnd`] = stamp.time;
+  updates[`s${n}/setterEndTs`] = stamp.ts;
+  updates[`s${n}/setterEndDate`] = stamp.date;
+  updates[`s${n}/cutTime`] = stamp.time;
+  updates[`s${n}/cutTimeTs`] = stamp.ts;
+  updates[`s${n}/cutDate`] = stamp.date;
   updates.stage = `Sample #${n} - CMM Pending`;
   updates.qualityStatus = `Sample #${n} CMM PENDING`;
   updates["notifications/cmm/notified"] = true;
@@ -1256,8 +1342,11 @@ window.setterEndSample = function(firebaseKey){
 window.toolRoomStart = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
+  const stamp = currentStamp();
   dbRef.child(firebaseKey).update({
-    toolStart: currentTime(),
+    toolStart: stamp.time,
+    toolStartTs: stamp.ts,
+    toolStartDate: stamp.date,
     stage: "Tool Room Running",
     qualityStatus: "TOOL ROOM RUNNING",
     "notifications/toolroom/read": true
@@ -1280,8 +1369,11 @@ window.toolRoomEnd = function(firebaseKey){
   if(!fixtureReady){ alert("Fixture Ready confirm करा."); return; }
   if(!serialNo){ alert("Available Fixture Serial Number टाका."); return; }
 
+  const stamp = currentStamp();
   const updates = {
-    toolEnd: currentTime(),
+    toolEnd: stamp.time,
+    toolEndTs: stamp.ts,
+    toolEndDate: stamp.date,
     toolingReady: true,
     fixtureReady: true,
     availableFixtureSerialNo: serialNo,
@@ -1315,8 +1407,11 @@ window.cmmStart = function(firebaseKey){
     return;
   }
   const n = s.sampleCount||1;
+  const stamp = currentStamp();
   dbRef.child(firebaseKey).update({
-    [`s${n}/cmmStart`]: currentTime(),
+    [`s${n}/cmmStart`]: stamp.time,
+    [`s${n}/cmmStartTs`]: stamp.ts,
+    [`s${n}/cmmStartDate`]: stamp.date,
     stage: `Sample #${n} - CMM Running`,
     qualityStatus: `Sample #${n} CMM RUNNING`,
     "notifications/cmm/read": true,
@@ -1329,9 +1424,16 @@ window.cmmEnd = function(firebaseKey){
   if(!s) return;
   const n = s.sampleCount||1;
   const sample = getSample(s,n);
+  const stamp = currentStamp();
   const updates = {};
-  if(!sample.cmmStart){ updates[`s${n}/cmmStart`] = currentTime(); }
-  updates[`s${n}/cmmEnd`] = currentTime();
+  if(!sample.cmmStart){
+    updates[`s${n}/cmmStart`] = stamp.time;
+    updates[`s${n}/cmmStartTs`] = stamp.ts;
+    updates[`s${n}/cmmStartDate`] = stamp.date;
+  }
+  updates[`s${n}/cmmEnd`] = stamp.time;
+  updates[`s${n}/cmmEndTs`] = stamp.ts;
+  updates[`s${n}/cmmEndDate`] = stamp.date;
   updates.stage = `Sample #${n} - Quality Pending`;
   updates.qualityStatus = `Sample #${n} QUALITY PENDING`;
   updates["notifications/quality/notified"] = true;
@@ -1352,8 +1454,11 @@ window.qualityStart = function(firebaseKey){
     return;
   }
   const n = s.sampleCount||1;
+  const stamp = currentStamp();
   dbRef.child(firebaseKey).update({
-    [`s${n}/qualityStart`]: currentTime(),
+    [`s${n}/qualityStart`]: stamp.time,
+    [`s${n}/qualityStartTs`]: stamp.ts,
+    [`s${n}/qualityStartDate`]: stamp.date,
     stage: `Sample #${n} - Quality Running`,
     qualityStatus: `Sample #${n} QUALITY RUNNING`,
     "notifications/quality/read": true,
@@ -1366,9 +1471,16 @@ window.qualityEnd = function(firebaseKey){
   if(!s) return;
   const n = s.sampleCount||1;
   const sample = getSample(s,n);
+  const stamp = currentStamp();
   const updates = {};
-  if(!sample.qualityStart){ updates[`s${n}/qualityStart`] = currentTime(); }
-  updates[`s${n}/qualityEnd`] = currentTime();
+  if(!sample.qualityStart){
+    updates[`s${n}/qualityStart`] = stamp.time;
+    updates[`s${n}/qualityStartTs`] = stamp.ts;
+    updates[`s${n}/qualityStartDate`] = stamp.date;
+  }
+  updates[`s${n}/qualityEnd`] = stamp.time;
+  updates[`s${n}/qualityEndTs`] = stamp.ts;
+  updates[`s${n}/qualityEndDate`] = stamp.date;
   updates.stage = `Sample #${n} - Quality Decision`;
   updates.qualityStatus = `Sample #${n} READY FOR DECISION`;
   dbRef.child(firebaseKey).update(updates);
@@ -1378,14 +1490,19 @@ window.qualityApprove = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
   const n = s.sampleCount||1;
-  const doneTime = currentTime();
+  const doneStamp = currentStamp();
   const updates = {
     [`s${n}/result`]: "SOP Approved",
+    [`s${n}/sopApprovalTime`]: doneStamp.time,
+    [`s${n}/sopApprovalTs`]: doneStamp.ts,
+    [`s${n}/sopApprovalDate`]: doneStamp.date,
     qualityStatus: "SOP DONE",
     stage: "SOP APPROVED",
-    timeSopDone: doneTime
+    timeSopDone: doneStamp.time,
+    timeSopDoneTs: doneStamp.ts,
+    sopApprovalDate: doneStamp.date
   };
-  updates.totalTimeSpent = totalSetupMinutes({ ...s, qualityStatus: "SOP DONE", timeSopDone: doneTime });
+  updates.totalTimeSpent = totalSetupMinutes({ ...s, qualityStatus: "SOP DONE", timeSopDone: doneStamp.time, timeSopDoneTs: doneStamp.ts });
   dbRef.child(firebaseKey).update(updates).then(()=>{
     const msg = buildQualityResultWhatsAppMessage(s,n,"SOP Approved");
     queueWorkflowWhatsApp("setter","SUTOM - QUALITY RESULT",msg,s);
@@ -1460,26 +1577,169 @@ window.setToolroomFilter = function(filter){ window.toolroomFilter = filter; ren
 window.setCmmFilter = function(filter){ window.cmmFilter = filter; renderSTDRoom(); };
 window.setQualityFilter = function(filter){ window.qualityFilter = filter; renderQuality(); };
 
-window.exportSetterDataToExcel = function(){
-  const list = window.allSetups||[];
-  if(list.length===0){ alert("Export करण्यासाठी कोणताही डेटा उपलब्ध नाही!"); return; }
-  let csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "Setup ID,Machine Name,Part Name,Part No,Fixture No,Setup Type,Date,Shift,Pallet,Priority,Registered By,Total Status,Total Time\n";
-  list.forEach(s=>{
-    let row = [
-      s.id||"", `"${s.machineName||""}"`, `"${s.partName||""}"`, `"${s.partNo||""}"`, `"${s.fixtureNo||""}"`,
-      s.setupType||"", s.setupDate||"", s.shift||"", s.pallet||"", s.priority||"",
-      `"${s.registeredBy||""}"`, `"${s.qualityStatus||""}"`, `"${s.totalTimeSpent||"Pending"}"`
-    ];
-    csvContent += row.join(",")+"\n";
+function getSampleNumbersForReport(s){
+  const max=Math.min(4,Math.max(1,Number(s.sampleCount||1)));
+  return [1,2,3,4].filter(n=>{
+    const x=getSample(s,n);
+    return n<=max || x.setterStart || x.setterEnd || x.cmmStart || x.cmmEnd || x.qualityStart || x.qualityEnd || x.result || x.sopApprovalTime;
   });
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `SUTOM_Setter_Report_${new Date().toISOString().split('T')[0]}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+}
+
+function buildDepartmentReportRows(dept,list){
+  const rows=[];
+  (list||[]).forEach(s=>{
+    const base={
+      "Date":s.setupDate||"",
+      "Machine Name":s.machineName||"",
+      "Setup ID":s.id||"",
+      "Part Name":s.partName||"",
+      "Part No":s.partNo||"",
+      "Setup Type":s.setupType||"",
+      "Shift":s.shift||"",
+      "Pallet":s.pallet||"",
+      "Priority":s.priority||"",
+      "Fixture No":s.fixtureNo||"",
+      "Fixture Serial No":s.fixtureSerialNo||"",
+      "Registered By":s.registeredBy||""
+    };
+
+    if(dept==="setter"){
+      rows.push({...base,
+        "Sample / Stage":"Setup Registration","Department":"SETTER",
+        "Start Time":s.timeRegistered||"",
+        "End Time":s.setupType==="Short"?"N/A":(s.toolStart||""),
+        "Start Date":s.setupDate||"",
+        "End Date":s.toolStartDate||s.setupDate||"",
+        "Total Time":s.setupType==="Short"?"N/A":durationExact(s.timeRegistered,s.toolStart,s.timestampRegistered,s.toolStartTs),
+        "Status":"REGISTERED"
+      });
+      getSampleNumbersForReport(s).forEach(n=>{
+        const x=getSample(s,n);
+        if(!x.setterStart && !x.setterEnd && !x.result) return;
+        rows.push({...base,
+          "Sample / Stage":`Sample #${n}`,"Department":"SETTER",
+          "Start Time":x.setterStart||"","End Time":x.setterEnd||"",
+          "Start Date":x.setterStartDate||s.setupDate||"",
+          "End Date":x.setterEndDate||s.setupDate||"",
+          "Total Time":durationExact(x.setterStart,x.setterEnd,x.setterStartTs,x.setterEndTs),
+          "Status":x.setterEnd?"DONE":(x.setterStart?"RUNNING":"PENDING")
+        });
+      });
+    }
+
+    if(dept==="toolroom" && s.setupType!=="Short"){
+      rows.push({...base,
+        "Sample / Stage":"Tooling & Fixture Ready","Department":"TOOL ROOM",
+        "Start Time":s.toolStart||"","End Time":s.toolEnd||"",
+        "Start Date":s.toolStartDate||s.setupDate||"",
+        "End Date":s.toolEndDate||s.setupDate||"",
+        "Total Time":durationExact(s.toolStart,s.toolEnd,s.toolStartTs,s.toolEndTs),
+        "Status":s.toolEnd?"READY":(s.toolStart?"RUNNING":"PENDING"),
+        "Available Fixture Serial":s.availableFixtureSerialNo||""
+      });
+    }
+
+    if(dept==="stdroom"){
+      getSampleNumbersForReport(s).forEach(n=>{
+        const x=getSample(s,n);
+        if(!x.cmmStart && !x.cmmEnd && !x.setterEnd) return;
+        rows.push({...base,
+          "Sample / Stage":`Sample #${n}`,"Department":"CMM ROOM",
+          "Start Time":x.cmmStart||"","End Time":x.cmmEnd||"",
+          "Start Date":x.cmmStartDate||s.setupDate||"",
+          "End Date":x.cmmEndDate||s.setupDate||"",
+          "Total Time":durationExact(x.cmmStart,x.cmmEnd,x.cmmStartTs,x.cmmEndTs),
+          "Status":x.cmmEnd?"DONE":(x.cmmStart?"RUNNING":"PENDING"),
+          "Setter Cut Time":x.cutTime||""
+        });
+      });
+    }
+
+    if(dept==="quality"){
+      getSampleNumbersForReport(s).forEach(n=>{
+        const x=getSample(s,n);
+        if(!x.qualityStart && !x.qualityEnd && !x.result && !x.cmmEnd) return;
+        rows.push({...base,
+          "Sample / Stage":`Sample #${n}`,"Department":"QUALITY",
+          "Start Time":x.qualityStart||"","End Time":x.qualityEnd||"",
+          "Start Date":x.qualityStartDate||s.setupDate||"",
+          "End Date":x.qualityEndDate||s.setupDate||"",
+          "Total Time":durationExact(x.qualityStart,x.qualityEnd,x.qualityStartTs,x.qualityEndTs),
+          "Status":x.result||(x.qualityEnd?"READY FOR DECISION":(x.qualityStart?"RUNNING":"PENDING"))
+        });
+        const approvalTime=x.sopApprovalTime || (x.result==="SOP Approved" ? s.timeSopDone : "");
+        const approvalTs=x.sopApprovalTs || s.timeSopDoneTs || null;
+        if(approvalTime){
+          rows.push({...base,
+            "Sample / Stage":`Sample #${n} - SOP APPROVAL`,"Department":"QUALITY",
+            "Start Time":x.qualityEnd||"","End Time":approvalTime||"",
+            "Start Date":x.qualityEndDate||s.setupDate||"",
+            "End Date":x.sopApprovalDate||s.sopApprovalDate||s.setupDate||"",
+            "Total Time":durationExact(x.qualityEnd,approvalTime,x.qualityEndTs,approvalTs),
+            "Status":"SOP APPROVED",
+            "SOP Total Setup Time":totalSetupMinutes({...s,qualityStatus:"SOP DONE",timeSopDone:approvalTime,timeSopDoneTs:approvalTs})
+          });
+        }
+      });
+    }
+  });
+  return rows;
+}
+
+function buildMachineMasterRows(s){
+  const rows=[];
+  ["setter","toolroom","stdroom","quality"].forEach(dept=>rows.push(...buildDepartmentReportRows(dept,[s])));
+  return rows;
+}
+
+function downloadWorkbook(rows,filename,sheetName){
+  if(!rows || !rows.length){
+    alert("Export करण्यासाठी या report मध्ये कोणताही data उपलब्ध नाही.");
+    return;
+  }
+  if(typeof XLSX==="undefined"){
+    alert("Excel module load झालेला नाही. Internet connection तपासा.");
+    return;
+  }
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!freeze"]={xSplit:0,ySplit:1};
+  XLSX.utils.book_append_sheet(wb,ws,(sheetName||"Detailed Report").substring(0,31));
+
+  const calendar=rows.map(r=>({
+    "Date":r["Date"]||"",
+    "Machine Name":r["Machine Name"]||"",
+    "Setup ID":r["Setup ID"]||"",
+    "Part Name":r["Part Name"]||"",
+    "Sample / Stage":r["Sample / Stage"]||"",
+    "Department":r["Department"]||"",
+    "Start Time":r["Start Time"]||"",
+    "End Time":r["End Time"]||"",
+    "Total Time":r["Total Time"]||"",
+    "Status":r["Status"]||""
+  }));
+  const ws2=XLSX.utils.json_to_sheet(calendar);
+  ws2["!freeze"]={xSplit:0,ySplit:1};
+  XLSX.utils.book_append_sheet(wb,ws2,"Calendar Wise");
+  XLSX.writeFile(wb,filename);
+}
+
+window.downloadDepartmentExcel=function(dept){
+  const rows=buildDepartmentReportRows(dept,window.allSetups||[]);
+  const names={setter:"SETTER",toolroom:"TOOL_ROOM",stdroom:"CMM_ROOM",quality:"QUALITY"};
+  const label=names[dept]||String(dept).toUpperCase();
+  downloadWorkbook(rows,`SUTOM_${label}_Report_${new Date().toISOString().split("T")[0]}.xlsx`,label+" Report");
+};
+
+window.downloadMachineExcel=function(firebaseKey){
+  const s=(window.allSetups||[]).find(x=>x.firebaseKey===firebaseKey);
+  if(!s){ alert("Machine report सापडला नाही."); return; }
+  const rows=buildMachineMasterRows(s);
+  downloadWorkbook(rows,`SUTOM_${s.machineName||"MACHINE"}_${s.id||Date.now()}_Report.xlsx`,"Machine Report");
+};
+
+window.exportSetterDataToExcel=function(){
+  downloadDepartmentExcel("setter");
 };
 
 window.renderSetterExcelTable = function(filterKey){
@@ -1526,7 +1786,7 @@ window.renderSetterExcelTable = function(filterKey){
     const done = Math.min(4,n), dots = [1,2,3,4].map(i=>`<span class="${i<done?'done':''} ${i===done?'active':''}"></span>${i<4?'<div class="progress-line"></div>':''}`).join('');
     return `<article class="machine-card ${statusClass}">
       <div class="mc-top"><div class="mc-icon"><i class="fas fa-industry"></i></div><span class="status-chip">${status}</span><span class="mc-menu">⋮</span></div>
-      <div class="mc-machine">${s.machineName||'-'}</div>
+      <div class="mc-machine machine-click" onclick="openWorkflowModal('${s.firebaseKey}')">${s.machineName||'-'}</div>
       <div class="mc-row"><span>Part</span><b>${s.partName||'-'}</b></div>
       <div class="mc-row"><span>P/N</span><b>${s.partNo||'-'}</b></div>
       <div class="mc-pallet">Pallet : <b>${(s.pallet||'-').replace('Pallet ','')}</b></div>
@@ -1720,6 +1980,7 @@ window.openWorkflowModal = function(firebaseKey){
   }
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
+  window.currentWorkflowFirebaseKey = firebaseKey;
   document.getElementById("workflowModal").classList.remove("hidden");
   
   document.getElementById("workflowTitle").textContent = `${s.machineName} - Complete Setup Time (${s.setupType||'Long'} Setup)`;
@@ -1777,9 +2038,16 @@ window.openWorkflowModal = function(firebaseKey){
       <td class="text-left font-bold text-black bg-white">QUALITY<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.qualityStart||"-"}</td>
       <td class="stage-end">${x.qualityEnd||"-"}</td>
-      <td class="font-bold text-blue-400">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
+      <td class="font-bold text-blue-400">${durationMinutes(x.qualityStart, x.qualityEnd, x.qualityStartTs, x.qualityEndTs)}</td>
       <td>${qStatus}</td>
-    </tr>`;
+    </tr>
+    ${x.sopApprovalTime ? `<tr>
+      <td class="text-left font-bold text-black bg-white">QUALITY<br><span class="text-[9px] text-gray-700">SOP Approval</span></td>
+      <td class="stage-start">${x.qualityEnd||"-"}</td>
+      <td class="stage-end">${x.sopApprovalTime||"-"}</td>
+      <td class="font-bold text-purple-400">${durationExact(x.qualityEnd,x.sopApprovalTime,x.qualityEndTs,x.sopApprovalTs)}</td>
+      <td><span class="text-emerald-400 font-bold text-[10px]">SOP APPROVED</span></td>
+    </tr>` : ""}`;
   }
 
   document.getElementById("workflowContent").innerHTML = `
@@ -1802,6 +2070,7 @@ window.openWorkflowModal = function(firebaseKey){
 
 function closeWorkflowModal(){
   document.getElementById("workflowModal").classList.add("hidden");
+  window.currentWorkflowFirebaseKey = null;
 }
 
 function handleResetAllData(){
@@ -1907,4 +2176,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+      </html>

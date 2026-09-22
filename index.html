@@ -13,7 +13,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 *{
@@ -359,6 +358,24 @@ button,input,select{font-family:inherit}
   #dashboardSection{min-height:calc(100vh - 64px)!important}.sutom-sidebar{display:none}#dashboardSection>main{width:100%;padding:8px 8px 18px!important}.setter-topbar{margin-bottom:7px}.setter-title-mobile{display:none}.setter-action-row{width:100%;justify-content:space-between}.compact-action{flex:1;justify-content:center;padding:6px 5px;font-size:8px}.setter-hero{height:112px;padding:18px 14px;border-radius:11px}.setter-hero h2{font-size:24px}.setter-hero p{font-size:10px;margin-top:6px}.setter-hero .hero-time{right:10px;top:52px;min-width:120px;padding:5px 8px}.hero-time .date{font-size:7px}.hero-time .time{font-size:13px}.setter-metrics{grid-template-columns:repeat(5,minmax(86px,1fr));gap:5px;margin:7px 0;overflow-x:auto;padding-bottom:2px}.metric-card{min-height:64px;padding:7px 8px}.metric-card .metric-label{font-size:7px}.metric-card .metric-num{font-size:19px}.metric-card .metric-sub{font-size:7px}.setter-list-panel{padding:7px;border-radius:10px}.setter-list-head h3{font-size:11px}.setter-list-head p{font-size:7px}.setter-list-head .row-count{font-size:7px;padding:4px 5px}.setter-machine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:6px}.machine-card{padding:7px;border-radius:9px}.machine-card .mc-icon{width:24px;height:24px;font-size:11px}.status-chip{font-size:6.5px;padding:3px 5px}.mc-menu{font-size:10px}.mc-machine{font-size:15px;margin-top:5px}.mc-row{font-size:7.5px;margin-top:4px}.mc-pallet,.priority,.shift-row,.stage-text{font-size:7px}.priority b{padding:2px 4px}.shift-row{margin-top:5px}.progress{margin:6px 0 3px}.mc-action{padding:4px;font-size:7.5px}.fixture-box{padding:5px}.fixture-box .fixture-title,.fixture-option,.fixture-save{font-size:7px}.fixture-save{padding:3px 5px}.fixture-serial-item{font-size:7px;padding:4px 5px}
   #setupFormCard form{grid-template-columns:1fr!important}.sutom-brand-title{white-space:nowrap}
 }
+
+/* ================= EXCEL REPORT SELECTOR ================= */
+.excel-report-modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px;z-index:120;}
+.excel-report-card{width:100%;max-width:520px;background:#091321;border:1px solid #2b405a;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden;}
+.excel-report-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#07101b;border-bottom:1px solid #22344a;}
+.excel-report-head h3{margin:0;color:#18d889;font-size:15px;font-weight:900;}
+.excel-report-body{padding:16px;}
+.excel-report-field{margin-bottom:13px;}
+.excel-report-field label{display:block;font-size:10px;font-weight:900;color:#9fb0c5;margin-bottom:5px;text-transform:uppercase;}
+.excel-report-field input,.excel-report-field select{width:100%;background:#050b14!important;color:#f5f7fb!important;border:1px solid #30445d!important;border-radius:8px;padding:10px;font-size:12px;font-weight:700;outline:none;}
+.excel-report-field input:focus,.excel-report-field select:focus{border-color:#18d889!important;}
+.excel-report-actions{display:flex;gap:8px;margin-top:16px;}
+.excel-report-actions button{flex:1;border:0;border-radius:8px;padding:10px;font-size:11px;font-weight:900;cursor:pointer;}
+.excel-report-open{background:#087f50;color:white;}
+.excel-report-close{background:#253448;color:#dbe5f1;}
+.excel-report-note{font-size:9px;color:#71839a;margin-top:10px;line-height:1.5;}
+@media(max-width:600px){.excel-report-card{max-width:100%;}.excel-report-actions{flex-direction:column;}}
+
 </style>
 </head>
 
@@ -437,7 +454,7 @@ button,input,select{font-family:inherit}
     <button class="sutom-nav-btn active" onclick="showDepartmentTab(window.currentUser?.dept||'setter')"><i class="fas fa-home"></i> Dashboard</button>
     <button class="sutom-nav-btn" onclick="openSetterModule('register')"><i class="fas fa-plus-square"></i> Register Setup</button>
     <button class="sutom-nav-btn" onclick="document.querySelector('.setter-list-panel')?.scrollIntoView({behavior:'smooth'})"><i class="fas fa-diagram-project"></i> Workflow</button>
-    <button class="sutom-nav-btn" onclick="exportSetterDataToExcel()"><i class="fas fa-chart-column"></i> Reports</button>
+    <button class="sutom-nav-btn" onclick="openExcelReportSelector()"><i class="fas fa-chart-column"></i> Reports</button>
     <button class="sutom-nav-btn" onclick="if(confirm('सर्व setup data reset करायचा आहे का?')) handleResetAllData()"><i class="fas fa-gear"></i> Settings</button>
     <div class="sutom-side-bottom">SUTOM<br><b>Setup Time Online Monitor</b><br><br>Precision &nbsp; | &nbsp; Efficiency</div>
   </aside>
@@ -450,7 +467,7 @@ button,input,select{font-family:inherit}
   <div class="setter-topbar">
     <div class="setter-title-mobile">Setter Dashboard</div>
     <div class="setter-action-row">
-      <button onclick="exportSetterDataToExcel()" class="compact-action green"><i class="fas fa-file-excel"></i> Download Excel</button>
+      <button onclick="openExcelReportSelector()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
       <button onclick="openSetterModule('register')" class="compact-action blue"><i class="fas fa-plus"></i> Register Setup</button>
     </div>
   </div>
@@ -479,7 +496,7 @@ button,input,select{font-family:inherit}
       <button onclick="toggleSetupForm(false)" class="text-xs font-bold text-slate-400 bg-slate-800 px-2.5 py-1 rounded">Close</button>
     </div>
     <form id="setterForm" onsubmit="handleSetterSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div><label class="block text-xs font-bold mb-1">MACHINE NAME</label><select id="machineName" required onchange="handleMachineSelectChange(this)" class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT MACHINE --</option></select></div>
+      <div><label class="block text-xs font-bold mb-1">MACHINE NAME</label><select id="machineName" required class="w-full p-2 border rounded-lg text-sm font-bold"><option value="">-- SELECT MACHINE --</option></select></div>
       <div><label class="block text-xs font-bold mb-1">PART NAME</label><input type="text" id="partName" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part Name"></div>
       <div><label class="block text-xs font-bold mb-1">PART NUMBER</label><input type="text" id="partNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Part No"></div>
       <div><label class="block text-xs font-bold mb-1">FIXTURE NUMBER</label><input type="text" id="fixtureNo" required class="w-full p-2 border rounded-lg text-sm" placeholder="Fixture Number"></div>
@@ -524,7 +541,6 @@ button,input,select{font-family:inherit}
     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
       <h2 class="text-lg font-bold text-white"><i class="fas fa-tools text-blue-500 mr-2"></i>Tool Room Setup Preparation</h2>
       <span class="text-xs text-slate-400">Long Setup साठी Tooling & Fixture Ready करा.</span>
-      <button onclick="downloadDepartmentExcel('toolroom')" class="compact-action green"><i class="fas fa-file-excel"></i> Tool Room Excel</button>
     </div>
     <div class="overflow-x-auto">
       <table class="dept-table">
@@ -566,7 +582,6 @@ button,input,select{font-family:inherit}
     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
       <h2 class="text-lg font-bold text-white"><i class="fas fa-microscope text-indigo-400 mr-2"></i>CMM ROOM / STD ROOM</h2>
       <span class="text-xs text-slate-400">Setter complete झाल्यावर CMM Action उपलब्ध होईल.</span>
-      <button onclick="downloadDepartmentExcel('stdroom')" class="compact-action green"><i class="fas fa-file-excel"></i> CMM Excel</button>
     </div>
     <div class="overflow-x-auto">
       <table class="dept-table">
@@ -642,6 +657,41 @@ button,input,select{font-family:inherit}
 </div>
 
 
+
+<!-- ================= EXCEL REPORT SELECTOR ================= -->
+<div id="excelReportModal" class="excel-report-modal hidden">
+  <div class="excel-report-card">
+    <div class="excel-report-head">
+      <h3><i class="fas fa-file-excel mr-2"></i>EXCEL REPORT</h3>
+      <button onclick="closeExcelReportSelector()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-bold text-xs">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="excel-report-body">
+      <div class="excel-report-field">
+        <label>Select Date</label>
+        <input type="date" id="excelReportDate" onchange="loadExcelReportMachines()">
+      </div>
+      <div class="excel-report-field">
+        <label>Select Machine</label>
+        <select id="excelReportMachine">
+          <option value="">-- SELECT MACHINE --</option>
+        </select>
+      </div>
+      <div class="excel-report-note">
+        Date निवडल्यानंतर त्या date मधील available machines दिसतील. Machine निवडल्यानंतर
+        <b>SR., DEPARTMENT, START TIME, END TIME, TOTAL TIME, STATUS</b> एवढाच Excel report उघडेल.
+      </div>
+      <div class="excel-report-actions">
+        <button class="excel-report-close" onclick="closeExcelReportSelector()">CANCEL</button>
+        <button class="excel-report-open" onclick="openSelectedExcelReport()">
+          <i class="fas fa-up-right-from-square mr-1"></i> OPEN EXCEL SHEET
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ================= WORKFLOW MODAL ================= -->
 <div id="workflowModal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] p-2 md:p-6">
   <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-7xl mx-auto shadow-2xl modal-scroll text-white">
@@ -650,10 +700,7 @@ button,input,select{font-family:inherit}
         <h2 id="workflowTitle" class="text-md md:text-xl font-black text-emerald-400">Machine Workflow</h2>
         <p id="workflowSubtitle" class="text-xs text-slate-300 mt-1"></p>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="workflowExcelBtn" onclick="downloadMachineExcel(window.currentWorkflowFirebaseKey)" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg font-bold text-xs"><i class="fas fa-file-excel mr-1"></i> MACHINE EXCEL</button>
-        <button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold text-xs"><i class="fas fa-times"></i></button>
-      </div>
+      <button onclick="closeWorkflowModal()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold text-xs"><i class="fas fa-times"></i></button>
     </div>
     <div class="p-2 md:p-6 overflow-x-auto">
       <div id="workflowContent"></div>
@@ -846,7 +893,6 @@ function initializeFCM() {
 
 window.allSetups = [];
 window.currentExcelFilter = "all";
-window.currentWorkflowFirebaseKey = null;
 window.currentUser = null;
 let alertInterval = null;
 
@@ -859,38 +905,13 @@ for(let i=1;i<=15;i++){ MACHINE_LIST.push("M"+i); }
 for(let i=1;i<=35;i++){ MACHINE_LIST.push("EN"+i); }
 [3,8,11,13,15,25,27,28].forEach(n=>{ MACHINE_LIST.push("MK"+n); });
 
-function getAllMachineNames(){
-  const fromFirebase=(window.allSetups||[]).map(s=>String(s.machineName||"").trim()).filter(Boolean);
-  return [...new Set([...MACHINE_LIST,...fromFirebase])];
-}
-
 function loadMachineList(){
-  const select=document.getElementById("machineName");
+  const select = document.getElementById("machineName");
   if(!select) return;
-  const current=select.value;
-  select.innerHTML=`<option value="">-- SELECT MACHINE --</option>`;
-  getAllMachineNames().forEach(machine=>{
-    select.innerHTML+=`<option value="${machine}">${machine}</option>`;
+  select.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
+  MACHINE_LIST.forEach(machine=>{
+    select.innerHTML += `<option value="${machine}">${machine}</option>`;
   });
-  select.innerHTML+=`<option value="__NEW_MACHINE__">＋ ADD NEW MACHINE...</option>`;
-  if(current && getAllMachineNames().includes(current)) select.value=current;
-}
-
-function handleMachineSelectChange(select){
-  if(select.value!=="__NEW_MACHINE__") return;
-  const name=prompt("नवीन Machine Name टाका (उदा. M16):","");
-  if(name && name.trim()){
-    const machine=name.trim().toUpperCase();
-    if(!getAllMachineNames().includes(machine)){
-      const option=document.createElement("option");
-      option.value=machine;
-      option.textContent=machine;
-      select.insertBefore(option,select.lastElementChild);
-    }
-    select.value=machine;
-  }else{
-    select.value="";
-  }
 }
 
 function loadPriority(){
@@ -942,6 +963,11 @@ window.addEventListener("DOMContentLoaded",()=>{
     showLoginSection();
   }
 
+  const excelReportDate = document.getElementById("excelReportDate");
+  if(excelReportDate){
+    excelReportDate.value = new Date().toISOString().split("T")[0];
+  }
+
   const dateInput = document.getElementById("setupDate");
   if(dateInput){
     dateInput.value = new Date().toISOString().split("T")[0];
@@ -954,7 +980,6 @@ window.addEventListener("DOMContentLoaded",()=>{
     }else{
       window.allSetups=[];
     }
-    loadMachineList();
     window.renderAllViews();
     checkDepartmentNotifications();
   });
@@ -1129,14 +1154,9 @@ function handleSetterSubmit(e){
     registeredBy: window.currentUser ? window.currentUser.name : "",
     registeredById: window.currentUser ? window.currentUser.id : "",
     timestampRegistered: now.getTime(),
-    timeRegistered: now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}),
-    registeredDate: now.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}),
+    timeRegistered: now.toLocaleTimeString(),
     toolStart: isShort ? "N/A (Short)" : null,
-    toolStartTs: isShort ? null : null,
-    toolStartDate: isShort ? now.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}) : null,
     toolEnd: isShort ? "N/A (Short)" : null,
-    toolEndTs: isShort ? null : null,
-    toolEndDate: isShort ? now.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}) : null,
     setupStarted: false,
     sampleCount: 1,
     s1: emptySample(), s2: emptySample(), s3: emptySample(), s4: emptySample(),
@@ -1184,23 +1204,14 @@ function handleSetterSubmit(e){
   });
 }
 
-function currentStamp(){
-  const d = new Date();
-  return {
-    time: d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}),
-    date: d.toLocaleDateString("en-IN",{year:"numeric",month:"2-digit",day:"2-digit"}),
-    ts: d.getTime()
-  };
-}
-
 function currentTime(){
-  return currentStamp().time;
+  return new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
 }
 
 function parseTimeToday(time){
-  if(!time || String(time).includes("N/A")) return null;
+  if(!time || time.includes("N/A")) return null;
   const d = new Date();
-  const match = String(time).match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
+  const match = time.match(/(\d+):(\d+):(\d+)\s*(AM|PM)?/i);
   if(!match) return null;
   let h = parseInt(match[1]);
   const m = parseInt(match[2]);
@@ -1214,49 +1225,24 @@ function parseTimeToday(time){
   return d;
 }
 
-function durationSeconds(start,end,startTs=null,endTs=null){
-  if(!start || !end || String(start).includes("N/A") || String(end).includes("N/A")) return 0;
-  let diff = (Number(endTs||0)>0 && Number(startTs||0)>0)
-    ? Math.floor((Number(endTs)-Number(startTs))/1000)
-    : null;
-  if(diff===null){
-    const a=parseTimeToday(start), b=parseTimeToday(end);
-    if(!a || !b) return 0;
-    diff=Math.floor((b-a)/1000);
-    if(diff<0) diff+=86400;
-  }
-  return Math.max(0,diff);
-}
-
-function formatDuration(sec){
-  sec=Math.max(0,Number(sec)||0);
-  const h=Math.floor(sec/3600);
-  const m=Math.floor((sec%3600)/60);
-  const s=sec%60;
-  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-}
-
-function durationExact(start,end,startTs=null,endTs=null){
-  if(!start || !end || String(start).includes("N/A") || String(end).includes("N/A")) return "-";
-  return formatDuration(durationSeconds(start,end,startTs,endTs));
-}
-
-function durationMinutes(start,end,startTs=null,endTs=null){
-  if(!start || !end || String(start).includes("N/A") || String(end).includes("N/A")) return "0 min";
-  return Math.floor(durationSeconds(start,end,startTs,endTs)/60)+" min";
+function durationMinutes(start,end){
+  if(!start || !end || start.includes("N/A") || end.includes("N/A")) return "0 min";
+  const a = parseTimeToday(start);
+  const b = parseTimeToday(end);
+  if(!a || !b) return "-";
+  let diff = Math.floor((b-a)/60000);
+  if(diff<0) diff+=1440;
+  return diff+" min";
 }
 
 function totalSetupMinutes(s){
   if(!s.timestampRegistered) return "-";
   if(s.qualityStatus!=="SOP DONE" || !s.timeSopDone) return "-";
-  const startTs=Number(s.timestampRegistered);
-  const endTs=Number(s.timeSopDoneTs||0);
-  if(endTs>0) return Math.floor(Math.max(0,endTs-startTs)/60000)+" min";
-  const end=parseTimeToday(s.timeSopDone);
+  const end = parseTimeToday(s.timeSopDone);
   if(!end) return "-";
-  const start=new Date(s.timestampRegistered);
-  let diff=Math.floor((end-start)/60000);
-  if(diff<0) diff+=1440;
+  const start = new Date(s.timestampRegistered);
+  let diff = Math.floor((end-start)/60000);
+  if(diff<0) return "-";
   return diff+" min";
 }
 
@@ -1292,7 +1278,6 @@ window.setterStartSetup = function(firebaseKey){
     return;
   }
   const n = s.sampleCount||1;
-  const stamp = currentStamp();
   const updates = {
     setupStarted: true,
     stage: `Sample #${n} - SETTER`,
@@ -1301,11 +1286,7 @@ window.setterStartSetup = function(firebaseKey){
     "notifications/setter/actionReady": false
   };
   const sample = getSample(s,n);
-  if(!sample.setterStart){
-    updates[`s${n}/setterStart`] = stamp.time;
-    updates[`s${n}/setterStartTs`] = stamp.ts;
-    updates[`s${n}/setterStartDate`] = stamp.date;
-  }
+  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
   dbRef.child(firebaseKey).update(updates);
 };
 
@@ -1314,19 +1295,10 @@ window.setterEndSample = function(firebaseKey){
   if(!s) return;
   const n = s.sampleCount||1;
   const sample = getSample(s,n);
-  const stamp = currentStamp();
   const updates = {};
-  if(!sample.setterStart){
-    updates[`s${n}/setterStart`] = stamp.time;
-    updates[`s${n}/setterStartTs`] = stamp.ts;
-    updates[`s${n}/setterStartDate`] = stamp.date;
-  }
-  updates[`s${n}/setterEnd`] = stamp.time;
-  updates[`s${n}/setterEndTs`] = stamp.ts;
-  updates[`s${n}/setterEndDate`] = stamp.date;
-  updates[`s${n}/cutTime`] = stamp.time;
-  updates[`s${n}/cutTimeTs`] = stamp.ts;
-  updates[`s${n}/cutDate`] = stamp.date;
+  if(!sample.setterStart){ updates[`s${n}/setterStart`] = currentTime(); }
+  updates[`s${n}/setterEnd`] = currentTime();
+  updates[`s${n}/cutTime`] = currentTime();
   updates.stage = `Sample #${n} - CMM Pending`;
   updates.qualityStatus = `Sample #${n} CMM PENDING`;
   updates["notifications/cmm/notified"] = true;
@@ -1342,11 +1314,8 @@ window.setterEndSample = function(firebaseKey){
 window.toolRoomStart = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-  const stamp = currentStamp();
   dbRef.child(firebaseKey).update({
-    toolStart: stamp.time,
-    toolStartTs: stamp.ts,
-    toolStartDate: stamp.date,
+    toolStart: currentTime(),
     stage: "Tool Room Running",
     qualityStatus: "TOOL ROOM RUNNING",
     "notifications/toolroom/read": true
@@ -1369,11 +1338,8 @@ window.toolRoomEnd = function(firebaseKey){
   if(!fixtureReady){ alert("Fixture Ready confirm करा."); return; }
   if(!serialNo){ alert("Available Fixture Serial Number टाका."); return; }
 
-  const stamp = currentStamp();
   const updates = {
-    toolEnd: stamp.time,
-    toolEndTs: stamp.ts,
-    toolEndDate: stamp.date,
+    toolEnd: currentTime(),
     toolingReady: true,
     fixtureReady: true,
     availableFixtureSerialNo: serialNo,
@@ -1407,11 +1373,8 @@ window.cmmStart = function(firebaseKey){
     return;
   }
   const n = s.sampleCount||1;
-  const stamp = currentStamp();
   dbRef.child(firebaseKey).update({
-    [`s${n}/cmmStart`]: stamp.time,
-    [`s${n}/cmmStartTs`]: stamp.ts,
-    [`s${n}/cmmStartDate`]: stamp.date,
+    [`s${n}/cmmStart`]: currentTime(),
     stage: `Sample #${n} - CMM Running`,
     qualityStatus: `Sample #${n} CMM RUNNING`,
     "notifications/cmm/read": true,
@@ -1424,16 +1387,9 @@ window.cmmEnd = function(firebaseKey){
   if(!s) return;
   const n = s.sampleCount||1;
   const sample = getSample(s,n);
-  const stamp = currentStamp();
   const updates = {};
-  if(!sample.cmmStart){
-    updates[`s${n}/cmmStart`] = stamp.time;
-    updates[`s${n}/cmmStartTs`] = stamp.ts;
-    updates[`s${n}/cmmStartDate`] = stamp.date;
-  }
-  updates[`s${n}/cmmEnd`] = stamp.time;
-  updates[`s${n}/cmmEndTs`] = stamp.ts;
-  updates[`s${n}/cmmEndDate`] = stamp.date;
+  if(!sample.cmmStart){ updates[`s${n}/cmmStart`] = currentTime(); }
+  updates[`s${n}/cmmEnd`] = currentTime();
   updates.stage = `Sample #${n} - Quality Pending`;
   updates.qualityStatus = `Sample #${n} QUALITY PENDING`;
   updates["notifications/quality/notified"] = true;
@@ -1454,11 +1410,8 @@ window.qualityStart = function(firebaseKey){
     return;
   }
   const n = s.sampleCount||1;
-  const stamp = currentStamp();
   dbRef.child(firebaseKey).update({
-    [`s${n}/qualityStart`]: stamp.time,
-    [`s${n}/qualityStartTs`]: stamp.ts,
-    [`s${n}/qualityStartDate`]: stamp.date,
+    [`s${n}/qualityStart`]: currentTime(),
     stage: `Sample #${n} - Quality Running`,
     qualityStatus: `Sample #${n} QUALITY RUNNING`,
     "notifications/quality/read": true,
@@ -1471,16 +1424,9 @@ window.qualityEnd = function(firebaseKey){
   if(!s) return;
   const n = s.sampleCount||1;
   const sample = getSample(s,n);
-  const stamp = currentStamp();
   const updates = {};
-  if(!sample.qualityStart){
-    updates[`s${n}/qualityStart`] = stamp.time;
-    updates[`s${n}/qualityStartTs`] = stamp.ts;
-    updates[`s${n}/qualityStartDate`] = stamp.date;
-  }
-  updates[`s${n}/qualityEnd`] = stamp.time;
-  updates[`s${n}/qualityEndTs`] = stamp.ts;
-  updates[`s${n}/qualityEndDate`] = stamp.date;
+  if(!sample.qualityStart){ updates[`s${n}/qualityStart`] = currentTime(); }
+  updates[`s${n}/qualityEnd`] = currentTime();
   updates.stage = `Sample #${n} - Quality Decision`;
   updates.qualityStatus = `Sample #${n} READY FOR DECISION`;
   dbRef.child(firebaseKey).update(updates);
@@ -1490,19 +1436,14 @@ window.qualityApprove = function(firebaseKey){
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
   const n = s.sampleCount||1;
-  const doneStamp = currentStamp();
+  const doneTime = currentTime();
   const updates = {
     [`s${n}/result`]: "SOP Approved",
-    [`s${n}/sopApprovalTime`]: doneStamp.time,
-    [`s${n}/sopApprovalTs`]: doneStamp.ts,
-    [`s${n}/sopApprovalDate`]: doneStamp.date,
     qualityStatus: "SOP DONE",
     stage: "SOP APPROVED",
-    timeSopDone: doneStamp.time,
-    timeSopDoneTs: doneStamp.ts,
-    sopApprovalDate: doneStamp.date
+    timeSopDone: doneTime
   };
-  updates.totalTimeSpent = totalSetupMinutes({ ...s, qualityStatus: "SOP DONE", timeSopDone: doneStamp.time, timeSopDoneTs: doneStamp.ts });
+  updates.totalTimeSpent = totalSetupMinutes({ ...s, qualityStatus: "SOP DONE", timeSopDone: doneTime });
   dbRef.child(firebaseKey).update(updates).then(()=>{
     const msg = buildQualityResultWhatsAppMessage(s,n,"SOP Approved");
     queueWorkflowWhatsApp("setter","SUTOM - QUALITY RESULT",msg,s);
@@ -1577,169 +1518,267 @@ window.setToolroomFilter = function(filter){ window.toolroomFilter = filter; ren
 window.setCmmFilter = function(filter){ window.cmmFilter = filter; renderSTDRoom(); };
 window.setQualityFilter = function(filter){ window.qualityFilter = filter; renderQuality(); };
 
-function getSampleNumbersForReport(s){
-  const max=Math.min(4,Math.max(1,Number(s.sampleCount||1)));
-  return [1,2,3,4].filter(n=>{
-    const x=getSample(s,n);
-    return n<=max || x.setterStart || x.setterEnd || x.cmmStart || x.cmmEnd || x.qualityStart || x.qualityEnd || x.result || x.sopApprovalTime;
-  });
+
+/* ================= NEW EXCEL REPORT =================
+   Date -> Machine -> Excel Sheet
+   Excel sheet contains ONLY:
+   SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS
+*/
+function reportDateForSetup(s){
+  if(s && s.setupDate) return String(s.setupDate);
+  if(s && s.timestampRegistered){
+    const d = new Date(s.timestampRegistered);
+    return d.toLocaleDateString("en-CA");
+  }
+  return "";
 }
 
-function buildDepartmentReportRows(dept,list){
-  const rows=[];
-  (list||[]).forEach(s=>{
-    const base={
-      "Date":s.setupDate||"",
-      "Machine Name":s.machineName||"",
-      "Setup ID":s.id||"",
-      "Part Name":s.partName||"",
-      "Part No":s.partNo||"",
-      "Setup Type":s.setupType||"",
-      "Shift":s.shift||"",
-      "Pallet":s.pallet||"",
-      "Priority":s.priority||"",
-      "Fixture No":s.fixtureNo||"",
-      "Fixture Serial No":s.fixtureSerialNo||"",
-      "Registered By":s.registeredBy||""
-    };
+function reportEscape(value){
+  return String(value==null ? "" : value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
 
-    if(dept==="setter"){
-      rows.push({...base,
-        "Sample / Stage":"Setup Registration","Department":"SETTER",
-        "Start Time":s.timeRegistered||"",
-        "End Time":s.setupType==="Short"?"N/A":(s.toolStart||""),
-        "Start Date":s.setupDate||"",
-        "End Date":s.toolStartDate||s.setupDate||"",
-        "Total Time":s.setupType==="Short"?"N/A":durationExact(s.timeRegistered,s.toolStart,s.timestampRegistered,s.toolStartTs),
-        "Status":"REGISTERED"
-      });
-      getSampleNumbersForReport(s).forEach(n=>{
-        const x=getSample(s,n);
-        if(!x.setterStart && !x.setterEnd && !x.result) return;
-        rows.push({...base,
-          "Sample / Stage":`Sample #${n}`,"Department":"SETTER",
-          "Start Time":x.setterStart||"","End Time":x.setterEnd||"",
-          "Start Date":x.setterStartDate||s.setupDate||"",
-          "End Date":x.setterEndDate||s.setupDate||"",
-          "Total Time":durationExact(x.setterStart,x.setterEnd,x.setterStartTs,x.setterEndTs),
-          "Status":x.setterEnd?"DONE":(x.setterStart?"RUNNING":"PENDING")
-        });
-      });
-    }
+function getExcelReportRows(s){
+  const rows = [];
+  let sr = 1;
 
-    if(dept==="toolroom" && s.setupType!=="Short"){
-      rows.push({...base,
-        "Sample / Stage":"Tooling & Fixture Ready","Department":"TOOL ROOM",
-        "Start Time":s.toolStart||"","End Time":s.toolEnd||"",
-        "Start Date":s.toolStartDate||s.setupDate||"",
-        "End Date":s.toolEndDate||s.setupDate||"",
-        "Total Time":durationExact(s.toolStart,s.toolEnd,s.toolStartTs,s.toolEndTs),
-        "Status":s.toolEnd?"READY":(s.toolStart?"RUNNING":"PENDING"),
-        "Available Fixture Serial":s.availableFixtureSerialNo||""
-      });
-    }
-
-    if(dept==="stdroom"){
-      getSampleNumbersForReport(s).forEach(n=>{
-        const x=getSample(s,n);
-        if(!x.cmmStart && !x.cmmEnd && !x.setterEnd) return;
-        rows.push({...base,
-          "Sample / Stage":`Sample #${n}`,"Department":"CMM ROOM",
-          "Start Time":x.cmmStart||"","End Time":x.cmmEnd||"",
-          "Start Date":x.cmmStartDate||s.setupDate||"",
-          "End Date":x.cmmEndDate||s.setupDate||"",
-          "Total Time":durationExact(x.cmmStart,x.cmmEnd,x.cmmStartTs,x.cmmEndTs),
-          "Status":x.cmmEnd?"DONE":(x.cmmStart?"RUNNING":"PENDING"),
-          "Setter Cut Time":x.cutTime||""
-        });
-      });
-    }
-
-    if(dept==="quality"){
-      getSampleNumbersForReport(s).forEach(n=>{
-        const x=getSample(s,n);
-        if(!x.qualityStart && !x.qualityEnd && !x.result && !x.cmmEnd) return;
-        rows.push({...base,
-          "Sample / Stage":`Sample #${n}`,"Department":"QUALITY",
-          "Start Time":x.qualityStart||"","End Time":x.qualityEnd||"",
-          "Start Date":x.qualityStartDate||s.setupDate||"",
-          "End Date":x.qualityEndDate||s.setupDate||"",
-          "Total Time":durationExact(x.qualityStart,x.qualityEnd,x.qualityStartTs,x.qualityEndTs),
-          "Status":x.result||(x.qualityEnd?"READY FOR DECISION":(x.qualityStart?"RUNNING":"PENDING"))
-        });
-        const approvalTime=x.sopApprovalTime || (x.result==="SOP Approved" ? s.timeSopDone : "");
-        const approvalTs=x.sopApprovalTs || s.timeSopDoneTs || null;
-        if(approvalTime){
-          rows.push({...base,
-            "Sample / Stage":`Sample #${n} - SOP APPROVAL`,"Department":"QUALITY",
-            "Start Time":x.qualityEnd||"","End Time":approvalTime||"",
-            "Start Date":x.qualityEndDate||s.setupDate||"",
-            "End Date":x.sopApprovalDate||s.sopApprovalDate||s.setupDate||"",
-            "Total Time":durationExact(x.qualityEnd,approvalTime,x.qualityEndTs,approvalTs),
-            "Status":"SOP APPROVED",
-            "SOP Total Setup Time":totalSetupMinutes({...s,qualityStatus:"SOP DONE",timeSopDone:approvalTime,timeSopDoneTs:approvalTs})
-          });
-        }
-      });
-    }
+  rows.push({
+    sr: sr++,
+    department: "SETTER / Setup Registration",
+    start: s.timeRegistered || "-",
+    end: s.setupType==="Short" ? "N/A" : (s.toolStart || "-"),
+    total: s.setupType==="Short" ? "0 min" : durationMinutes(s.timeRegistered, s.toolStart),
+    status: "REGISTERED"
   });
+
+  if(s.setupType!=="Short"){
+    rows.push({
+      sr: sr++,
+      department: "TOOL ROOM / Tooling & Fixture Ready",
+      start: s.toolStart || "-",
+      end: s.toolEnd || "-",
+      total: durationMinutes(s.toolStart, s.toolEnd),
+      status: s.toolEnd ? "READY" : "PENDING"
+    });
+  }
+
+  const sampleCount = Math.max(1, Number(s.sampleCount||1));
+  for(let n=1; n<=4; n++){
+    const x = getSample(s,n);
+
+    if(!x.setterStart && !x.setterEnd && !x.cmmStart && !x.cmmEnd &&
+       !x.qualityStart && !x.qualityEnd && !x.result && n>sampleCount){
+      continue;
+    }
+
+    let setStatus = x.cutTime ? "DONE" : (x.setterStart ? "RUNNING" : "PENDING");
+    let cmmStatus = x.cmmEnd ? "DONE" : (x.cmmStart ? "RUNNING" : "PENDING");
+    let qStatus = x.result ? x.result : (x.qualityStart ? "RUNNING" : "PENDING");
+
+    rows.push({
+      sr: "S"+n,
+      department: "SETTER / Sample #"+n,
+      start: x.setterStart || "-",
+      end: x.setterEnd || "-",
+      total: durationMinutes(x.setterStart, x.setterEnd),
+      status: setStatus
+    });
+
+    rows.push({
+      sr: "",
+      department: "CMM ROOM / Sample #"+n,
+      start: x.cmmStart || "-",
+      end: x.cmmEnd || "-",
+      total: durationMinutes(x.cmmStart, x.cmmEnd),
+      status: cmmStatus
+    });
+
+    rows.push({
+      sr: "",
+      department: "QUALITY / Sample #"+n,
+      start: x.qualityStart || "-",
+      end: x.qualityEnd || "-",
+      total: durationMinutes(x.qualityStart, x.qualityEnd),
+      status: qStatus
+    });
+  }
+
   return rows;
 }
 
-function buildMachineMasterRows(s){
-  const rows=[];
-  ["setter","toolroom","stdroom","quality"].forEach(dept=>rows.push(...buildDepartmentReportRows(dept,[s])));
-  return rows;
-}
+window.openExcelReportSelector = function(){
+  const modal = document.getElementById("excelReportModal");
+  const dateInput = document.getElementById("excelReportDate");
+  const machineSelect = document.getElementById("excelReportMachine");
+  if(!modal || !dateInput || !machineSelect) return;
 
-function downloadWorkbook(rows,filename,sheetName){
-  if(!rows || !rows.length){
-    alert("Export करण्यासाठी या report मध्ये कोणताही data उपलब्ध नाही.");
-    return;
+  if(!dateInput.value){
+    dateInput.value = new Date().toISOString().split("T")[0];
   }
-  if(typeof XLSX==="undefined"){
-    alert("Excel module load झालेला नाही. Internet connection तपासा.");
-    return;
-  }
-  const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.json_to_sheet(rows);
-  ws["!freeze"]={xSplit:0,ySplit:1};
-  XLSX.utils.book_append_sheet(wb,ws,(sheetName||"Detailed Report").substring(0,31));
-
-  const calendar=rows.map(r=>({
-    "Date":r["Date"]||"",
-    "Machine Name":r["Machine Name"]||"",
-    "Setup ID":r["Setup ID"]||"",
-    "Part Name":r["Part Name"]||"",
-    "Sample / Stage":r["Sample / Stage"]||"",
-    "Department":r["Department"]||"",
-    "Start Time":r["Start Time"]||"",
-    "End Time":r["End Time"]||"",
-    "Total Time":r["Total Time"]||"",
-    "Status":r["Status"]||""
-  }));
-  const ws2=XLSX.utils.json_to_sheet(calendar);
-  ws2["!freeze"]={xSplit:0,ySplit:1};
-  XLSX.utils.book_append_sheet(wb,ws2,"Calendar Wise");
-  XLSX.writeFile(wb,filename);
-}
-
-window.downloadDepartmentExcel=function(dept){
-  const rows=buildDepartmentReportRows(dept,window.allSetups||[]);
-  const names={setter:"SETTER",toolroom:"TOOL_ROOM",stdroom:"CMM_ROOM",quality:"QUALITY"};
-  const label=names[dept]||String(dept).toUpperCase();
-  downloadWorkbook(rows,`SUTOM_${label}_Report_${new Date().toISOString().split("T")[0]}.xlsx`,label+" Report");
+  modal.classList.remove("hidden");
+  loadExcelReportMachines();
 };
 
-window.downloadMachineExcel=function(firebaseKey){
-  const s=(window.allSetups||[]).find(x=>x.firebaseKey===firebaseKey);
-  if(!s){ alert("Machine report सापडला नाही."); return; }
-  const rows=buildMachineMasterRows(s);
-  downloadWorkbook(rows,`SUTOM_${s.machineName||"MACHINE"}_${s.id||Date.now()}_Report.xlsx`,"Machine Report");
+window.closeExcelReportSelector = function(){
+  const modal = document.getElementById("excelReportModal");
+  if(modal) modal.classList.add("hidden");
 };
 
-window.exportSetterDataToExcel=function(){
-  downloadDepartmentExcel("setter");
+window.loadExcelReportMachines = function(){
+  const dateInput = document.getElementById("excelReportDate");
+  const machineSelect = document.getElementById("excelReportMachine");
+  if(!dateInput || !machineSelect) return;
+
+  const selectedDate = dateInput.value;
+  const machines = [...new Set(
+    (window.allSetups||[])
+      .filter(s=>reportDateForSetup(s)===selectedDate)
+      .map(s=>s.machineName)
+      .filter(Boolean)
+  )].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
+
+  machineSelect.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
+  machines.forEach(machine=>{
+    machineSelect.innerHTML += `<option value="${reportEscape(machine)}">${reportEscape(machine)}</option>`;
+  });
+
+  if(!machines.length){
+    machineSelect.innerHTML = `<option value="">-- NO MACHINE FOUND FOR THIS DATE --</option>`;
+  }
+};
+
+window.openSelectedExcelReport = function(){
+  const dateInput = document.getElementById("excelReportDate");
+  const machineSelect = document.getElementById("excelReportMachine");
+  if(!dateInput || !machineSelect) return;
+
+  const selectedDate = dateInput.value;
+  const machine = machineSelect.value;
+
+  if(!selectedDate){
+    alert("कृपया Date select करा.");
+    return;
+  }
+  if(!machine){
+    alert("कृपया Machine select करा.");
+    return;
+  }
+
+  const setup = (window.allSetups||[])
+    .filter(s=>reportDateForSetup(s)===selectedDate && String(s.machineName)===String(machine))
+    .sort((a,b)=>(b.timestampRegistered||0)-(a.timestampRegistered||0))[0];
+
+  if(!setup){
+    alert("Selected Date आणि Machine साठी setup data सापडला नाही.");
+    return;
+  }
+
+  const rows = getExcelReportRows(setup);
+  const safeMachine = reportEscape(setup.machineName||machine);
+  const safeDate = reportEscape(selectedDate);
+  const safeId = reportEscape(setup.id||"-");
+  const safePart = reportEscape(setup.partName||"-");
+  const safePallet = reportEscape(setup.pallet||"-");
+
+  const tableRows = rows.map(r=>`
+    <tr>
+      <td class="sr">${reportEscape(r.sr)}</td>
+      <td class="dept">${reportEscape(r.department)}</td>
+      <td class="start">${reportEscape(r.start)}</td>
+      <td class="end">${reportEscape(r.end)}</td>
+      <td class="total">${reportEscape(r.total)}</td>
+      <td class="status">${reportEscape(r.status)}</td>
+    </tr>
+  `).join("");
+
+  const excelWindow = window.open("", "_blank");
+  if(!excelWindow){
+    alert("Excel Sheet उघडण्यासाठी browser popup allow करा.");
+    return;
+  }
+
+  const reportHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${safeMachine} - SUTOM Excel Report</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;background:#eef2f7;font-family:Segoe UI,Arial,sans-serif;color:#111827}
+  .sheet{background:white;max-width:1200px;margin:0 auto;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+  .top{border:2px solid #047857;border-bottom:0;padding:14px 16px}
+  h1{margin:0;font-size:24px;color:#047857}
+  .meta{margin-top:8px;font-size:12px;color:#374151;font-weight:600}
+  table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+  th{background:#0f172a;color:#fff;border:1px solid #334155;padding:10px 7px;text-align:center;font-weight:800}
+  td{border:1px solid #cbd5e1;padding:9px 7px;text-align:center;vertical-align:middle}
+  tr:nth-child(even) td{background:#f0fdf4}
+  td.dept{text-align:left;font-weight:800}
+  td.start{background:#dbeafe;color:#1d4ed8;font-family:monospace;font-weight:800}
+  td.end{background:#dcfce7;color:#15803d;font-family:monospace;font-weight:800}
+  td.total{color:#2563eb;font-weight:800}
+  td.status{color:#059669;font-weight:800}
+  .sr{width:8%}.dept{width:30%}.start,.end{width:17%}.total{width:12%}.status{width:16%}
+  .actions{text-align:right;margin:0 0 12px}
+  .actions button{border:0;background:#047857;color:#fff;border-radius:6px;padding:8px 12px;font-weight:800;cursor:pointer;margin-left:6px}
+  .actions button.gray{background:#475569}
+  @media print{
+    body{padding:0;background:white}.sheet{box-shadow:none;max-width:none;padding:10px}
+    .actions{display:none}
+    h1{font-size:18px}.meta{font-size:10px}table{font-size:10px}th,td{padding:6px 4px}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="actions">
+    <button onclick="window.print()">PRINT / SAVE AS PDF</button>
+    <button class="gray" onclick="downloadExcel()">DOWNLOAD .XLS</button>
+  </div>
+  <div class="top">
+    <h1>SUTOM - ${safeMachine} - Complete Setup Time</h1>
+    <div class="meta">Date: ${safeDate} &nbsp; | &nbsp; Setup ID: ${safeId} &nbsp; | &nbsp; Part: ${safePart} &nbsp; | &nbsp; Pallet: ${safePallet}</div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>SR.</th>
+        <th>DEPARTMENT</th>
+        <th>START TIME</th>
+        <th>END TIME</th>
+        <th>TOTAL TIME</th>
+        <th>STATUS</th>
+      </tr>
+    </thead>
+    <tbody>${tableRows}</tbody>
+  </table>
+</div>
+<script>
+function downloadExcel(){
+  const html = '<html><head><meta charset="UTF-8"><style>' +
+    'table{border-collapse:collapse;width:100%;font-family:Segoe UI,Arial}th,td{border:1px solid #999;padding:7px;text-align:center}th{background:#0f172a;color:white}td.dept{text-align:left;font-weight:bold}' +
+    '</style></head><body>' + document.querySelector('table').outerHTML + '</body></html>';
+  const blob = new Blob([html],{type:'application/vnd.ms-excel'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'SUTOM_${safeMachine}_${safeDate}.xls';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+<\/script>
+</body>
+</html>`;
+
+  excelWindow.document.open();
+  excelWindow.document.write(reportHtml);
+  excelWindow.document.close();
+  closeExcelReportSelector();
 };
 
 window.renderSetterExcelTable = function(filterKey){
@@ -1786,7 +1825,7 @@ window.renderSetterExcelTable = function(filterKey){
     const done = Math.min(4,n), dots = [1,2,3,4].map(i=>`<span class="${i<done?'done':''} ${i===done?'active':''}"></span>${i<4?'<div class="progress-line"></div>':''}`).join('');
     return `<article class="machine-card ${statusClass}">
       <div class="mc-top"><div class="mc-icon"><i class="fas fa-industry"></i></div><span class="status-chip">${status}</span><span class="mc-menu">⋮</span></div>
-      <div class="mc-machine machine-click" onclick="openWorkflowModal('${s.firebaseKey}')">${s.machineName||'-'}</div>
+      <div class="mc-machine">${s.machineName||'-'}</div>
       <div class="mc-row"><span>Part</span><b>${s.partName||'-'}</b></div>
       <div class="mc-row"><span>P/N</span><b>${s.partNo||'-'}</b></div>
       <div class="mc-pallet">Pallet : <b>${(s.pallet||'-').replace('Pallet ','')}</b></div>
@@ -1980,7 +2019,6 @@ window.openWorkflowModal = function(firebaseKey){
   }
   const s = window.allSetups.find(x=>x.firebaseKey===firebaseKey);
   if(!s) return;
-  window.currentWorkflowFirebaseKey = firebaseKey;
   document.getElementById("workflowModal").classList.remove("hidden");
   
   document.getElementById("workflowTitle").textContent = `${s.machineName} - Complete Setup Time (${s.setupType||'Long'} Setup)`;
@@ -2038,16 +2076,9 @@ window.openWorkflowModal = function(firebaseKey){
       <td class="text-left font-bold text-black bg-white">QUALITY<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.qualityStart||"-"}</td>
       <td class="stage-end">${x.qualityEnd||"-"}</td>
-      <td class="font-bold text-blue-400">${durationMinutes(x.qualityStart, x.qualityEnd, x.qualityStartTs, x.qualityEndTs)}</td>
+      <td class="font-bold text-blue-400">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
       <td>${qStatus}</td>
-    </tr>
-    ${x.sopApprovalTime ? `<tr>
-      <td class="text-left font-bold text-black bg-white">QUALITY<br><span class="text-[9px] text-gray-700">SOP Approval</span></td>
-      <td class="stage-start">${x.qualityEnd||"-"}</td>
-      <td class="stage-end">${x.sopApprovalTime||"-"}</td>
-      <td class="font-bold text-purple-400">${durationExact(x.qualityEnd,x.sopApprovalTime,x.qualityEndTs,x.sopApprovalTs)}</td>
-      <td><span class="text-emerald-400 font-bold text-[10px]">SOP APPROVED</span></td>
-    </tr>` : ""}`;
+    </tr>`;
   }
 
   document.getElementById("workflowContent").innerHTML = `
@@ -2070,7 +2101,6 @@ window.openWorkflowModal = function(firebaseKey){
 
 function closeWorkflowModal(){
   document.getElementById("workflowModal").classList.add("hidden");
-  window.currentWorkflowFirebaseKey = null;
 }
 
 function handleResetAllData(){
@@ -2176,4 +2206,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-      </html>
+  </html>

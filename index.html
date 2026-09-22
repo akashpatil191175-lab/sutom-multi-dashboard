@@ -11,7 +11,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-<!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
 
 <style>
@@ -21,6 +20,8 @@
 
 body{
   background:#f1f5f9;
+  margin:0;
+  padding:0;
 }
 
 @keyframes pulse-red{
@@ -248,10 +249,24 @@ button,input,select{font-family:inherit}
 .sutom-company{display:flex;align-items:center;gap:9px;font-size:12px;color:#e9eef6}.sutom-company i{font-size:28px;color:#cbd5e1}.sutom-company small{display:block;color:#93a0b4;font-size:10px;margin-top:1px}
 .sutom-head-actions{display:flex;align-items:center;gap:7px}.compact-header-btn{border:1px solid #33465f;background:#0b1625;color:#dce6f4;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:900;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}.compact-header-btn:hover{filter:brightness(1.15)}.compact-header-btn.excel{border-color:#059669;color:#10b981;background:#022c22;}.compact-header-btn.reset{border-color:#9b1c2d;color:#ff9aa5;background:#210b11}.compact-header-btn.logout{border-color:#5b6b80;color:#f2f5f8;background:#101a28}.sutom-pill{border:1px solid #26364d;background:#0b1524;color:#e9eef6;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}.sutom-pill.live{border-color:#00b96b;color:#54f0a9;background:#061b13}.sutom-pill.live i{font-size:7px}.sutom-user{display:flex;align-items:center;gap:7px;padding-left:5px}.sutom-user-avatar{width:36px;height:36px;border-radius:50%;background:#f5f7fb;color:#111827;display:flex;align-items:center;justify-content:center;font-size:19px}.sutom-user-name{font-size:11px;font-weight:800}.sutom-user-dept{font-size:9px;color:#8d9bb0;margin-top:2px}
 
-/* --- Authentication & Dashboard Visibility Fix --- */
-#dashboardSection{display:none !important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
-#dashboardSection.active-flex{display:flex!important;}
-.hidden-section{display:none !important;}
+/* --- Fixed Login Screen Display & Visibility --- */
+#authSection {
+  display: flex !important;
+  position: relative;
+  z-index: 100;
+}
+#dashboardSection {
+  display: none !important;
+  flex-direction: row !important;
+  min-height: calc(100vh - 78px) !important;
+  background: transparent;
+}
+#dashboardSection.active-flex {
+  display: flex !important;
+}
+.hidden-section {
+  display: none !important;
+}
 
 .sutom-sidebar{width:176px;flex:0 0 176px;background:#06101b;border-right:1px solid #203047;padding:18px 10px;display:flex;flex-direction:column;gap:7px;min-height:calc(100vh - 78px);position:sticky;top:78px;height:calc(100vh - 78px)}
 .sutom-nav-btn{width:100%;border:0;background:transparent;color:#c6d0df;text-align:left;padding:11px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:11px}.sutom-nav-btn i{width:18px;text-align:center;font-size:15px}.sutom-nav-btn:hover,.sutom-nav-btn.active{background:linear-gradient(90deg,#d92338,#8d1325);color:white;box-shadow:0 6px 18px rgba(255,36,56,.16)}.sutom-side-bottom{margin-top:auto;border-top:1px solid #1b2b40;padding-top:10px;color:#66758a;font-size:9px;text-align:center;line-height:1.5}
@@ -352,7 +367,6 @@ button,input,select{font-family:inherit}
   word-break:break-all;
 }
 
-
 #setupFormCard{background:#0a1523!important;color:#e9eef6;border:1px solid #29415c!important;padding:14px!important}
 #setupFormCard label{color:#aebbd0}
 #setupFormCard input, #setupFormCard select{background:#07111d!important;color:#f5f7fb!important;border-color:#30455e!important}
@@ -375,7 +389,7 @@ button,input,select{font-family:inherit}
 
 <body class="font-sans min-h-screen">
 
-<!-- ================= COMPACT PREMIUM HEADER ================= -->
+<!-- ================= HEADER ================= -->
 <header class="sutom-header">
   <div class="sutom-brand">
     <div class="sutom-logo" aria-hidden="true"></div>
@@ -952,40 +966,67 @@ window.addEventListener("DOMContentLoaded",()=>{
   });
 });
 
+/* ================= ACCURATE LOGIN HANDLER ================= */
 function handleLogin(e){
   e.preventDefault();
-  window.currentUser = {
-    name: document.getElementById("loginName").value.trim(),
-    id: document.getElementById("loginId").value.trim(),
-    dept: document.getElementById("loginDept").value
-  };
+  const name = document.getElementById("loginName").value.trim();
+  const id = document.getElementById("loginId").value.trim();
+  const dept = document.getElementById("loginDept").value;
+
+  if(!name || !id || !dept){
+    alert("कृपया नाव, आयडी आणि डिपार्टमेंट सर्व पर्याय भरा.");
+    return;
+  }
+
+  window.currentUser = { name, id, dept };
   localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
   loadDashboard(window.currentUser);
 }
 
 function loadDashboard(user){
-  document.getElementById("authSection").classList.add("hidden-section");
+  const authSec = document.getElementById("authSection");
+  if(authSec){
+    authSec.style.setProperty("display", "none", "important");
+  }
+
   const dashSec = document.getElementById("dashboardSection");
-  dashSec.classList.remove("hidden-section");
-  dashSec.classList.add("active-flex");
+  if(dashSec){
+    dashSec.classList.remove("hidden-section");
+    dashSec.classList.add("active-flex");
+    dashSec.style.setProperty("display", "flex", "important");
+  }
   
-  document.getElementById("userInfo").classList.remove("hidden");
-  document.getElementById("userInfo").classList.add("flex");
+  const userInfo = document.getElementById("userInfo");
+  if(userInfo){
+    userInfo.classList.remove("hidden");
+    userInfo.classList.add("flex");
+  }
 
   const hu = document.getElementById("headerUserName");
   const hd = document.getElementById("headerUserDept");
-  if(hu) hu.textContent = user.name||"User";
-  if(hd) hd.textContent = (user.dept||"").toUpperCase();
+  if(hu) hu.textContent = user.name || "User";
+  if(hd) hd.textContent = (user.dept || "").toUpperCase();
 
   showDepartmentTab(user.dept);
 }
 
 function showLoginSection(){
-  document.getElementById("authSection").classList.remove("hidden-section");
+  const authSec = document.getElementById("authSection");
+  if(authSec){
+    authSec.style.setProperty("display", "flex", "important");
+  }
+
   const dashSec = document.getElementById("dashboardSection");
-  dashSec.classList.remove("active-flex");
-  dashSec.classList.add("hidden-section");
-  document.getElementById("userInfo").classList.add("hidden");
+  if(dashSec){
+    dashSec.classList.remove("active-flex");
+    dashSec.classList.add("hidden-section");
+    dashSec.style.setProperty("display", "none", "important");
+  }
+
+  const userInfo = document.getElementById("userInfo");
+  if(userInfo){
+    userInfo.classList.add("hidden");
+  }
 }
 
 function handleLogout(){
@@ -2032,4 +2073,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-                                                                         </html>
+</html>

@@ -13,6 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 
 <style>
 *{
@@ -360,21 +361,24 @@ button,input,select{font-family:inherit}
 }
 
 /* ================= EXCEL REPORT SELECTOR ================= */
-.excel-report-modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px;z-index:120;}
-.excel-report-card{width:100%;max-width:520px;background:#091321;border:1px solid #2b405a;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden;}
-.excel-report-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#07101b;border-bottom:1px solid #22344a;}
-.excel-report-head h3{margin:0;color:#18d889;font-size:15px;font-weight:900;}
-.excel-report-body{padding:16px;}
-.excel-report-field{margin-bottom:13px;}
-.excel-report-field label{display:block;font-size:10px;font-weight:900;color:#9fb0c5;margin-bottom:5px;text-transform:uppercase;}
-.excel-report-field input,.excel-report-field select{width:100%;background:#050b14!important;color:#f5f7fb!important;border:1px solid #30445d!important;border-radius:8px;padding:10px;font-size:12px;font-weight:700;outline:none;}
-.excel-report-field input:focus,.excel-report-field select:focus{border-color:#18d889!important;}
-.excel-report-actions{display:flex;gap:8px;margin-top:16px;}
-.excel-report-actions button{flex:1;border:0;border-radius:8px;padding:10px;font-size:11px;font-weight:900;cursor:pointer;}
-.excel-report-open{background:#087f50;color:white;}
-.excel-report-close{background:#253448;color:#dbe5f1;}
-.excel-report-note{font-size:9px;color:#71839a;margin-top:10px;line-height:1.5;}
-@media(max-width:600px){.excel-report-card{max-width:100%;}.excel-report-actions{flex-direction:column;}}
+.excel-report-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px;z-index:120}
+.excel-report-card{width:min(520px,100%);background:#08111e;border:1px solid #29415c;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:hidden;color:#f5f7fb}
+.excel-report-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:#050b14;border-bottom:1px solid #203149}
+.excel-report-head h3{margin:0;font-size:17px;font-weight:950;color:#19d889}
+.excel-report-head p{margin:3px 0 0;font-size:10px;color:#91a0b5}
+.excel-report-close{width:34px;height:34px;border:0;border-radius:9px;background:#e11d2e;color:#fff;font-size:17px;font-weight:900;cursor:pointer}
+.excel-report-body{padding:17px}
+.excel-report-field{margin-bottom:13px}
+.excel-report-field label{display:block;font-size:10px;font-weight:900;color:#aebbd0;margin-bottom:6px;text-transform:uppercase}
+.excel-report-field input,.excel-report-field select{width:100%;background:#07111d;color:#f5f7fb;border:1px solid #30455e;border-radius:9px;padding:11px 12px;font-size:13px;font-weight:800;outline:none}
+.excel-report-field input:focus,.excel-report-field select:focus{border-color:#19d889;box-shadow:0 0 0 2px rgba(24,216,137,.12)}
+.excel-report-machine-info{font-size:10px;color:#8ea0b5;margin:5px 0 13px}
+.excel-report-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.excel-report-actions button{border-radius:9px;padding:10px 14px;border:1px solid #33465f;background:#101a28;color:#dce6f4;font-size:11px;font-weight:900;cursor:pointer}
+.excel-report-actions .open{background:#087a4c;border-color:#19d889;color:#fff;flex:1}
+.excel-report-actions button:disabled{opacity:.45;cursor:not-allowed}
+.excel-report-note{margin-top:12px;padding:9px 10px;border-radius:8px;background:#071a14;border:1px solid #145c42;color:#8eeec2;font-size:9px;line-height:1.45}
+@media(max-width:520px){.excel-report-card{border-radius:12px}.excel-report-body{padding:13px}.excel-report-head h3{font-size:14px}.excel-report-actions{flex-direction:column}.excel-report-actions button{width:100%}}
 
 </style>
 </head>
@@ -659,34 +663,34 @@ button,input,select{font-family:inherit}
 
 
 <!-- ================= EXCEL REPORT SELECTOR ================= -->
-<div id="excelReportModal" class="excel-report-modal hidden">
+<div id="excelReportModal" class="excel-report-overlay hidden">
   <div class="excel-report-card">
     <div class="excel-report-head">
-      <h3><i class="fas fa-file-excel mr-2"></i>EXCEL REPORT</h3>
-      <button onclick="closeExcelReportSelector()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-bold text-xs">
-        <i class="fas fa-times"></i>
-      </button>
+      <div>
+        <h3><i class="fas fa-file-excel mr-2"></i>WORKFLOW EXCEL REPORT</h3>
+        <p>Date निवडा → Machine निवडा → Styled Excel / Google Sheets file उघडा</p>
+      </div>
+      <button class="excel-report-close" onclick="closeExcelReportSelector()">×</button>
     </div>
     <div class="excel-report-body">
       <div class="excel-report-field">
-        <label>Select Date</label>
+        <label for="excelReportDate">REPORT DATE</label>
         <input type="date" id="excelReportDate" onchange="loadExcelReportMachines()">
       </div>
       <div class="excel-report-field">
-        <label>Select Machine</label>
-        <select id="excelReportMachine">
+        <label for="excelReportMachine">MACHINE NAME</label>
+        <select id="excelReportMachine" onchange="updateExcelReportMachineInfo()">
           <option value="">-- SELECT MACHINE --</option>
         </select>
       </div>
-      <div class="excel-report-note">
-        Date निवडल्यानंतर त्या date मधील available machines दिसतील. Machine निवडल्यानंतर
-        <b>SR., DEPARTMENT, START TIME, END TIME, TOTAL TIME, STATUS</b> एवढाच Excel report उघडेल.
-      </div>
+      <div id="excelReportMachineInfo" class="excel-report-machine-info">Selected date वर उपलब्ध machine निवडा.</div>
       <div class="excel-report-actions">
-        <button class="excel-report-close" onclick="closeExcelReportSelector()">CANCEL</button>
-        <button class="excel-report-open" onclick="openSelectedExcelReport()">
-          <i class="fas fa-up-right-from-square mr-1"></i> OPEN EXCEL SHEET
-        </button>
+        <button onclick="closeExcelReportSelector()">CLOSE</button>
+        <button id="excelReportOpenBtn" class="open" onclick="openSelectedExcelReport()" disabled><i class="fas fa-file-excel mr-1"></i> OPEN SHEET</button>
+      </div>
+      <div class="excel-report-note">
+        <b>Format:</b> SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS<br>
+        Google Sheets मध्ये उघडण्यासाठी generated <b>.xlsx</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
       </div>
     </div>
   </div>
@@ -961,11 +965,6 @@ window.addEventListener("DOMContentLoaded",()=>{
     }
   } else {
     showLoginSection();
-  }
-
-  const excelReportDate = document.getElementById("excelReportDate");
-  if(excelReportDate){
-    excelReportDate.value = new Date().toISOString().split("T")[0];
   }
 
   const dateInput = document.getElementById("setupDate");
@@ -1518,267 +1517,212 @@ window.setToolroomFilter = function(filter){ window.toolroomFilter = filter; ren
 window.setCmmFilter = function(filter){ window.cmmFilter = filter; renderSTDRoom(); };
 window.setQualityFilter = function(filter){ window.qualityFilter = filter; renderQuality(); };
 
-
-/* ================= NEW EXCEL REPORT =================
-   Date -> Machine -> Excel Sheet
-   Excel sheet contains ONLY:
-   SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS
-*/
+/* ================= STYLED XLSX / GOOGLE SHEETS REPORT ================= */
 function reportDateForSetup(s){
   if(s && s.setupDate) return String(s.setupDate);
   if(s && s.timestampRegistered){
-    const d = new Date(s.timestampRegistered);
-    return d.toLocaleDateString("en-CA");
+    const d=new Date(s.timestampRegistered);
+    if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
   }
   return "";
 }
 
-function reportEscape(value){
-  return String(value==null ? "" : value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#39;");
+function getReportSetupsForDate(dateValue){
+  return (window.allSetups||[]).filter(s=>reportDateForSetup(s)===dateValue);
 }
 
-function getExcelReportRows(s){
-  const rows = [];
-  let sr = 1;
+function loadExcelReportMachines(){
+  const dateEl=document.getElementById('excelReportDate');
+  const machineEl=document.getElementById('excelReportMachine');
+  const btn=document.getElementById('excelReportOpenBtn');
+  const info=document.getElementById('excelReportMachineInfo');
+  if(!dateEl||!machineEl) return;
+  const date=dateEl.value;
+  const list=getReportSetupsForDate(date);
+  const machines=[...new Set(list.map(s=>s.machineName).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
+  machineEl.innerHTML='<option value="">-- SELECT MACHINE --</option>'+machines.map(m=>`<option value="${String(m).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${m}</option>`).join('');
+  if(btn) btn.disabled=true;
+  if(info) info.textContent=machines.length ? `${machines.length} machine(s) available for ${date}.` : `या date साठी कोणताही setup report उपलब्ध नाही.`;
+}
 
-  rows.push({
-    sr: sr++,
-    department: "SETTER / Setup Registration",
-    start: s.timeRegistered || "-",
-    end: s.setupType==="Short" ? "N/A" : (s.toolStart || "-"),
-    total: s.setupType==="Short" ? "0 min" : durationMinutes(s.timeRegistered, s.toolStart),
-    status: "REGISTERED"
-  });
+function updateExcelReportMachineInfo(){
+  const date=document.getElementById('excelReportDate')?.value||'';
+  const machine=document.getElementById('excelReportMachine')?.value||'';
+  const btn=document.getElementById('excelReportOpenBtn');
+  const info=document.getElementById('excelReportMachineInfo');
+  const matches=machine?getReportSetupsForDate(date).filter(s=>s.machineName===machine):[];
+  if(btn) btn.disabled=!matches.length;
+  if(info) info.textContent=matches.length ? `${machine} • ${matches.length} setup record(s) found for ${date}.` : 'Selected date आणि machine निवडा.';
+}
 
-  if(s.setupType!=="Short"){
-    rows.push({
-      sr: sr++,
-      department: "TOOL ROOM / Tooling & Fixture Ready",
-      start: s.toolStart || "-",
-      end: s.toolEnd || "-",
-      total: durationMinutes(s.toolStart, s.toolEnd),
-      status: s.toolEnd ? "READY" : "PENDING"
-    });
+window.openExcelReportSelector=function(){
+  const modal=document.getElementById('excelReportModal');
+  const dateEl=document.getElementById('excelReportDate');
+  if(!modal||!dateEl) return;
+  dateEl.value=new Date().toISOString().split('T')[0];
+  modal.classList.remove('hidden');
+  loadExcelReportMachines();
+  document.getElementById('excelReportMachine')?.focus();
+};
+
+window.closeExcelReportSelector=function(){
+  document.getElementById('excelReportModal')?.classList.add('hidden');
+};
+
+function buildExcelWorkflowRows(s){
+  const rows=[];
+  let sr=1;
+  rows.push({type:'normal',sr:sr++,dept:'SETTER\nSetup Registration',start:s.timeRegistered||'-',end:s.setupType==='Short'?'N/A':(s.toolStart||'-'),total:s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered,s.toolStart),status:'REGISTERED'});
+  if(s.setupType!=='Short'){
+    rows.push({type:'normal',sr:sr++,dept:'TOOL ROOM\nTooling & Fixture Ready',start:s.toolStart||'-',end:s.toolEnd||'-',total:durationMinutes(s.toolStart,s.toolEnd),status:s.toolEnd?'READY':'PENDING'});
   }
-
-  const sampleCount = Math.max(1, Number(s.sampleCount||1));
-  for(let n=1; n<=4; n++){
-    const x = getSample(s,n);
-
-    if(!x.setterStart && !x.setterEnd && !x.cmmStart && !x.cmmEnd &&
-       !x.qualityStart && !x.qualityEnd && !x.result && n>sampleCount){
-      continue;
-    }
-
-    let setStatus = x.cutTime ? "DONE" : (x.setterStart ? "RUNNING" : "PENDING");
-    let cmmStatus = x.cmmEnd ? "DONE" : (x.cmmStart ? "RUNNING" : "PENDING");
-    let qStatus = x.result ? x.result : (x.qualityStart ? "RUNNING" : "PENDING");
-
-    rows.push({
-      sr: "S"+n,
-      department: "SETTER / Sample #"+n,
-      start: x.setterStart || "-",
-      end: x.setterEnd || "-",
-      total: durationMinutes(x.setterStart, x.setterEnd),
-      status: setStatus
-    });
-
-    rows.push({
-      sr: "",
-      department: "CMM ROOM / Sample #"+n,
-      start: x.cmmStart || "-",
-      end: x.cmmEnd || "-",
-      total: durationMinutes(x.cmmStart, x.cmmEnd),
-      status: cmmStatus
-    });
-
-    rows.push({
-      sr: "",
-      department: "QUALITY / Sample #"+n,
-      start: x.qualityStart || "-",
-      end: x.qualityEnd || "-",
-      total: durationMinutes(x.qualityStart, x.qualityEnd),
-      status: qStatus
-    });
+  for(let n=1;n<=4;n++){
+    const x=getSample(s,n);
+    if(!x.setterStart && !x.setterEnd && !x.cmmStart && !x.cmmEnd && !x.qualityStart && !x.qualityEnd && !x.result && n>(s.sampleCount||1)) continue;
+    const setStatus=x.cutTime?'DONE':(x.setterStart?'RUNNING':'PENDING');
+    const cmmStatus=x.cmmEnd?'DONE':(x.cmmStart?'RUNNING':'PENDING');
+    const qStatus=x.result|| (x.qualityStart?'RUNNING':'PENDING');
+    rows.push({type:'sample',sample:n,sampleFirst:true,dept:`SETTER\nSample #${n}`,start:x.setterStart||'-',end:x.setterEnd||'-',total:durationMinutes(x.setterStart,x.setterEnd),status:setStatus});
+    rows.push({type:'sample',sample:n,dept:`CMM ROOM\nSample #${n}`,start:x.cmmStart||'-',end:x.cmmEnd||'-',total:durationMinutes(x.cmmStart,x.cmmEnd),status:cmmStatus});
+    rows.push({type:'sample',sample:n,dept:`QUALITY\nSample #${n}`,start:x.qualityStart||'-',end:x.qualityEnd||'-',total:durationMinutes(x.qualityStart,x.qualityEnd),status:qStatus});
   }
-
   return rows;
 }
 
-window.openExcelReportSelector = function(){
-  const modal = document.getElementById("excelReportModal");
-  const dateInput = document.getElementById("excelReportDate");
-  const machineSelect = document.getElementById("excelReportMachine");
-  if(!modal || !dateInput || !machineSelect) return;
-
-  if(!dateInput.value){
-    dateInput.value = new Date().toISOString().split("T")[0];
-  }
-  modal.classList.remove("hidden");
-  loadExcelReportMachines();
-};
-
-window.closeExcelReportSelector = function(){
-  const modal = document.getElementById("excelReportModal");
-  if(modal) modal.classList.add("hidden");
-};
-
-window.loadExcelReportMachines = function(){
-  const dateInput = document.getElementById("excelReportDate");
-  const machineSelect = document.getElementById("excelReportMachine");
-  if(!dateInput || !machineSelect) return;
-
-  const selectedDate = dateInput.value;
-  const machines = [...new Set(
-    (window.allSetups||[])
-      .filter(s=>reportDateForSetup(s)===selectedDate)
-      .map(s=>s.machineName)
-      .filter(Boolean)
-  )].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
-
-  machineSelect.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
-  machines.forEach(machine=>{
-    machineSelect.innerHTML += `<option value="${reportEscape(machine)}">${reportEscape(machine)}</option>`;
+function buildExcelRowsForSetups(setups){
+  const out=[];
+  (setups||[]).forEach((s,idx)=>{
+    if(idx>0) out.push({type:'separator',dept:'',start:'',end:'',total:'',status:''});
+    out.push(...buildExcelWorkflowRows(s));
   });
-
-  if(!machines.length){
-    machineSelect.innerHTML = `<option value="">-- NO MACHINE FOUND FOR THIS DATE --</option>`;
-  }
-};
-
-window.openSelectedExcelReport = function(){
-  const dateInput = document.getElementById("excelReportDate");
-  const machineSelect = document.getElementById("excelReportMachine");
-  if(!dateInput || !machineSelect) return;
-
-  const selectedDate = dateInput.value;
-  const machine = machineSelect.value;
-
-  if(!selectedDate){
-    alert("कृपया Date select करा.");
-    return;
-  }
-  if(!machine){
-    alert("कृपया Machine select करा.");
-    return;
-  }
-
-  const setup = (window.allSetups||[])
-    .filter(s=>reportDateForSetup(s)===selectedDate && String(s.machineName)===String(machine))
-    .sort((a,b)=>(b.timestampRegistered||0)-(a.timestampRegistered||0))[0];
-
-  if(!setup){
-    alert("Selected Date आणि Machine साठी setup data सापडला नाही.");
-    return;
-  }
-
-  const rows = getExcelReportRows(setup);
-  const safeMachine = reportEscape(setup.machineName||machine);
-  const safeDate = reportEscape(selectedDate);
-  const safeId = reportEscape(setup.id||"-");
-  const safePart = reportEscape(setup.partName||"-");
-  const safePallet = reportEscape(setup.pallet||"-");
-
-  const tableRows = rows.map(r=>`
-    <tr>
-      <td class="sr">${reportEscape(r.sr)}</td>
-      <td class="dept">${reportEscape(r.department)}</td>
-      <td class="start">${reportEscape(r.start)}</td>
-      <td class="end">${reportEscape(r.end)}</td>
-      <td class="total">${reportEscape(r.total)}</td>
-      <td class="status">${reportEscape(r.status)}</td>
-    </tr>
-  `).join("");
-
-  const excelWindow = window.open("", "_blank");
-  if(!excelWindow){
-    alert("Excel Sheet उघडण्यासाठी browser popup allow करा.");
-    return;
-  }
-
-  const reportHtml = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>${safeMachine} - SUTOM Excel Report</title>
-<style>
-  *{box-sizing:border-box}
-  body{margin:0;padding:24px;background:#eef2f7;font-family:Segoe UI,Arial,sans-serif;color:#111827}
-  .sheet{background:white;max-width:1200px;margin:0 auto;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
-  .top{border:2px solid #047857;border-bottom:0;padding:14px 16px}
-  h1{margin:0;font-size:24px;color:#047857}
-  .meta{margin-top:8px;font-size:12px;color:#374151;font-weight:600}
-  table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
-  th{background:#0f172a;color:#fff;border:1px solid #334155;padding:10px 7px;text-align:center;font-weight:800}
-  td{border:1px solid #cbd5e1;padding:9px 7px;text-align:center;vertical-align:middle}
-  tr:nth-child(even) td{background:#f0fdf4}
-  td.dept{text-align:left;font-weight:800}
-  td.start{background:#dbeafe;color:#1d4ed8;font-family:monospace;font-weight:800}
-  td.end{background:#dcfce7;color:#15803d;font-family:monospace;font-weight:800}
-  td.total{color:#2563eb;font-weight:800}
-  td.status{color:#059669;font-weight:800}
-  .sr{width:8%}.dept{width:30%}.start,.end{width:17%}.total{width:12%}.status{width:16%}
-  .actions{text-align:right;margin:0 0 12px}
-  .actions button{border:0;background:#047857;color:#fff;border-radius:6px;padding:8px 12px;font-weight:800;cursor:pointer;margin-left:6px}
-  .actions button.gray{background:#475569}
-  @media print{
-    body{padding:0;background:white}.sheet{box-shadow:none;max-width:none;padding:10px}
-    .actions{display:none}
-    h1{font-size:18px}.meta{font-size:10px}table{font-size:10px}th,td{padding:6px 4px}
-  }
-</style>
-</head>
-<body>
-<div class="sheet">
-  <div class="actions">
-    <button onclick="window.print()">PRINT / SAVE AS PDF</button>
-    <button class="gray" onclick="downloadExcel()">DOWNLOAD .XLS</button>
-  </div>
-  <div class="top">
-    <h1>SUTOM - ${safeMachine} - Complete Setup Time</h1>
-    <div class="meta">Date: ${safeDate} &nbsp; | &nbsp; Setup ID: ${safeId} &nbsp; | &nbsp; Part: ${safePart} &nbsp; | &nbsp; Pallet: ${safePallet}</div>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>SR.</th>
-        <th>DEPARTMENT</th>
-        <th>START TIME</th>
-        <th>END TIME</th>
-        <th>TOTAL TIME</th>
-        <th>STATUS</th>
-      </tr>
-    </thead>
-    <tbody>${tableRows}</tbody>
-  </table>
-</div>
-<script>
-function downloadExcel(){
-  const html = '<html><head><meta charset="UTF-8"><style>' +
-    'table{border-collapse:collapse;width:100%;font-family:Segoe UI,Arial}th,td{border:1px solid #999;padding:7px;text-align:center}th{background:#0f172a;color:white}td.dept{text-align:left;font-weight:bold}' +
-    '</style></head><body>' + document.querySelector('table').outerHTML + '</body></html>';
-  const blob = new Blob([html],{type:'application/vnd.ms-excel'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'SUTOM_${safeMachine}_${safeDate}.xls';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  return out;
 }
-<\/script>
-</body>
-</html>`;
 
-  excelWindow.document.open();
-  excelWindow.document.write(reportHtml);
-  excelWindow.document.close();
-  closeExcelReportSelector();
+function safeSheetName(name){
+  return String(name||'SUTOM').replace(/[\\\/?*\[\]:]/g,'').slice(0,31)||'SUTOM';
+}
+
+window.openSelectedExcelReport=async function(){
+  const date=document.getElementById('excelReportDate')?.value||'';
+  const machine=document.getElementById('excelReportMachine')?.value||'';
+  if(!date||!machine){ alert('कृपया Date आणि Machine दोन्ही निवडा.'); return; }
+  const setups=(window.allSetups||[]).filter(s=>reportDateForSetup(s)===date && s.machineName===machine);
+  if(!setups.length){ alert('या Date आणि Machine साठी report उपलब्ध नाही.'); return; }
+  if(typeof ExcelJS==='undefined'){ alert('Excel report library load झाली नाही. Internet connection तपासा आणि पुन्हा प्रयत्न करा.'); return; }
+
+  const btn=document.getElementById('excelReportOpenBtn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i> CREATING SHEET...';}
+  try{
+    const wb=new ExcelJS.Workbook();
+    wb.creator='SUTOM - Setup Time Online Monitor';
+    wb.created=new Date();
+    wb.modified=new Date();
+    const ws=wb.addWorksheet(safeSheetName(machine),{views:[{showGridLines:false,zoomScale:80,zoomScaleNormal:80}]});
+
+    ws.columns=[
+      {key:'sr',width:6},
+      {key:'dept',width:24},
+      {key:'start',width:14},
+      {key:'end',width:14},
+      {key:'total',width:11},
+      {key:'status',width:18}
+    ];
+
+    const rows=buildExcelRowsForSetups(setups);
+    const header=ws.addRow(['SR.','DEPARTMENT','START TIME','END TIME','TOTAL TIME','STATUS']);
+    header.height=32;
+    header.eachCell(cell=>{
+      cell.font={name:'Arial',size:12,bold:true,color:{argb:'FFFFFFFF'}};
+      cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0F172A'}};
+      cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+      cell.border={top:{style:'thin',color:{argb:'FF047857'}},left:{style:'thin',color:{argb:'FF047857'}},bottom:{style:'thin',color:{argb:'FF047857'}},right:{style:'thin',color:{argb:'FF047857'}}};
+    });
+
+    let excelRowNumber=2;
+    for(let i=0;i<rows.length;i++){
+      const r=rows[i];
+      if(r.type==='separator'){
+        const sep=ws.addRow(['','','','','','']);
+        sep.height=10;
+        sep.eachCell(cell=>cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF050B14'}});
+        excelRowNumber++;
+        continue;
+      }
+      if(r.type==='sample' && r.sampleFirst){
+        const sampleRows=rows.slice(i,i+3);
+        sampleRows.forEach(sr=>{
+          const row=ws.addRow(['',sr.dept,sr.start,sr.end,sr.total,sr.status]);
+          row.height=48;
+          row.eachCell((cell,col)=>{
+            cell.font={name:'Arial',size:11,bold:(col===2||col===6),color:{argb:'FF111827'}};
+            cell.alignment={horizontal:col===2?'left':'center',vertical:'middle',wrapText:true};
+            cell.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
+          });
+          row.getCell(2).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
+          row.getCell(3).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDBEAFE'}};
+          row.getCell(3).font={name:'Arial',size:11,bold:true,color:{argb:'FF1D4ED8'}};
+          row.getCell(4).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDCFCE7'}};
+          row.getCell(4).font={name:'Arial',size:11,bold:true,color:{argb:'FF15803D'}};
+          row.getCell(5).font={name:'Arial',size:11,bold:true,color:{argb:'FF2563EB'}};
+          row.getCell(6).font={name:'Arial',size:11,bold:true,color:{argb:'FF10B981'}};
+          excelRowNumber++;
+        });
+        const first=excelRowNumber-3, last=excelRowNumber-1;
+        ws.mergeCells(`A${first}:A${last}`);
+        const ac=ws.getCell(`A${first}`);
+        ac.value='S'+r.sample;
+        ac.font={name:'Arial',size:11,bold:true,color:{argb:'FF111827'}};
+        ac.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
+        ac.alignment={horizontal:'center',vertical:'middle'};
+        ac.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
+        i+=2;
+        continue;
+      }
+      const row=ws.addRow([r.sr,r.dept,r.start,r.end,r.total,r.status]);
+      row.height=52;
+      row.eachCell((cell,col)=>{
+        cell.font={name:'Arial',size:11,bold:(col===1||col===2||col===6),color:{argb:'FF111827'}};
+        cell.alignment={horizontal:col===2?'left':'center',vertical:'middle',wrapText:true};
+        cell.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
+      });
+      row.getCell(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
+      row.getCell(2).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
+      row.getCell(3).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDBEAFE'}};
+      row.getCell(3).font={name:'Arial',size:11,bold:true,color:{argb:'FF1D4ED8'}};
+      row.getCell(4).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDCFCE7'}};
+      row.getCell(4).font={name:'Arial',size:11,bold:true,color:{argb:'FF15803D'}};
+      row.getCell(5).font={name:'Arial',size:11,bold:true,color:{argb:'FF2563EB'}};
+      row.getCell(6).font={name:'Arial',size:11,bold:true,color:{argb:'FF10B981'}};
+      excelRowNumber++;
+    }
+
+
+    ws.freezePanes={xSplit:0,ySplit:1};
+    ws.autoFilter={from:'A1',to:'F'+Math.max(1,ws.rowCount)};
+    ws.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:'A4',margins:{left:0.2,right:0.2,top:0.4,bottom:0.4,header:0.1,footer:0.1}};
+    ws.pageSetup.horizontalDpi=300;
+    ws.pageSetup.verticalDpi=300;
+    ws.headerFooter.oddFooter='&L SUTOM - Setup Time Monitor&C'+machine+' - '+date+'&RPage &P of &N';
+    ws.sheetProperties.pageSetUpPr={fitToPage:true};
+
+    const buffer=await wb.xlsx.writeBuffer();
+    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`SUTOM_${machine}_${date}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    closeExcelReportSelector();
+    alert(`SUTOM ${machine} report तयार झाला.\n\nहा .xlsx file Google Sheets किंवा Microsoft Excel मध्ये उघडता येईल.`);
+  }catch(err){
+    console.error('Excel report error:',err);
+    alert('Excel report तयार करताना error आला. पुन्हा प्रयत्न करा.');
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-file-excel mr-1"></i> OPEN SHEET';}
+  }
 };
 
 window.renderSetterExcelTable = function(filterKey){

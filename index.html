@@ -13,7 +13,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 
 <style>
 *{
@@ -112,16 +111,18 @@ body{
 }
 
 .workflow-table th{
-  background:#0f172a;
-  color:white;
-  padding:8px 4px;
-  border:1px solid #334155;
+  background:#091929 !important;
+  color:white !important;
+  padding:10px 6px;
+  border:1px solid #203149;
   text-align:center;
   white-space:nowrap;
+  font-size:12px;
+  font-weight:800;
 }
 
 .workflow-table td{
-  padding:6px 4px;
+  padding:8px 6px;
   border:1px solid #cbd5e1;
   text-align:center;
   word-break:break-word;
@@ -132,16 +133,26 @@ body{
 }
 
 .stage-start{
-  background:#dbeafe;
-  color:#1d4ed8;
+  background:#dbeafe !important;
+  color:#1e40af !important;
   font-family:monospace;
   font-weight:700;
 }
 
 .stage-end{
-  background:#dcfce7;
-  color:#15803d;
+  background:#dcfce7 !important;
+  color:#166534 !important;
   font-family:monospace;
+  font-weight:700;
+}
+
+.stage-total{
+  color:#3b82f6 !important;
+  font-weight:700;
+}
+
+.stage-status{
+  color:#10b981 !important;
   font-weight:700;
 }
 
@@ -235,7 +246,7 @@ button,input,select{font-family:inherit}
 .sutom-logo:after{content:'⌁';font-size:22px;color:#dce5f2;transform:rotate(-30deg);position:absolute;top:8px;left:17px}
 .sutom-brand-title{font-size:31px;font-weight:900;line-height:.9;letter-spacing:-1px;color:#f4f7fb}.sutom-brand-title b{color:#f1283d}.sutom-brand-sub{font-size:11px;color:#d3dbe6;margin-top:5px}.sutom-brand-sub b{color:#ff3348}
 .sutom-company{display:flex;align-items:center;gap:9px;font-size:12px;color:#e9eef6}.sutom-company i{font-size:28px;color:#cbd5e1}.sutom-company small{display:block;color:#93a0b4;font-size:10px;margin-top:1px}
-.sutom-head-actions{display:flex;align-items:center;gap:7px}.compact-header-btn{border:1px solid #33465f;background:#0b1625;color:#dce6f4;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:900;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}.compact-header-btn:hover{filter:brightness(1.15)}.compact-header-btn.reset{border-color:#9b1c2d;color:#ff9aa5;background:#210b11}.compact-header-btn.logout{border-color:#5b6b80;color:#f2f5f8;background:#101a28}.sutom-pill{border:1px solid #26364d;background:#0b1524;color:#e9eef6;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}.sutom-pill.live{border-color:#00b96b;color:#54f0a9;background:#061b13}.sutom-pill.live i{font-size:7px}.sutom-user{display:flex;align-items:center;gap:7px;padding-left:5px}.sutom-user-avatar{width:36px;height:36px;border-radius:50%;background:#f5f7fb;color:#111827;display:flex;align-items:center;justify-content:center;font-size:19px}.sutom-user-name{font-size:11px;font-weight:800}.sutom-user-dept{font-size:9px;color:#8d9bb0;margin-top:2px}
+.sutom-head-actions{display:flex;align-items:center;gap:7px}.compact-header-btn{border:1px solid #33465f;background:#0b1625;color:#dce6f4;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:900;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}.compact-header-btn:hover{filter:brightness(1.15)}.compact-header-btn.excel{border-color:#059669;color:#10b981;background:#022c22;}.compact-header-btn.reset{border-color:#9b1c2d;color:#ff9aa5;background:#210b11}.compact-header-btn.logout{border-color:#5b6b80;color:#f2f5f8;background:#101a28}.sutom-pill{border:1px solid #26364d;background:#0b1524;color:#e9eef6;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}.sutom-pill.live{border-color:#00b96b;color:#54f0a9;background:#061b13}.sutom-pill.live i{font-size:7px}.sutom-user{display:flex;align-items:center;gap:7px;padding-left:5px}.sutom-user-avatar{width:36px;height:36px;border-radius:50%;background:#f5f7fb;color:#111827;display:flex;align-items:center;justify-content:center;font-size:19px}.sutom-user-name{font-size:11px;font-weight:800}.sutom-user-dept{font-size:9px;color:#8d9bb0;margin-top:2px}
 
 /* --- Authentication & Dashboard Visibility Fix --- */
 #dashboardSection{display:none !important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
@@ -266,7 +277,7 @@ button,input,select{font-family:inherit}
 .compact-action.green{background:#086f45;border-color:#16c784;color:white}
 
 .setter-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:12px 0}
-.metric-card{background:linear-gradient(145deg,#0a1421,#07101b);border:1px solid #263950;border-radius:11px;padding:10px 12px;min-height:76px;position:relative;overflow:hidden;cursor:pointer}
+.metric-card{background:linear-gradient(145deg,#0a1421,#07101d);border:1px solid #263950;border-radius:11px;padding:10px 12px;min-height:76px;position:relative;overflow:hidden;cursor:pointer}
 .metric-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#2994ff}
 .metric-card.ready:before{background:#19d889}
 .metric-card.running:before{background:#ffb91f}
@@ -359,27 +370,6 @@ button,input,select{font-family:inherit}
   #dashboardSection{min-height:calc(100vh - 64px)!important}.sutom-sidebar{display:none}#dashboardSection>main{width:100%;padding:8px 8px 18px!important}.setter-topbar{margin-bottom:7px}.setter-title-mobile{display:none}.setter-action-row{width:100%;justify-content:space-between}.compact-action{flex:1;justify-content:center;padding:6px 5px;font-size:8px}.setter-hero{height:112px;padding:18px 14px;border-radius:11px}.setter-hero h2{font-size:24px}.setter-hero p{font-size:10px;margin-top:6px}.setter-hero .hero-time{right:10px;top:52px;min-width:120px;padding:5px 8px}.hero-time .date{font-size:7px}.hero-time .time{font-size:13px}.setter-metrics{grid-template-columns:repeat(5,minmax(86px,1fr));gap:5px;margin:7px 0;overflow-x:auto;padding-bottom:2px}.metric-card{min-height:64px;padding:7px 8px}.metric-card .metric-label{font-size:7px}.metric-card .metric-num{font-size:19px}.metric-card .metric-sub{font-size:7px}.setter-list-panel{padding:7px;border-radius:10px}.setter-list-head h3{font-size:11px}.setter-list-head p{font-size:7px}.setter-list-head .row-count{font-size:7px;padding:4px 5px}.setter-machine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:6px}.machine-card{padding:7px;border-radius:9px}.machine-card .mc-icon{width:24px;height:24px;font-size:11px}.status-chip{font-size:6.5px;padding:3px 5px}.mc-menu{font-size:10px}.mc-machine{font-size:15px;margin-top:5px}.mc-row{font-size:7.5px;margin-top:4px}.mc-pallet,.priority,.shift-row,.stage-text{font-size:7px}.priority b{padding:2px 4px}.shift-row{margin-top:5px}.progress{margin:6px 0 3px}.mc-action{padding:4px;font-size:7.5px}.fixture-box{padding:5px}.fixture-box .fixture-title,.fixture-option,.fixture-save{font-size:7px}.fixture-save{padding:3px 5px}.fixture-serial-item{font-size:7px;padding:4px 5px}
   #setupFormCard form{grid-template-columns:1fr!important}.sutom-brand-title{white-space:nowrap}
 }
-
-/* ================= EXCEL REPORT SELECTOR ================= */
-.excel-report-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px;z-index:120}
-.excel-report-card{width:min(520px,100%);background:#08111e;border:1px solid #29415c;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:hidden;color:#f5f7fb}
-.excel-report-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:#050b14;border-bottom:1px solid #203149}
-.excel-report-head h3{margin:0;font-size:17px;font-weight:950;color:#19d889}
-.excel-report-head p{margin:3px 0 0;font-size:10px;color:#91a0b5}
-.excel-report-close{width:34px;height:34px;border:0;border-radius:9px;background:#e11d2e;color:#fff;font-size:17px;font-weight:900;cursor:pointer}
-.excel-report-body{padding:17px}
-.excel-report-field{margin-bottom:13px}
-.excel-report-field label{display:block;font-size:10px;font-weight:900;color:#aebbd0;margin-bottom:6px;text-transform:uppercase}
-.excel-report-field input,.excel-report-field select{width:100%;background:#07111d;color:#f5f7fb;border:1px solid #30455e;border-radius:9px;padding:11px 12px;font-size:13px;font-weight:800;outline:none}
-.excel-report-field input:focus,.excel-report-field select:focus{border-color:#19d889;box-shadow:0 0 0 2px rgba(24,216,137,.12)}
-.excel-report-machine-info{font-size:10px;color:#8ea0b5;margin:5px 0 13px}
-.excel-report-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-.excel-report-actions button{border-radius:9px;padding:10px 14px;border:1px solid #33465f;background:#101a28;color:#dce6f4;font-size:11px;font-weight:900;cursor:pointer}
-.excel-report-actions .open{background:#087a4c;border-color:#19d889;color:#fff;flex:1}
-.excel-report-actions button:disabled{opacity:.45;cursor:not-allowed}
-.excel-report-note{margin-top:12px;padding:9px 10px;border-radius:8px;background:#071a14;border:1px solid #145c42;color:#8eeec2;font-size:9px;line-height:1.45}
-@media(max-width:520px){.excel-report-card{border-radius:12px}.excel-report-body{padding:13px}.excel-report-head h3{font-size:14px}.excel-report-actions{flex-direction:column}.excel-report-actions button{width:100%}}
-
 </style>
 </head>
 
@@ -402,6 +392,7 @@ button,input,select{font-family:inherit}
 
   <div class="sutom-head-actions">
     <div class="sutom-pill live"><i class="fas fa-circle"></i><span>FIREBASE LIVE</span></div>
+    <button class="compact-header-btn excel" onclick="openExcelReportModal()"><i class="fas fa-file-excel"></i><span>Excel Report</span></button>
     <button class="compact-header-btn reset" onclick="handleResetAllData()" title="Reset All Data"><i class="fas fa-trash-rotate"></i><span>Reset All Data</span></button>
     <button class="compact-header-btn logout" onclick="handleLogout()" title="Logout"><i class="fas fa-right-from-bracket"></i><span>Logout</span></button>
     <div class="sutom-user">
@@ -458,7 +449,7 @@ button,input,select{font-family:inherit}
     <button class="sutom-nav-btn active" onclick="showDepartmentTab(window.currentUser?.dept||'setter')"><i class="fas fa-home"></i> Dashboard</button>
     <button class="sutom-nav-btn" onclick="openSetterModule('register')"><i class="fas fa-plus-square"></i> Register Setup</button>
     <button class="sutom-nav-btn" onclick="document.querySelector('.setter-list-panel')?.scrollIntoView({behavior:'smooth'})"><i class="fas fa-diagram-project"></i> Workflow</button>
-    <button class="sutom-nav-btn" onclick="openExcelReportSelector()"><i class="fas fa-chart-column"></i> Reports</button>
+    <button class="sutom-nav-btn" onclick="openExcelReportModal()"><i class="fas fa-chart-column"></i> Reports</button>
     <button class="sutom-nav-btn" onclick="if(confirm('सर्व setup data reset करायचा आहे का?')) handleResetAllData()"><i class="fas fa-gear"></i> Settings</button>
     <div class="sutom-side-bottom">SUTOM<br><b>Setup Time Online Monitor</b><br><br>Precision &nbsp; | &nbsp; Efficiency</div>
   </aside>
@@ -471,7 +462,7 @@ button,input,select{font-family:inherit}
   <div class="setter-topbar">
     <div class="setter-title-mobile">Setter Dashboard</div>
     <div class="setter-action-row">
-      <button onclick="openExcelReportSelector()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
+      <button onclick="openExcelReportModal()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
       <button onclick="openSetterModule('register')" class="compact-action blue"><i class="fas fa-plus"></i> Register Setup</button>
     </div>
   </div>
@@ -526,6 +517,10 @@ button,input,select{font-family:inherit}
 
 <!-- ================= TOOL ROOM ========================== -->
 <div id="tab-toolroom" class="tab-content hidden space-y-6">
+  <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800">
+    <h2 class="text-md font-bold text-white"><i class="fas fa-tools text-blue-500 mr-2"></i>TOOL ROOM SETUP PREPARATION</h2>
+    <button onclick="openExcelReportModal()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
+  </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div onclick="setToolroomFilter('ready')" class="dept-card ready-box">
       <div class="icon-box"><i class="fas fa-check-double"></i></div>
@@ -567,6 +562,10 @@ button,input,select{font-family:inherit}
 
 <!-- ================= CMM ROOM ============================ -->
 <div id="tab-stdroom" class="tab-content hidden space-y-6">
+  <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800">
+    <h2 class="text-md font-bold text-white"><i class="fas fa-microscope text-indigo-400 mr-2"></i>CMM ROOM / STD ROOM</h2>
+    <button onclick="openExcelReportModal()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
+  </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div onclick="setCmmFilter('registered')" class="dept-card info-box">
       <div class="icon-box"><i class="fas fa-clipboard-list"></i></div>
@@ -607,6 +606,10 @@ button,input,select{font-family:inherit}
 
 <!-- ================= QUALITY ============================== -->
 <div id="tab-quality" class="tab-content hidden space-y-6">
+  <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800">
+    <h2 class="text-md font-bold text-white"><i class="fas fa-clipboard-check text-emerald-400 mr-2"></i>QUALITY INSPECTION</h2>
+    <button onclick="openExcelReportModal()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
+  </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div onclick="setQualityFilter('approve')" class="dept-card approve-box">
       <div class="icon-box"><i class="fas fa-file-signature"></i></div>
@@ -618,14 +621,14 @@ button,input,select{font-family:inherit}
       <div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
       <div class="count" id="qualityPendingCount">0</div>
       <div class="label">SOP PENDING</div>
-      <p class="text-[10px] text-slate-400 mt-1">Work Start/End ನಂತರही pending; Approve किंवा Correction पर्यंत इथेच</p>
+      <p class="text-[10px] text-slate-400 mt-1">Work Start/End नंतरही pending; Approve किंवा Correction पर्यंत इथेच</p>
     </div>
   </div>
 
   <div class="dept-table-container">
     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
       <h2 class="text-lg font-bold text-white"><i class="fas fa-clipboard-check text-emerald-400 mr-2"></i>QUALITY INSPECTION</h2>
-      <span class="text-xs text-slate-400">CMM End notification ನಂತರ Quality Action उपलब्ध होईल.</span>
+      <span class="text-xs text-slate-400">CMM End notification नंतर Quality Action उपलब्ध होईल.</span>
     </div>
     <div id="qualityTableArea" class="overflow-x-auto"></div>
   </div>
@@ -633,6 +636,10 @@ button,input,select{font-family:inherit}
 
 <!-- ================= SUPERVISOR ================= -->
 <div id="tab-supervisor" class="tab-content hidden space-y-6">
+  <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800">
+    <h2 class="text-md font-bold text-white"><i class="fas fa-chart-line text-emerald-500 mr-2"></i>SUPERVISOR SUMMARY</h2>
+    <button onclick="openExcelReportModal()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
+  </div>
   <div class="dept-table-container">
     <h2 class="text-lg font-bold mb-4 border-b border-slate-800 pb-2 text-white">
       <i class="fas fa-chart-line text-emerald-500 mr-2"></i>Supervisor / HOD - Complete Workflow Summary
@@ -661,36 +668,28 @@ button,input,select{font-family:inherit}
 </div>
 
 
-
-<!-- ================= EXCEL REPORT SELECTOR ================= -->
-<div id="excelReportModal" class="excel-report-overlay hidden">
-  <div class="excel-report-card">
-    <div class="excel-report-head">
-      <div>
-        <h3><i class="fas fa-file-excel mr-2"></i>WORKFLOW EXCEL REPORT</h3>
-        <p>Date निवडा → Machine निवडा → Styled Excel / Google Sheets file उघडा</p>
-      </div>
-      <button class="excel-report-close" onclick="closeExcelReportSelector()">×</button>
+<!-- ================= EXCEL SELECTION MODAL ================= -->
+<div id="excelReportModal" class="fixed inset-0 bg-black/80 hidden z-[70] flex items-center justify-center p-4">
+  <div class="bg-slate-900 border border-emerald-600 rounded-2xl max-w-md w-full p-6 text-white shadow-2xl">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+      <h3 class="text-lg font-bold text-emerald-400"><i class="fas fa-file-excel mr-2"></i>Download Excel Report</h3>
+      <button onclick="closeExcelReportModal()" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
     </div>
-    <div class="excel-report-body">
-      <div class="excel-report-field">
-        <label for="excelReportDate">REPORT DATE</label>
-        <input type="date" id="excelReportDate" onchange="loadExcelReportMachines()">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-300 mb-1">1. Choose Date</label>
+        <input type="date" id="excelFilterDate" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white">
       </div>
-      <div class="excel-report-field">
-        <label for="excelReportMachine">MACHINE NAME</label>
-        <select id="excelReportMachine" onchange="updateExcelReportMachineInfo()">
-          <option value="">-- SELECT MACHINE --</option>
+      <div>
+        <label class="block text-xs font-bold text-slate-300 mb-1">2. Choose Machine</label>
+        <select id="excelFilterMachine" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white font-bold">
+          <option value="ALL">-- ALL MACHINES --</option>
         </select>
       </div>
-      <div id="excelReportMachineInfo" class="excel-report-machine-info">Selected date वर उपलब्ध machine निवडा.</div>
-      <div class="excel-report-actions">
-        <button onclick="closeExcelReportSelector()">CLOSE</button>
-        <button id="excelReportOpenBtn" class="open" onclick="openSelectedExcelReport()" disabled><i class="fas fa-file-excel mr-1"></i> OPEN SHEET</button>
-      </div>
-      <div class="excel-report-note">
-        <b>Format:</b> SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS<br>
-        Google Sheets मध्ये उघडण्यासाठी generated <b>.xlsx</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
+      <div class="pt-2 flex gap-3">
+        <button onclick="generateExcelReport()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow flex items-center justify-center gap-2">
+          <i class="fas fa-download"></i> Open / Export Excel
+        </button>
       </div>
     </div>
   </div>
@@ -745,11 +744,6 @@ const dbRef = firebase.database().ref("setups");
 const messaging = firebase.messaging();
 const VAPID_KEY = "BB7GLqS9RfXRulA0XP1YcDlVDyzceQhaYyJLTRzx8naS2yhbbgXi6ZfOKBAOMCGMmwKZYtQttVre0vRE8MgHyik";
 
-/* ================= DEPARTMENT WHATSAPP CONTACTS =================
-   Contacts from the supplied SUTOM department-wise list.
-   WhatsApp numbers are stored without +91 so they can be used
-   safely with the WhatsApp Cloud API/backend.
-*/
 const DEPARTMENT_WHATSAPP = {
   setter: [
     { name:"Pranjay Bhalerao", phone:"9370357998", shift:"C" },
@@ -782,11 +776,6 @@ const DEPARTMENT_WHATSAPP = {
   ]
 };
 
-/* ================= WHATSAPP CLICK-TO-CHAT =================
-   IMPORTANT: This does NOT send automatically and does NOT use WhatsApp API.
-   It opens the selected WhatsApp contact with the message PRE-FILLED.
-   The user must press Send inside WhatsApp.
-*/
 let pendingWhatsApp = null;
 
 function getWhatsAppContacts(dept){
@@ -803,9 +792,6 @@ function getCurrentShift(){
   const now = new Date();
   const minutes = now.getHours()*60 + now.getMinutes();
 
-  // A: 07:45 AM to 04:15 PM
-  // B: 04:15 PM to 12:00 AM
-  // C: 12:00 AM to 07:45 AM
   if(minutes >= 7*60+45 && minutes < 16*60+15) return "A";
   if(minutes >= 16*60+15) return "B";
   return "C";
@@ -826,8 +812,6 @@ function showWhatsAppButtons(dept, title, message){
 
   const currentShift = getCurrentShift();
 
-  // Current shift contacts always appear first.
-  // Within the same group, original contact order is preserved.
   const sortedContacts = contacts.slice().sort((a,b)=>{
     const aCurrent = a.shift === currentShift ? 0 : 1;
     const bCurrent = b.shift === currentShift ? 0 : 1;
@@ -852,43 +836,25 @@ function showWhatsAppButtons(dept, title, message){
   });
 }
 
-function queueWhatsAppNotification(dept, title, message, setup){
-  // Kept as a compatibility wrapper for the existing workflow calls.
-  // Nothing is sent automatically; triggerAlert shows contact buttons.
-  return Promise.resolve();
-}
-
 function queueWorkflowWhatsApp(dept, title, message, setup){
   showWhatsAppButtons(dept, title, message);
 }
 
-
 function initializeFCM() {
   Notification.requestPermission().then((permission) => {
     if (permission === 'granted') {
-      console.log('Notification permission granted.');
       messaging.getToken({ vapidKey: VAPID_KEY }).then((currentToken) => {
         if (currentToken) {
-          console.log('FCM Token:', currentToken);
-          // Token database मध्ये किंवा localstorage मध्ये सेव्ह करू शकता
           firebase.database().ref('fcm_tokens').push({
             token: currentToken,
             timestamp: Date.now()
           });
-        } else {
-          console.log('No registration token available. Request permission to generate one.');
         }
-      }).catch((err) => {
-        console.log('An error occurred while retrieving token. ', err);
       });
-    } else {
-      console.log('Unable to get permission to notify.');
     }
   });
 
-  // Listen for foreground incoming messages
   messaging.onMessage((payload) => {
-    console.log('Message received. ', payload);
     const title = payload.notification.title || "SUTOM Alert";
     const body = payload.notification.body || "New update in system.";
     triggerAlert(title, body);
@@ -911,11 +877,15 @@ for(let i=1;i<=35;i++){ MACHINE_LIST.push("EN"+i); }
 
 function loadMachineList(){
   const select = document.getElementById("machineName");
-  if(!select) return;
-  select.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
-  MACHINE_LIST.forEach(machine=>{
-    select.innerHTML += `<option value="${machine}">${machine}</option>`;
-  });
+  const excelSelect = document.getElementById("excelFilterMachine");
+  if(select){
+    select.innerHTML = `<option value="">-- SELECT MACHINE --</option>`;
+    MACHINE_LIST.forEach(machine=>{ select.innerHTML += `<option value="${machine}">${machine}</option>`; });
+  }
+  if(excelSelect){
+    excelSelect.innerHTML = `<option value="ALL">-- ALL MACHINES --</option>`;
+    MACHINE_LIST.forEach(machine=>{ excelSelect.innerHTML += `<option value="${machine}">${machine}</option>`; });
+  }
 }
 
 function loadPriority(){
@@ -941,17 +911,10 @@ updateLiveTime();
 window.addEventListener("DOMContentLoaded",()=>{
   loadMachineList();
   loadPriority();
-  initializeFCM(); // FCM Initialize call
+  initializeFCM();
 
-  // Service Worker Registration for PWA Background support
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./firebase-messaging-sw.js')
-      .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      })
-      .catch((err) => {
-        console.log('Service Worker registration failed:', err);
-      });
+    navigator.serviceWorker.register('./firebase-messaging-sw.js').catch(()=>{});
   }
 
   const u = localStorage.getItem("sutom_user");
@@ -970,6 +933,11 @@ window.addEventListener("DOMContentLoaded",()=>{
   const dateInput = document.getElementById("setupDate");
   if(dateInput){
     dateInput.value = new Date().toISOString().split("T")[0];
+  }
+
+  const excelDateInput = document.getElementById("excelFilterDate");
+  if(excelDateInput){
+    excelDateInput.value = new Date().toISOString().split("T")[0];
   }
 
   dbRef.on("value",snapshot=>{
@@ -1057,6 +1025,130 @@ function openSetterModule(key){
   }
 }
 
+function openExcelReportModal(){
+  document.getElementById("excelReportModal").classList.remove("hidden");
+}
+
+function closeExcelReportModal(){
+  document.getElementById("excelReportModal").classList.add("hidden");
+}
+
+/* ================= GENERATE EXACT MATCHING EXCEL REPORT ================= */
+function generateExcelReport(){
+  const dateVal = document.getElementById("excelFilterDate").value;
+  const machineVal = document.getElementById("excelFilterMachine").value;
+
+  let list = window.allSetups || [];
+
+  if(dateVal) list = list.filter(s => s.setupDate === dateVal);
+  if(machineVal && machineVal !== "ALL") list = list.filter(s => s.machineName === machineVal);
+
+  if(!list.length){
+    alert("निवडलेल्या तारीख आणि मशीनसाठी कोणताही डेटा उपलब्ध नाही.");
+    return;
+  }
+
+  let tableHtml = `
+  <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+  <head>
+  <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>SUTOM Report</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+  <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
+  <style>
+    table { border-collapse: collapse; width: 100%; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+    th { background-color: #091929; color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #203149; padding: 10px; white-space: nowrap; font-size: 13px; }
+    td { border: 1px solid #cbd5e1; text-align: center; padding: 8px; white-space: nowrap; mso-number-format:"\\@"; font-size: 12px; }
+    .stage-start { background-color: #dbeafe; color: #1e40af; font-weight: bold; }
+    .stage-end { background-color: #dcfce7; color: #166534; font-weight: bold; }
+    .stage-total { color: #3b82f6; font-weight: bold; }
+    .stage-status { color: #10b981; font-weight: bold; }
+  </style>
+  </head>
+  <body>
+  <table>
+    <thead>
+      <tr>
+        <th>SR.</th>
+        <th>DEPARTMENT</th>
+        <th>START</th>
+        <th>END</th>
+        <th>TOTAL</th>
+        <th>STATUS</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  let sr = 1;
+
+  list.forEach(s => {
+    tableHtml += `
+      <tr>
+        <td>${sr++}</td>
+        <td><b>SETTER</b><br><span style="color:#64748b; font-size:10px;">Setup Registration (${s.machineName} -${s.partName})</span></td>
+        <td class="stage-start">${s.timeRegistered || '-'}</td>
+        <td class="stage-end">${s.setupType === 'Short' ? 'N/A' : (s.toolStart || '-')}</td>
+        <td class="stage-total">${s.setupType === 'Short' ? '0 min' : durationMinutes(s.timeRegistered, s.toolStart)}</td>
+        <td class="stage-status">REGISTERED</td>
+      </tr>`;
+
+    if(s.setupType !== 'Short'){
+      tableHtml += `
+      <tr>
+        <td>${sr++}</td>
+        <td><b>TOOL ROOM</b><br><span style="color:#64748b; font-size:10px;">Tooling & Fixture Ready</span></td>
+        <td class="stage-start">${s.toolStart || '-'}</td>
+        <td class="stage-end">${s.toolEnd || '-'}</td>
+        <td class="stage-total">${durationMinutes(s.toolStart, s.toolEnd)}</td>
+        <td class="stage-status">${s.toolEnd ? 'READY' : 'PENDING'}</td>
+      </tr>`;
+    }
+
+    for(let n=1; n<=4; n++){
+      const x = getSample(s, n);
+      if(!x.setterStart && !x.setterEnd && n > (s.sampleCount||1)) continue;
+
+      let setStatus = x.cutTime ? 'DONE' : (x.setterStart ? 'RUNNING' : 'PENDING');
+      let cmmStatus = x.cmmEnd ? 'DONE' : (x.cmmStart ? 'RUNNING' : 'PENDING');
+      let qStatus = x.result ? x.result : (x.qualityStart ? 'RUNNING' : 'PENDING');
+
+      tableHtml += `
+      <tr>
+        <td rowspan="3" style="font-weight:bold;">S${n}</td>
+        <td><b>SETTER</b><br><span style="color:#64748b; font-size:10px;">Sample #${n}</span></td>
+        <td class="stage-start">${x.setterStart || '-'}</td>
+        <td class="stage-end">${x.setterEnd || '-'}</td>
+        <td class="stage-total">${durationMinutes(x.setterStart, x.setterEnd)}</td>
+        <td class="stage-status">${setStatus}</td>
+      </tr>
+      <tr>
+        <td><b>CMM ROOM</b><br><span style="color:#64748b; font-size:10px;">Sample #${n}</span></td>
+        <td class="stage-start">${x.cmmStart || '-'}</td>
+        <td class="stage-end">${x.cmmEnd || '-'}</td>
+        <td class="stage-total">${durationMinutes(x.cmmStart, x.cmmEnd)}</td>
+        <td class="stage-status">${cmmStatus}</td>
+      </tr>
+      <tr>
+        <td><b>QUALITY</b><br><span style="color:#64748b; font-size:10px;">Sample #${n}</span></td>
+        <td class="stage-start">${x.qualityStart || '-'}</td>
+        <td class="stage-end">${x.qualityEnd || '-'}</td>
+        <td class="stage-total">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
+        <td class="stage-status">${qStatus}</td>
+      </tr>`;
+    }
+  });
+
+  tableHtml += `</tbody></table></body></html>`;
+
+  const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SUTOM_Report_${dateVal}_${machineVal}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  closeExcelReportModal();
+}
+
 function emptySample(){
   return {
     setterStart:null, setterEnd:null, cutTime:null,
@@ -1110,7 +1202,7 @@ function buildQualityResultWhatsAppMessage(s, n, result){
   return `Part name : ${s.partNo || "-"}
 Part name : ${s.partName || "-"}
 Priority : ${s.priority || "-"}
-${formatSampleOrdinal(n)} sample cmm report and mould checking done. ${result}.`;
+${formatSampleOrdinal(n)} sample cmm report and mould checking done.${result}.`;
 }
 
 function handleSetterSubmit(e){
@@ -1517,214 +1609,6 @@ window.setToolroomFilter = function(filter){ window.toolroomFilter = filter; ren
 window.setCmmFilter = function(filter){ window.cmmFilter = filter; renderSTDRoom(); };
 window.setQualityFilter = function(filter){ window.qualityFilter = filter; renderQuality(); };
 
-/* ================= STYLED XLSX / GOOGLE SHEETS REPORT ================= */
-function reportDateForSetup(s){
-  if(s && s.setupDate) return String(s.setupDate);
-  if(s && s.timestampRegistered){
-    const d=new Date(s.timestampRegistered);
-    if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
-  }
-  return "";
-}
-
-function getReportSetupsForDate(dateValue){
-  return (window.allSetups||[]).filter(s=>reportDateForSetup(s)===dateValue);
-}
-
-function loadExcelReportMachines(){
-  const dateEl=document.getElementById('excelReportDate');
-  const machineEl=document.getElementById('excelReportMachine');
-  const btn=document.getElementById('excelReportOpenBtn');
-  const info=document.getElementById('excelReportMachineInfo');
-  if(!dateEl||!machineEl) return;
-  const date=dateEl.value;
-  const list=getReportSetupsForDate(date);
-  const machines=[...new Set(list.map(s=>s.machineName).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
-  machineEl.innerHTML='<option value="">-- SELECT MACHINE --</option>'+machines.map(m=>`<option value="${String(m).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${m}</option>`).join('');
-  if(btn) btn.disabled=true;
-  if(info) info.textContent=machines.length ? `${machines.length} machine(s) available for ${date}.` : `या date साठी कोणताही setup report उपलब्ध नाही.`;
-}
-
-function updateExcelReportMachineInfo(){
-  const date=document.getElementById('excelReportDate')?.value||'';
-  const machine=document.getElementById('excelReportMachine')?.value||'';
-  const btn=document.getElementById('excelReportOpenBtn');
-  const info=document.getElementById('excelReportMachineInfo');
-  const matches=machine?getReportSetupsForDate(date).filter(s=>s.machineName===machine):[];
-  if(btn) btn.disabled=!matches.length;
-  if(info) info.textContent=matches.length ? `${machine} • ${matches.length} setup record(s) found for ${date}.` : 'Selected date आणि machine निवडा.';
-}
-
-window.openExcelReportSelector=function(){
-  const modal=document.getElementById('excelReportModal');
-  const dateEl=document.getElementById('excelReportDate');
-  if(!modal||!dateEl) return;
-  dateEl.value=new Date().toISOString().split('T')[0];
-  modal.classList.remove('hidden');
-  loadExcelReportMachines();
-  document.getElementById('excelReportMachine')?.focus();
-};
-
-window.closeExcelReportSelector=function(){
-  document.getElementById('excelReportModal')?.classList.add('hidden');
-};
-
-function buildExcelWorkflowRows(s){
-  const rows=[];
-  let sr=1;
-  rows.push({type:'normal',sr:sr++,dept:'SETTER\nSetup Registration',start:s.timeRegistered||'-',end:s.setupType==='Short'?'N/A':(s.toolStart||'-'),total:s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered,s.toolStart),status:'REGISTERED'});
-  if(s.setupType!=='Short'){
-    rows.push({type:'normal',sr:sr++,dept:'TOOL ROOM\nTooling & Fixture Ready',start:s.toolStart||'-',end:s.toolEnd||'-',total:durationMinutes(s.toolStart,s.toolEnd),status:s.toolEnd?'READY':'PENDING'});
-  }
-  for(let n=1;n<=4;n++){
-    const x=getSample(s,n);
-    if(!x.setterStart && !x.setterEnd && !x.cmmStart && !x.cmmEnd && !x.qualityStart && !x.qualityEnd && !x.result && n>(s.sampleCount||1)) continue;
-    const setStatus=x.cutTime?'DONE':(x.setterStart?'RUNNING':'PENDING');
-    const cmmStatus=x.cmmEnd?'DONE':(x.cmmStart?'RUNNING':'PENDING');
-    const qStatus=x.result|| (x.qualityStart?'RUNNING':'PENDING');
-    rows.push({type:'sample',sample:n,sampleFirst:true,dept:`SETTER\nSample #${n}`,start:x.setterStart||'-',end:x.setterEnd||'-',total:durationMinutes(x.setterStart,x.setterEnd),status:setStatus});
-    rows.push({type:'sample',sample:n,dept:`CMM ROOM\nSample #${n}`,start:x.cmmStart||'-',end:x.cmmEnd||'-',total:durationMinutes(x.cmmStart,x.cmmEnd),status:cmmStatus});
-    rows.push({type:'sample',sample:n,dept:`QUALITY\nSample #${n}`,start:x.qualityStart||'-',end:x.qualityEnd||'-',total:durationMinutes(x.qualityStart,x.qualityEnd),status:qStatus});
-  }
-  return rows;
-}
-
-function buildExcelRowsForSetups(setups){
-  const out=[];
-  (setups||[]).forEach((s,idx)=>{
-    if(idx>0) out.push({type:'separator',dept:'',start:'',end:'',total:'',status:''});
-    out.push(...buildExcelWorkflowRows(s));
-  });
-  return out;
-}
-
-function safeSheetName(name){
-  return String(name||'SUTOM').replace(/[\\\/?*\[\]:]/g,'').slice(0,31)||'SUTOM';
-}
-
-window.openSelectedExcelReport=async function(){
-  const date=document.getElementById('excelReportDate')?.value||'';
-  const machine=document.getElementById('excelReportMachine')?.value||'';
-  if(!date||!machine){ alert('कृपया Date आणि Machine दोन्ही निवडा.'); return; }
-  const setups=(window.allSetups||[]).filter(s=>reportDateForSetup(s)===date && s.machineName===machine);
-  if(!setups.length){ alert('या Date आणि Machine साठी report उपलब्ध नाही.'); return; }
-  if(typeof ExcelJS==='undefined'){ alert('Excel report library load झाली नाही. Internet connection तपासा आणि पुन्हा प्रयत्न करा.'); return; }
-
-  const btn=document.getElementById('excelReportOpenBtn');
-  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i> CREATING SHEET...';}
-  try{
-    const wb=new ExcelJS.Workbook();
-    wb.creator='SUTOM - Setup Time Online Monitor';
-    wb.created=new Date();
-    wb.modified=new Date();
-    const ws=wb.addWorksheet(safeSheetName(machine),{views:[{showGridLines:false,zoomScale:80,zoomScaleNormal:80}]});
-
-    ws.columns=[
-      {key:'sr',width:6},
-      {key:'dept',width:24},
-      {key:'start',width:14},
-      {key:'end',width:14},
-      {key:'total',width:11},
-      {key:'status',width:18}
-    ];
-
-    const rows=buildExcelRowsForSetups(setups);
-    const header=ws.addRow(['SR.','DEPARTMENT','START TIME','END TIME','TOTAL TIME','STATUS']);
-    header.height=32;
-    header.eachCell(cell=>{
-      cell.font={name:'Arial',size:12,bold:true,color:{argb:'FFFFFFFF'}};
-      cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0F172A'}};
-      cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
-      cell.border={top:{style:'thin',color:{argb:'FF047857'}},left:{style:'thin',color:{argb:'FF047857'}},bottom:{style:'thin',color:{argb:'FF047857'}},right:{style:'thin',color:{argb:'FF047857'}}};
-    });
-
-    let excelRowNumber=2;
-    for(let i=0;i<rows.length;i++){
-      const r=rows[i];
-      if(r.type==='separator'){
-        const sep=ws.addRow(['','','','','','']);
-        sep.height=10;
-        sep.eachCell(cell=>cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF050B14'}});
-        excelRowNumber++;
-        continue;
-      }
-      if(r.type==='sample' && r.sampleFirst){
-        const sampleRows=rows.slice(i,i+3);
-        sampleRows.forEach(sr=>{
-          const row=ws.addRow(['',sr.dept,sr.start,sr.end,sr.total,sr.status]);
-          row.height=48;
-          row.eachCell((cell,col)=>{
-            cell.font={name:'Arial',size:11,bold:(col===2||col===6),color:{argb:'FF111827'}};
-            cell.alignment={horizontal:col===2?'left':'center',vertical:'middle',wrapText:true};
-            cell.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
-          });
-          row.getCell(2).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-          row.getCell(3).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDBEAFE'}};
-          row.getCell(3).font={name:'Arial',size:11,bold:true,color:{argb:'FF1D4ED8'}};
-          row.getCell(4).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDCFCE7'}};
-          row.getCell(4).font={name:'Arial',size:11,bold:true,color:{argb:'FF15803D'}};
-          row.getCell(5).font={name:'Arial',size:11,bold:true,color:{argb:'FF2563EB'}};
-          row.getCell(6).font={name:'Arial',size:11,bold:true,color:{argb:'FF10B981'}};
-          excelRowNumber++;
-        });
-        const first=excelRowNumber-3, last=excelRowNumber-1;
-        ws.mergeCells(`A${first}:A${last}`);
-        const ac=ws.getCell(`A${first}`);
-        ac.value='S'+r.sample;
-        ac.font={name:'Arial',size:11,bold:true,color:{argb:'FF111827'}};
-        ac.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-        ac.alignment={horizontal:'center',vertical:'middle'};
-        ac.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
-        i+=2;
-        continue;
-      }
-      const row=ws.addRow([r.sr,r.dept,r.start,r.end,r.total,r.status]);
-      row.height=52;
-      row.eachCell((cell,col)=>{
-        cell.font={name:'Arial',size:11,bold:(col===1||col===2||col===6),color:{argb:'FF111827'}};
-        cell.alignment={horizontal:col===2?'left':'center',vertical:'middle',wrapText:true};
-        cell.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
-      });
-      row.getCell(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-      row.getCell(2).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-      row.getCell(3).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDBEAFE'}};
-      row.getCell(3).font={name:'Arial',size:11,bold:true,color:{argb:'FF1D4ED8'}};
-      row.getCell(4).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDCFCE7'}};
-      row.getCell(4).font={name:'Arial',size:11,bold:true,color:{argb:'FF15803D'}};
-      row.getCell(5).font={name:'Arial',size:11,bold:true,color:{argb:'FF2563EB'}};
-      row.getCell(6).font={name:'Arial',size:11,bold:true,color:{argb:'FF10B981'}};
-      excelRowNumber++;
-    }
-
-
-    ws.freezePanes={xSplit:0,ySplit:1};
-    ws.autoFilter={from:'A1',to:'F'+Math.max(1,ws.rowCount)};
-    ws.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:'A4',margins:{left:0.2,right:0.2,top:0.4,bottom:0.4,header:0.1,footer:0.1}};
-    ws.pageSetup.horizontalDpi=300;
-    ws.pageSetup.verticalDpi=300;
-    ws.headerFooter.oddFooter='&L SUTOM - Setup Time Monitor&C'+machine+' - '+date+'&RPage &P of &N';
-    ws.sheetProperties.pageSetUpPr={fitToPage:true};
-
-    const buffer=await wb.xlsx.writeBuffer();
-    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=`SUTOM_${machine}_${date}.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-    closeExcelReportSelector();
-    alert(`SUTOM ${machine} report तयार झाला.\n\nहा .xlsx file Google Sheets किंवा Microsoft Excel मध्ये उघडता येईल.`);
-  }catch(err){
-    console.error('Excel report error:',err);
-    alert('Excel report तयार करताना error आला. पुन्हा प्रयत्न करा.');
-  }finally{
-    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-file-excel mr-1"></i> OPEN SHEET';}
-  }
-};
-
 window.renderSetterExcelTable = function(filterKey){
   const container = document.getElementById("setterExcelTableBody");
   const rowCount = document.getElementById("excelRowCount");
@@ -1773,8 +1657,8 @@ window.renderSetterExcelTable = function(filterKey){
       <div class="mc-row"><span>Part</span><b>${s.partName||'-'}</b></div>
       <div class="mc-row"><span>P/N</span><b>${s.partNo||'-'}</b></div>
       <div class="mc-pallet">Pallet : <b>${(s.pallet||'-').replace('Pallet ','')}</b></div>
-      <div class="priority-row"><span class="priority">Priority <b>P${s.priority||'-'}</b></span><span style="font-size:7px;color:#748399">${s.id||''}</span></div>
-      <div class="shift-row"><i class="fas fa-${String(s.shift||'').includes('C')?'moon':'sun'}"></i><span>${s.shift||'-'}<br>${s.setupDate||''}</span></div>
+      <div class="priority-row"><span class="priority">Priority <b>P${s.priority\vert{}\vert{}'-'}</b></span><span style="font-size:7px;color:#748399">${s.id||''}</span></div>
+      <div class="shift-row"><i class="fas fa-${String(s.shift||'').includes('C')?'moon':'sun'}"></i><span>${s.shift\vert{}\vert{}'-'}<br>${s.setupDate||''}</span></div>
       <div class="progress">${dots}</div><div class="stage-text">${s.setupStarted?`Sample ${n} → Running`:(s.qualityStatus||'Registered')}</div>
       ${fixture}
       <div style="margin-top:5px">${action}</div>
@@ -1801,9 +1685,9 @@ window.renderToolroom = function(){
     return `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} - ${s.partName}<br>
+        ${s.machineName} -${s.partName}<br>
         <span class="text-[11px] font-semibold text-emerald-400">Part No: ${s.partNo||'-'}</span><br>
-        <span class="text-[10px] text-slate-400">${s.id} | ${s.pallet||"-"} | Priority ${s.priority||"-"}</span>
+        <span class="text-[10px] text-slate-400">${s.id} | ${s.pallet\vert{}\vert{}"-"} \vert{} Priority ${s.priority||"-"}</span>
       </td>
       <td class="p-3 text-xs">
         <b>Fixture No:</b> ${s.fixtureNo}<br>
@@ -1853,7 +1737,7 @@ window.renderSTDRoom = function(){
     html += `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} - ${s.partName}<br>
+        ${s.machineName} -${s.partName}<br>
         <span class="text-[10px] text-slate-400">${s.id} (${s.setupType||'Long'} Setup)</span>
       </td>
       <td class="p-3 font-bold text-indigo-400">
@@ -1897,8 +1781,8 @@ window.renderQuality = function(){
     rows += `
     <tr class="border-b border-slate-800">
       <td class="p-3 font-bold text-blue-400">
-        ${s.machineName} - ${s.partName}<br>
-        <span class="text-[10px] text-slate-400">${s.id} | P${s.priority||"-"}</span>
+        ${s.machineName} -${s.partName}<br>
+        <span class="text-[10px] text-slate-400">${s.id} \vert{} P${s.priority||"-"}</span>
       </td>
       <td class="p-3 font-bold text-indigo-400">SAMPLE #${n}</td>
       <td class="p-3 small-time">${x.qualityStart||"-"}</td>
@@ -1965,7 +1849,7 @@ window.openWorkflowModal = function(firebaseKey){
   if(!s) return;
   document.getElementById("workflowModal").classList.remove("hidden");
   
-  document.getElementById("workflowTitle").textContent = `${s.machineName} - Complete Setup Time (${s.setupType||'Long'} Setup)`;
+  document.getElementById("workflowTitle").textContent = `${s.machineName} - Complete Setup Time (${s.setupType||'Long Setup'})`;
   document.getElementById("workflowSubtitle").textContent = `Setup ID: ${s.id} | Part: ${s.partName} | Pallet: ${s.pallet}`;
 
   let rows = "";
@@ -1976,8 +1860,8 @@ window.openWorkflowModal = function(firebaseKey){
     <td class="text-left font-bold text-black bg-white">SETTER<br><span class="text-[9px] text-gray-700">Setup Registration</span></td>
     <td class="stage-start">${s.timeRegistered||"-"}</td>
     <td class="stage-end">${s.setupType==='Short'?'N/A':(s.toolStart||"-")}</td>
-    <td class="font-bold text-blue-400">${s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered, s.toolStart)}</td>
-    <td><span class="text-emerald-400 font-bold text-[10px]">REGISTERED</span></td>
+    <td class="stage-total">${s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered, s.toolStart)}</td>
+    <td class="stage-status">REGISTERED</td>
   </tr>`;
 
   if(s.setupType!=='Short'){
@@ -1987,8 +1871,8 @@ window.openWorkflowModal = function(firebaseKey){
       <td class="text-left font-bold text-black bg-white">TOOL ROOM<br><span class="text-[9px] text-gray-700">Tooling & Fixture Ready</span></td>
       <td class="stage-start">${s.toolStart||"-"}</td>
       <td class="stage-end">${s.toolEnd||"-"}</td>
-      <td class="font-bold text-blue-400">${durationMinutes(s.toolStart, s.toolEnd)}</td>
-      <td>${s.toolEnd ? `<span class="text-emerald-400 font-bold text-[10px]">READY</span>` : `<span class="text-amber-400 font-bold text-[10px]">PENDING</span>`}</td>
+      <td class="stage-total">${durationMinutes(s.toolStart, s.toolEnd)}</td>
+      <td class="stage-status">${s.toolEnd ? 'READY' : 'PENDING'}</td>
     </tr>`;
   }
 
@@ -1996,9 +1880,9 @@ window.openWorkflowModal = function(firebaseKey){
     const x = getSample(s,n);
     if(!x.setterStart && !x.setterEnd && n>s.sampleCount) continue;
 
-    let setStatus = x.cutTime ? '<span class="text-emerald-400 font-bold text-[10px]">DONE</span>' : (x.setterStart ? '<span class="text-blue-400 font-bold text-[10px]">RUNNING</span>' : '<span class="text-amber-400 font-bold text-[10px]">PENDING</span>');
-    let cmmStatus = x.cmmEnd ? '<span class="text-emerald-400 font-bold text-[10px]">DONE</span>' : (x.cmmStart ? '<span class="text-blue-400 font-bold text-[10px]">RUNNING</span>' : '<span class="text-amber-400 font-bold text-[10px]">PENDING</span>');
-    let qStatus = x.result ? `<span class="text-emerald-400 font-bold text-[10px]">${x.result}</span>` : (x.qualityStart ? '<span class="text-blue-400 font-bold text-[10px]">RUNNING</span>' : '<span class="text-amber-400 font-bold text-[10px]">PENDING</span>');
+    let setStatus = x.cutTime ? 'DONE' : (x.setterStart ? 'RUNNING' : 'PENDING');
+    let cmmStatus = x.cmmEnd ? 'DONE' : (x.cmmStart ? 'RUNNING' : 'PENDING');
+    let qStatus = x.result ? x.result : (x.qualityStart ? 'RUNNING' : 'PENDING');
 
     rows += `
     <tr>
@@ -2006,22 +1890,22 @@ window.openWorkflowModal = function(firebaseKey){
       <td class="text-left font-bold text-black bg-white">SETTER<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.setterStart||"-"}</td>
       <td class="stage-end">${x.setterEnd||"-"}</td>
-      <td class="font-bold text-blue-400">${durationMinutes(x.setterStart, x.setterEnd)}</td>
-      <td>${setStatus}</td>
+      <td class="stage-total">${durationMinutes(x.setterStart, x.setterEnd)}</td>
+      <td class="stage-status">${setStatus}</td>
     </tr>
     <tr>
       <td class="text-left font-bold text-black bg-white">CMM ROOM<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.cmmStart||"-"}</td>
       <td class="stage-end">${x.cmmEnd||"-"}</td>
-      <td class="font-bold text-blue-400">${durationMinutes(x.cmmStart, x.cmmEnd)}</td>
-      <td>${cmmStatus}</td>
+      <td class="stage-total">${durationMinutes(x.cmmStart, x.cmmEnd)}</td>
+      <td class="stage-status">${cmmStatus}</td>
     </tr>
     <tr>
       <td class="text-left font-bold text-black bg-white">QUALITY<br><span class="text-[9px] text-gray-700">Sample #${n}</span></td>
       <td class="stage-start">${x.qualityStart||"-"}</td>
       <td class="stage-end">${x.qualityEnd||"-"}</td>
-      <td class="font-bold text-blue-400">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
-      <td>${qStatus}</td>
+      <td class="stage-total">${durationMinutes(x.qualityStart, x.qualityEnd)}</td>
+      <td class="stage-status">${qStatus}</td>
     </tr>`;
   }
 
@@ -2095,8 +1979,6 @@ function triggerAlert(title,msg,whatsappDept=null,whatsappMessage=null){
   const waBox = document.getElementById("whatsappContactButtons");
   const waHelp = document.getElementById("whatsappHelpText");
 
-  // If queueWorkflowWhatsApp() was called just before triggerAlert(),
-  // use that pending department/message automatically.
   if(!whatsappDept && pendingWhatsApp){
     whatsappDept = pendingWhatsApp.dept;
     whatsappMessage = pendingWhatsApp.message;
@@ -2150,4 +2032,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+                                                                         </html>

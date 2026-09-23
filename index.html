@@ -386,6 +386,33 @@ button,input,select{font-family:inherit}
   .excel-report-card-wide{width:100%;}
 }
 
+
+/* ================= SEND TO HOD / TO CHOOSER ================= */
+.hod-send-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:14px;z-index:180}
+.hod-send-card{width:min(470px,100%);background:#08111e;border:1px solid #29415c;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.65);overflow:hidden;color:#f5f7fb}
+.hod-send-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:#050b14;border-bottom:1px solid #203149}
+.hod-send-head h3{margin:0;font-size:16px;font-weight:950;color:#19d889}
+.hod-send-head p{margin:3px 0 0;font-size:10px;color:#91a0b5}
+.hod-send-close{width:34px;height:34px;border:0;border-radius:9px;background:#e11d2e;color:#fff;font-size:17px;font-weight:900;cursor:pointer}
+.hod-send-body{padding:15px}
+.hod-to-label{font-size:10px;font-weight:950;color:#aebbd0;text-transform:uppercase;margin-bottom:8px}
+.hod-choice-list{display:grid;gap:8px}
+.hod-choice{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border:1px solid #30455e;border-radius:11px;background:#07111d;color:#f5f7fb;cursor:pointer;text-align:left}
+.hod-choice:hover{border-color:#19d889;background:#0a1825}
+.hod-choice input{accent-color:#19d889;width:17px;height:17px;flex:0 0 auto}
+.hod-choice-main{display:flex;flex-direction:column;gap:2px;min-width:0}
+.hod-choice-name{font-size:12px;font-weight:900}
+.hod-choice-phone{font-size:10px;color:#7ee7b7;font-family:monospace}
+.hod-send-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:8px;margin-top:13px}
+.hod-send-actions button{border-radius:9px;padding:10px 12px;border:1px solid #33465f;background:#101a28;color:#dce6f4;font-size:11px;font-weight:900;cursor:pointer}
+.hod-send-actions .hod-confirm{background:#075e54;border-color:#20c997;color:#fff}
+.hod-send-note{margin-top:10px;padding:9px 10px;border-radius:8px;background:#071a14;border:1px solid #145c42;color:#8eeec2;font-size:9px;line-height:1.45}
+@media(max-width:520px){
+  .hod-send-card{border-radius:12px}
+  .hod-send-body{padding:13px}
+  .hod-send-actions{grid-template-columns:1fr}
+}
+
 .excel-report-card{width:min(520px,100%);background:#08111e;border:1px solid #29415c;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:hidden;color:#f5f7fb}
 .excel-report-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:#050b14;border-bottom:1px solid #203149}
 .excel-report-head h3{margin:0;font-size:17px;font-weight:950;color:#19d889}
@@ -726,7 +753,7 @@ button,input,select{font-family:inherit}
             <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('toolroom')">
               <i class="fas fa-download"></i> EXCEL
             </button>
-            <button class="excel-dept-send" onclick="sendDepartmentExcelReport('toolroom')">
+            <button class="excel-dept-send" onclick="openDepartmentHodChooser('toolroom')">
               <i class="fab fa-whatsapp"></i> SEND TO HOD
             </button>
           </div>
@@ -740,7 +767,7 @@ button,input,select{font-family:inherit}
             <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('stdroom')">
               <i class="fas fa-download"></i> EXCEL
             </button>
-            <button class="excel-dept-send" onclick="sendDepartmentExcelReport('stdroom')">
+            <button class="excel-dept-send" onclick="openDepartmentHodChooser('stdroom')">
               <i class="fab fa-whatsapp"></i> SEND TO HOD
             </button>
           </div>
@@ -758,7 +785,7 @@ button,input,select{font-family:inherit}
             <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('setter')">
               <i class="fas fa-download"></i> EXCEL
             </button>
-            <button class="excel-dept-send" onclick="sendDepartmentExcelReport('setter')">
+            <button class="excel-dept-send" onclick="openDepartmentHodChooser('setter')">
               <i class="fab fa-whatsapp"></i> SEND TO HOD
             </button>
           </div>
@@ -772,7 +799,7 @@ button,input,select{font-family:inherit}
             <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('quality')">
               <i class="fas fa-download"></i> EXCEL
             </button>
-            <button class="excel-dept-send" onclick="sendDepartmentExcelReport('quality')">
+            <button class="excel-dept-send" onclick="openDepartmentHodChooser('quality')">
               <i class="fab fa-whatsapp"></i> SEND TO HOD
             </button>
           </div>
@@ -788,9 +815,41 @@ button,input,select{font-family:inherit}
         <b>Report मध्ये same complete workflow information:</b>
         SETTER → TOOL ROOM → CMM ROOM → QUALITY, प्रत्येक Sample चा START, END, TOTAL TIME आणि STATUS.
         <br>
-        <b>SEND TO HOD:</b> Android/browser support असल्यास Excel file share sheet मधून WhatsApp वर share करता येईल.
-        Support नसल्यास Excel download होईल आणि HOD चा WhatsApp chat pre-filled message सोबत उघडेल.
-        WhatsApp मध्ये <b>Send</b> तुम्ही स्वतः करायचा आहे.
+        <b>SEND TO HOD:</b> प्रत्येक Department च्या SEND TO HOD button वर क्लिक केल्यावर फक्त त्या Department चे HOD contacts दिसतील.
+        Setter मध्ये फक्त Setter HODs दिसतील. TO मधून HOD निवडा → SEND TO SELECTED HOD.
+        Excel download होईल आणि निवडलेल्या HOD चा WhatsApp chat उघडेल. WhatsApp मध्ये Excel attach करून <b>Send</b> करायचा आहे.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= SEND EXCEL TO HOD / TO CHOOSER ================= -->
+<div id="hodSendModal" class="hod-send-overlay hidden">
+  <div class="hod-send-card">
+    <div class="hod-send-head">
+      <div>
+        <h3><i class="fab fa-whatsapp mr-2"></i>SEND EXCEL TO HOD</h3>
+        <p id="hodSendSubtitle">Department HOD निवडा.</p>
+      </div>
+      <button class="hod-send-close" onclick="closeDepartmentHodChooser()">×</button>
+    </div>
+
+    <div class="hod-send-body">
+      <div class="hod-to-label">TO — HOD CONTACT</div>
+      <div id="hodChoiceList" class="hod-choice-list"></div>
+
+      <div class="hod-send-actions">
+        <button onclick="closeDepartmentHodChooser()">CANCEL</button>
+        <button class="hod-confirm" onclick="confirmDepartmentHodSend()">
+          <i class="fab fa-whatsapp"></i> SEND TO SELECTED HOD
+        </button>
+      </div>
+
+      <div class="hod-send-note">
+        <b>Note:</b> फक्त निवडलेल्या Department चे HOD contacts इथे दिसतील.
+        Excel file download होईल आणि निवडलेल्या HOD चा WhatsApp chat उघडेल.
+        WhatsApp मध्ये Excel attach करून <b>Send</b> करायचा आहे.
       </div>
     </div>
   </div>
@@ -1997,58 +2056,87 @@ function buildWhatsAppReportMessage(deptKey,date,machine){
   return `SUTOM Excel Report\nDepartment: ${dept.label}\nMachine: ${machine}\nDate: ${date}\n\nComplete workflow timing report attached/shared.\nSETTER → TOOL ROOM → CMM ROOM → QUALITY\n\nPlease check the attached Excel report.`;
 }
 
-window.sendDepartmentExcelReport=async function(deptKey){
+
+let selectedDepartmentForHodSend = "";
+let selectedHodIndexForSend = 0;
+
+window.openDepartmentHodChooser=function(deptKey){
   const ctx=getSelectedReportContext(deptKey);
   if(!ctx) return;
 
   const dept=DEPARTMENT_REPORT_HODS[deptKey];
+  selectedDepartmentForHodSend=deptKey;
+  selectedHodIndexForSend=0;
+
+  const subtitle=document.getElementById("hodSendSubtitle");
+  const list=document.getElementById("hodChoiceList");
+  if(!subtitle || !list) return;
+
+  subtitle.textContent=`${dept.label} — TO साठी HOD निवडा`;
+  list.innerHTML=dept.hods.map((hod,index)=>`
+    <label class="hod-choice">
+      <input type="radio" name="selectedHodForSend" value="${index}" ${index===0?"checked":""}>
+      <span class="hod-choice-main">
+        <span class="hod-choice-name">${hod.name}</span>
+        <span class="hod-choice-phone">+91 ${hod.phone}</span>
+      </span>
+    </label>
+  `).join("");
+
+  document.querySelectorAll('input[name="selectedHodForSend"]').forEach(r=>{
+    r.addEventListener("change",()=>{
+      selectedHodIndexForSend=Number(r.value);
+    });
+  });
+
+  const modal=document.getElementById("hodSendModal");
+  if(modal) modal.classList.remove("hidden");
+};
+
+window.closeDepartmentHodChooser=function(){
+  const modal=document.getElementById("hodSendModal");
+  if(modal) modal.classList.add("hidden");
+  selectedDepartmentForHodSend="";
+  selectedHodIndexForSend=0;
+};
+
+window.confirmDepartmentHodSend=async function(){
+  const deptKey=selectedDepartmentForHodSend;
+  if(!deptKey || !DEPARTMENT_REPORT_HODS[deptKey]){
+    alert("Department निवडलेले नाही.");
+    return;
+  }
+
+  const selected=document.querySelector('input[name="selectedHodForSend"]:checked');
+  if(selected) selectedHodIndexForSend=Number(selected.value);
+
+  const ctx=getSelectedReportContext(deptKey);
+  if(!ctx) return;
+
+  const dept=DEPARTMENT_REPORT_HODS[deptKey];
+  const hod=dept.hods[selectedHodIndexForSend] || dept.hods[0];
 
   try{
     const result=buildDepartmentWorkbook(ctx.setups,ctx.machine,ctx.date,deptKey);
 
-    // Create a real .xlsx Blob so Android's native share sheet can attach the file.
-    const data=XLSX.write(result.wb,{
-      bookType:'xlsx',
-      type:'array',
-      cellStyles:true
-    });
-
-    const file=new File(
-      [data],
-      result.filename,
-      {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
-    );
-
-    const message=buildWhatsAppReportMessage(deptKey,ctx.date,ctx.machine);
-
-    // Preferred path: share the actual Excel file using Android/Web Share.
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({
-        title:`SUTOM ${dept.label} Excel Report`,
-        text:message,
-        files:[file]
-      });
-      return;
-    }
-
-    // Fallback: download Excel + open the exact HOD WhatsApp chat.
+    // Download a real XLSX first so it can be attached in WhatsApp.
     downloadWorkbookFile(result.wb,result.filename);
 
-    const hod=dept.hods[0];
-    const waUrl=`https://wa.me/91${hod.phone}?text=${encodeURIComponent(message+"\n\nExcel file downloaded from SUTOM. Please attach the downloaded Excel file and send.")}`;
+    const message=buildWhatsAppReportMessage(deptKey,ctx.date,ctx.machine) +
+      `\n\nTO: ${hod.name}\nContact: +91 ${hod.phone}\n\nExcel file downloaded from SUTOM. Please attach this file and send.`;
+
+    const waUrl=`https://wa.me/91${hod.phone}?text=${encodeURIComponent(message)}`;
     window.open(waUrl,"_blank");
 
-    if(dept.hods.length>1){
-      alert(`Excel file download झाला. ${dept.label} साठी multiple HOD आहेत.\nपहिला HOD WhatsApp chat उघडला आहे. File attach करून Send करा.`);
-    }else{
-      alert(`Excel file download झाला आणि ${hod.name} यांचा WhatsApp chat उघडला आहे. Excel file attach करून Send करा.`);
-    }
+    closeDepartmentHodChooser();
 
+    alert(`Excel report तयार आहे.\n\nTO: ${hod.name} (+91 ${hod.phone})\n\nWhatsApp chat उघडला आहे. Download झालेली Excel file attach करून Send करा.`);
   }catch(err){
-    console.error("Send Excel report error:",err);
-    alert("Excel report share करताना error आला. आधी EXCEL button वापरून file तयार करा.");
+    console.error("Department Excel send error:",err);
+    alert("Excel report तयार करताना error आला. Internet ON करून पुन्हा प्रयत्न करा.");
   }
 };
+
 
 window.renderSetterExcelTable = function(filterKey){
   const container = document.getElementById("setterExcelTableBody");

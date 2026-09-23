@@ -13,6 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
 <style>
 *{
@@ -667,7 +668,7 @@ button,input,select{font-family:inherit}
     <div class="excel-report-head">
       <div>
         <h3><i class="fas fa-file-excel mr-2"></i>WORKFLOW EXCEL REPORT</h3>
-        <p>Date निवडा → Machine निवडा → Styled Excel / Google Sheets file उघडा</p>
+        <p>Date निवडा → Machine निवडा → Styled Excel / Google Sheets file तयार करा</p>
       </div>
       <button class="excel-report-close" onclick="closeExcelReportSelector()">×</button>
     </div>
@@ -689,7 +690,7 @@ button,input,select{font-family:inherit}
       </div>
       <div class="excel-report-note">
         <b>Format:</b> SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS<br>
-        Google Sheets / Microsoft Excel मध्ये उघडण्यासाठी generated <b>.xls</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
+        Google Sheets / Microsoft Excel मध्ये उघडण्यासाठी generated <b>.xlsx</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
       </div>
     </div>
   </div>
@@ -1634,46 +1635,122 @@ function escapeExcelHtml(v){
 }
 
 function downloadStyledExcelFallback(setups, machine, date){
-  const rows=buildExcelRowsForSetups(setups);
-  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-  @page{size:A4 landscape;margin:8mm}
-  body{font-family:Arial,sans-serif;margin:0;background:#fff}
-  table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:12px}
-  th{background:#0f172a;color:#fff;border:1px solid #047857;padding:10px 6px;text-align:center;font-weight:700}
-  td{border:1px solid #d1d5db;padding:8px 6px;text-align:center;vertical-align:middle;height:42px;white-space:pre-line}
-  .dept{text-align:left;font-weight:700;background:#fff}
-  .start{background:#dbeafe;color:#1d4ed8;font-weight:700}
-  .end{background:#dcfce7;color:#15803d;font-weight:700}
-  .total{color:#2563eb;font-weight:700}
-  .status{color:#10b981;font-weight:700}
-  .sep td{height:8px;background:#fff;border:0}
-  .title{font-size:16px;font-weight:700;text-align:center;padding:8px}
-  </style></head><body>
-  <div class="title">SUTOM - ${escapeExcelHtml(machine)} | ${escapeExcelHtml(date)}</div>
-  <table><colgroup><col style="width:8%"><col style="width:34%"><col style="width:15%"><col style="width:15%"><col style="width:12%"><col style="width:16%"></colgroup>
-  <tr><th>SR.</th><th>DEPARTMENT</th><th>START TIME</th><th>END TIME</th><th>TOTAL TIME</th><th>STATUS</th></tr>`;
-  for(let i=0;i<rows.length;i++){
-    const r=rows[i];
-    if(r.type==='separator'){html+='<tr class="sep"><td colspan="6"></td></tr>';continue;}
-    if(r.type==='sample' && r.sampleFirst){
-      const sampleRows=rows.slice(i,i+3);
-      html+=`<tr><td rowspan="3" style="font-weight:700">S${r.sample}</td>`;
-      for(let j=0;j<sampleRows.length;j++){
-        const x=sampleRows[j];
-        if(j>0) html+='<tr>';
-        html+=`<td class="dept">${escapeExcelHtml(x.dept)}</td><td class="start">${escapeExcelHtml(x.start)}</td><td class="end">${escapeExcelHtml(x.end)}</td><td class="total">${escapeExcelHtml(x.total)}</td><td class="status">${escapeExcelHtml(x.status)}</td></tr>`;
-      }
-      i+=2;continue;
-    }
-    html+=`<tr><td>${escapeExcelHtml(r.sr)}</td><td class="dept">${escapeExcelHtml(r.dept)}</td><td class="start">${escapeExcelHtml(r.start)}</td><td class="end">${escapeExcelHtml(r.end)}</td><td class="total">${escapeExcelHtml(r.total)}</td><td class="status">${escapeExcelHtml(r.status)}</td></tr>`;
+  if(!window.XLSX || !XLSX.utils || !XLSX.writeFile){
+    alert('Excel library load झाली नाही. कृपया internet ON करून पुन्हा OPEN SHEET करा.');
+    return;
   }
-  html+='</table></body></html>';
-  const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=`SUTOM_${machine}_${date}.xls`;document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),30000);
+
+  const rows=buildExcelRowsForSetups(setups);
+  const aoa=[["SR.","DEPARTMENT","START TIME","END TIME","TOTAL TIME","STATUS"]];
+  const merges=[];
+  const rowStyles=[];
+
+  const border={
+    top:{style:'thin',color:{rgb:'94A3B8'}},
+    bottom:{style:'thin',color:{rgb:'94A3B8'}},
+    left:{style:'thin',color:{rgb:'94A3B8'}},
+    right:{style:'thin',color:{rgb:'94A3B8'}}
+  };
+  const headerStyle={
+    fill:{fgColor:{rgb:'0F172A'}},
+    font:{bold:true,color:{rgb:'FFFFFF'},sz:12},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const normalStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{color:{rgb:'111827'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const deptStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{bold:true,color:{rgb:'111827'},sz:11},
+    alignment:{horizontal:'left',vertical:'center',wrapText:true},
+    border:border
+  };
+  const startStyle={
+    fill:{fgColor:{rgb:'DBEAFE'}},
+    font:{bold:true,color:{rgb:'1D4ED8'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const endStyle={
+    fill:{fgColor:{rgb:'DCFCE7'}},
+    font:{bold:true,color:{rgb:'15803D'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const totalStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{bold:true,color:{rgb:'2563EB'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const statusStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{bold:true,color:{rgb:'059669'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+
+  for(const r of rows){
+    if(r.type==='separator'){
+      aoa.push(["","","","","",""]);
+      rowStyles.push(null);
+      continue;
+    }
+
+    if(r.type==='sample' && r.sampleFirst){
+      const baseRow=aoa.length;
+      const sampleRows=rows.slice(rows.indexOf(r), rows.indexOf(r)+3);
+      aoa.push([`S${r.sample}`, sampleRows[0].dept, sampleRows[0].start, sampleRows[0].end, sampleRows[0].total, sampleRows[0].status]);
+      aoa.push(["", sampleRows[1].dept, sampleRows[1].start, sampleRows[1].end, sampleRows[1].total, sampleRows[1].status]);
+      aoa.push(["", sampleRows[2].dept, sampleRows[2].start, sampleRows[2].end, sampleRows[2].total, sampleRows[2].status]);
+      merges.push({s:{r:baseRow,c:0},e:{r:baseRow+2,c:0}});
+      rowStyles.push({sample:true}); rowStyles.push({sample:true}); rowStyles.push({sample:true});
+      continue;
+    }
+
+    aoa.push([r.sr,r.dept,r.start,r.end,r.total,r.status]);
+    rowStyles.push({normal:true});
+  }
+
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!merges']=merges;
+  ws['!cols']=[
+    {wch:8},
+    {wch:34},
+    {wch:18},
+    {wch:18},
+    {wch:15},
+    {wch:22}
+  ];
+  ws['!rows']=aoa.map((_,i)=>({hpt:i===0?28:42}));
+  ws['!autofilter']={ref:`A1:F${aoa.length}`};
+  ws['!freeze']={xSplit:0,ySplit:1,topLeftCell:'A2',activePane:'bottomRight'};
+
+  for(let c=0;c<6;c++){
+    const addr=XLSX.utils.encode_cell({r:0,c});
+    if(ws[addr]) ws[addr].s=headerStyle;
+  }
+
+  for(let r=1;r<aoa.length;r++){
+    const row=aoa[r];
+    if(!row || row.every(v=>v==='')) continue;
+    const isSample=String(row[0]).startsWith('S');
+    const styles=[isSample?normalStyle:normalStyle,deptStyle,startStyle,endStyle,totalStyle,statusStyle];
+    for(let c=0;c<6;c++){
+      const addr=XLSX.utils.encode_cell({r,c});
+      if(ws[addr]) ws[addr].s=styles[c];
+    }
+  }
+
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,safeSheetName(machine));
+  const filename=`SUTOM_${String(machine).replace(/[^a-zA-Z0-9_-]/g,'_')}_${date}.xlsx`;
+  XLSX.writeFile(wb,filename,{bookType:'xlsx',cellStyles:true});
   closeExcelReportSelector();
-  alert(`SUTOM ${machine} report तयार झाला.\n\nExcel-compatible .xls file download झाली आहे. ती Google Sheets मध्ये Upload/Open करा.`);
 }
 
 window.renderSetterExcelTable = function(filterKey){
@@ -2101,4 +2178,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-        </html>
+          </html>

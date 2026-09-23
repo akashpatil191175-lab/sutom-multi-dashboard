@@ -745,7 +745,7 @@ button,input,select{font-family:inherit}
 
       <div class="excel-dept-grid">
 
-        <div class="excel-dept-card">
+        <div class="excel-dept-card" data-report-dept="toolroom">
           <div class="excel-dept-icon tool"><i class="fas fa-tools"></i></div>
           <div class="excel-dept-title">TOOL ROOM</div>
           <div class="excel-dept-hod">HOD: <b>Datta Navale</b><br><span>8830646984</span></div>
@@ -759,7 +759,7 @@ button,input,select{font-family:inherit}
           </div>
         </div>
 
-        <div class="excel-dept-card">
+        <div class="excel-dept-card" data-report-dept="stdroom">
           <div class="excel-dept-icon cmm"><i class="fas fa-microscope"></i></div>
           <div class="excel-dept-title">CMM ROOM</div>
           <div class="excel-dept-hod">HOD: <b>Ragesh Dhoore</b><br><span>9823099157</span></div>
@@ -773,7 +773,7 @@ button,input,select{font-family:inherit}
           </div>
         </div>
 
-        <div class="excel-dept-card">
+        <div class="excel-dept-card" data-report-dept="setter">
           <div class="excel-dept-icon setter"><i class="fas fa-user-gear"></i></div>
           <div class="excel-dept-title">SETTER</div>
           <div class="excel-dept-hod">
@@ -791,7 +791,7 @@ button,input,select{font-family:inherit}
           </div>
         </div>
 
-        <div class="excel-dept-card">
+        <div class="excel-dept-card" data-report-dept="quality">
           <div class="excel-dept-icon quality"><i class="fas fa-clipboard-check"></i></div>
           <div class="excel-dept-title">QUALITY</div>
           <div class="excel-dept-hod">HOD: <b>Sharan Nule</b><br><span>8446622274</span></div>
@@ -815,9 +815,10 @@ button,input,select{font-family:inherit}
         <b>Report मध्ये same complete workflow information:</b>
         SETTER → TOOL ROOM → CMM ROOM → QUALITY, प्रत्येक Sample चा START, END, TOTAL TIME आणि STATUS.
         <br>
-        <b>SEND TO HOD:</b> प्रत्येक Department च्या SEND TO HOD button वर क्लिक केल्यावर फक्त त्या Department चे HOD contacts दिसतील.
-        Setter मध्ये फक्त Setter HODs दिसतील. TO मधून HOD निवडा → SEND TO SELECTED HOD.
-        Excel download होईल आणि निवडलेल्या HOD चा WhatsApp chat उघडेल. WhatsApp मध्ये Excel attach करून <b>Send</b> करायचा आहे.
+        <b>LOGIN-BASED REPORT:</b> तुम्ही ज्या Department मध्ये login आहात, फक्त त्या Department चा EXCEL आणि SEND TO HOD card दिसेल.
+        Setter login → फक्त Setter HODs. Tool Room login → फक्त Tool Room HOD. CMM login → फक्त CMM HOD. Quality login → फक्त Quality HOD.
+        Excel मध्ये मात्र <b>सर्व Department ची same complete workflow information</b> राहील.
+        TO मधून त्या Department चा HOD निवडा → SEND TO SELECTED HOD. WhatsApp मध्ये Excel attach करून <b>Send</b> करायचा आहे.
       </div>
     </div>
   </div>
@@ -1169,6 +1170,7 @@ function loadDashboard(user){
   if(hd) hd.textContent = (user.dept||"").toUpperCase();
 
   showDepartmentTab(user.dept);
+  updateDepartmentReportVisibility();
 }
 
 function showLoginSection(){
@@ -1748,6 +1750,25 @@ function updateExcelReportMachineInfo(){
   }
 }
 
+
+function updateDepartmentReportVisibility(){
+  const loggedDept = window.currentUser?.dept || "";
+  const isSupervisor = loggedDept === "supervisor";
+
+  document.querySelectorAll("[data-report-dept]").forEach(card=>{
+    const cardDept = card.getAttribute("data-report-dept");
+    const show = isSupervisor || cardDept === loggedDept;
+    card.style.display = show ? "" : "none";
+  });
+
+  const grid=document.querySelector(".excel-dept-grid");
+  if(grid){
+    const visible=[...grid.querySelectorAll("[data-report-dept]")].filter(el=>el.style.display!=="none");
+    grid.style.gridTemplateColumns = visible.length===1 ? "minmax(0,520px)" : "";
+    grid.style.justifyContent = visible.length===1 ? "center" : "";
+  }
+}
+
 window.openExcelReportSelector=function(){
   const modal=document.getElementById('excelReportModal');
   const dateEl=document.getElementById('excelReportDate');
@@ -1755,6 +1776,7 @@ window.openExcelReportSelector=function(){
 
   dateEl.value=new Date().toISOString().split('T')[0];
   modal.classList.remove('hidden');
+  updateDepartmentReportVisibility();
   loadExcelReportMachines();
   document.getElementById('excelReportMachine')?.focus();
 };
@@ -2028,6 +2050,12 @@ function getSelectedReportContext(deptKey){
 
   if(!DEPARTMENT_REPORT_HODS[deptKey]){
     alert('Department report configuration सापडली नाही.');
+    return null;
+  }
+
+  const loggedDept = window.currentUser?.dept || "";
+  if(loggedDept !== "supervisor" && loggedDept !== deptKey){
+    alert(`तुम्ही ${String(loggedDept || "या").toUpperCase()} department मध्ये login आहात. फक्त त्याच department चा Excel report पाठवू शकता.`);
     return null;
   }
 

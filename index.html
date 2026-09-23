@@ -13,7 +13,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <!-- Firebase Messaging SDK Added -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 
 <style>
 *{
@@ -690,7 +689,7 @@ button,input,select{font-family:inherit}
       </div>
       <div class="excel-report-note">
         <b>Format:</b> SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS<br>
-        Google Sheets मध्ये उघडण्यासाठी generated <b>.xlsx</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
+        Google Sheets / Microsoft Excel मध्ये उघडण्यासाठी generated <b>.xls</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
       </div>
     </div>
   </div>
@@ -1602,131 +1601,33 @@ function safeSheetName(name){
   return String(name||'SUTOM').replace(/[\\\/?*\[\]:]/g,'').slice(0,31)||'SUTOM';
 }
 
-window.openSelectedExcelReport=async function(){
+window.openSelectedExcelReport=function(){
   const date=document.getElementById('excelReportDate')?.value||'';
   const machine=document.getElementById('excelReportMachine')?.value||'';
   if(!date||!machine){ alert('कृपया Date आणि Machine दोन्ही निवडा.'); return; }
+
   const setups=(window.allSetups||[]).filter(s=>reportDateForSetup(s)===date && s.machineName===machine);
   if(!setups.length){ alert('या Date आणि Machine साठी report उपलब्ध नाही.'); return; }
-  
 
   const btn=document.getElementById('excelReportOpenBtn');
   if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i> CREATING SHEET...';}
+
   try{
-    /* ExcelJS is preferred for real .xlsx. If it fails on a mobile browser, a styled Excel-compatible fallback is used. */
-    if(typeof ExcelJS==='undefined'){
-      return downloadStyledExcelFallback(setups, machine, date);
-    }
-    const wb=new ExcelJS.Workbook();
-    wb.creator='SUTOM - Setup Time Online Monitor';
-    wb.created=new Date();
-    wb.modified=new Date();
-    const ws=wb.addWorksheet(safeSheetName(machine),{views:[{showGridLines:false,zoomScale:80,zoomScaleNormal:80}]});
-
-    ws.columns=[
-      {key:'sr',width:6},
-      {key:'dept',width:24},
-      {key:'start',width:14},
-      {key:'end',width:14},
-      {key:'total',width:11},
-      {key:'status',width:18}
-    ];
-
-    const rows=buildExcelRowsForSetups(setups);
-    const header=ws.addRow(['SR.','DEPARTMENT','START TIME','END TIME','TOTAL TIME','STATUS']);
-    header.height=32;
-    header.eachCell(cell=>{
-      cell.font={name:'Arial',size:12,bold:true,color:{argb:'FFFFFFFF'}};
-      cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0F172A'}};
-      cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
-      cell.border={top:{style:'thin',color:{argb:'FF047857'}},left:{style:'thin',color:{argb:'FF047857'}},bottom:{style:'thin',color:{argb:'FF047857'}},right:{style:'thin',color:{argb:'FF047857'}}};
-    });
-
-    let excelRowNumber=2;
-    for(let i=0;i<rows.length;i++){
-      const r=rows[i];
-      if(r.type==='separator'){
-        const sep=ws.addRow(['','','','','','']);
-        sep.height=10;
-        sep.eachCell(cell=>cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF050B14'}});
-        excelRowNumber++;
-        continue;
-      }
-      if(r.type==='sample' && r.sampleFirst){
-        const sampleRows=rows.slice(i,i+3);
-        sampleRows.forEach(sr=>{
-          const row=ws.addRow(['',sr.dept,sr.start,sr.end,sr.total,sr.status]);
-          row.height=48;
-          row.eachCell((cell,col)=>{
-            cell.font={name:'Arial',size:11,bold:(col===2||col===6),color:{argb:'FF111827'}};
-            cell.alignment={horizontal:col===2?'left':'center',vertical:'middle',wrapText:true};
-            cell.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
-          });
-          row.getCell(2).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-          row.getCell(3).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDBEAFE'}};
-          row.getCell(3).font={name:'Arial',size:11,bold:true,color:{argb:'FF1D4ED8'}};
-          row.getCell(4).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDCFCE7'}};
-          row.getCell(4).font={name:'Arial',size:11,bold:true,color:{argb:'FF15803D'}};
-          row.getCell(5).font={name:'Arial',size:11,bold:true,color:{argb:'FF2563EB'}};
-          row.getCell(6).font={name:'Arial',size:11,bold:true,color:{argb:'FF10B981'}};
-          excelRowNumber++;
-        });
-        const first=excelRowNumber-3, last=excelRowNumber-1;
-        ws.mergeCells(`A${first}:A${last}`);
-        const ac=ws.getCell(`A${first}`);
-        ac.value='S'+r.sample;
-        ac.font={name:'Arial',size:11,bold:true,color:{argb:'FF111827'}};
-        ac.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-        ac.alignment={horizontal:'center',vertical:'middle'};
-        ac.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
-        i+=2;
-        continue;
-      }
-      const row=ws.addRow([r.sr,r.dept,r.start,r.end,r.total,r.status]);
-      row.height=52;
-      row.eachCell((cell,col)=>{
-        cell.font={name:'Arial',size:11,bold:(col===1||col===2||col===6),color:{argb:'FF111827'}};
-        cell.alignment={horizontal:col===2?'left':'center',vertical:'middle',wrapText:true};
-        cell.border={top:{style:'thin',color:{argb:'FFD1D5DB'}},left:{style:'thin',color:{argb:'FFD1D5DB'}},bottom:{style:'thin',color:{argb:'FFD1D5DB'}},right:{style:'thin',color:{argb:'FFD1D5DB'}}};
-      });
-      row.getCell(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-      row.getCell(2).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-      row.getCell(3).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDBEAFE'}};
-      row.getCell(3).font={name:'Arial',size:11,bold:true,color:{argb:'FF1D4ED8'}};
-      row.getCell(4).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFDCFCE7'}};
-      row.getCell(4).font={name:'Arial',size:11,bold:true,color:{argb:'FF15803D'}};
-      row.getCell(5).font={name:'Arial',size:11,bold:true,color:{argb:'FF2563EB'}};
-      row.getCell(6).font={name:'Arial',size:11,bold:true,color:{argb:'FF10B981'}};
-      excelRowNumber++;
-    }
-
-
-    ws.freezePanes={xSplit:0,ySplit:1};
-    ws.autoFilter={from:'A1',to:'F'+Math.max(1,ws.rowCount)};
-    ws.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9,margins:{left:0.2,right:0.2,top:0.4,bottom:0.4,header:0.1,footer:0.1}};
-    ws.headerFooter.oddFooter='&L SUTOM - Setup Time Monitor&C'+machine+' - '+date+'&RPage &P of &N';
-    ws.sheetProperties.pageSetUpPr={fitToPage:true};
-
-    const buffer=await wb.xlsx.writeBuffer();
-    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=`SUTOM_${machine}_${date}.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-    closeExcelReportSelector();
-    alert(`SUTOM ${machine} report तयार झाला.\n\nहा .xlsx file Google Sheets किंवा Microsoft Excel मध्ये उघडता येईल.`);
+    /*
+      IMPORTANT:
+      Do not use ExcelJS here. On some Android/GitHub Pages browsers the
+      ExcelJS CDN/library throws while building the workbook. Instead we
+      generate an Excel-compatible SpreadsheetML/HTML .xls directly.
+      Google Sheets and Microsoft Excel can open this format reliably.
+    */
+    downloadStyledExcelFallback(setups,machine,date);
   }catch(err){
-    console.error('Excel report error:',err);
+    console.error('SUTOM Excel report error:',err);
     alert('Excel report तयार करताना error आला. पुन्हा प्रयत्न करा.');
   }finally{
     if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-file-excel mr-1"></i> OPEN SHEET';}
   }
 };
-
 
 function escapeExcelHtml(v){
   return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -2200,4 +2101,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+        </html>

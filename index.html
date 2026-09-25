@@ -1943,37 +1943,44 @@ window.shareSelectedExcelReport=async function(){
       the actual .xlsx file to Android's native share sheet.
       From there the user can select WhatsApp and send the file.
     */
-    const canShareFiles =
-      typeof navigator !== 'undefined' &&
-      typeof navigator.share === 'function' &&
-      (
-        typeof navigator.canShare !== 'function' ||
-        navigator.canShare({files:[result.file]})
-      );
+    /*
+      IMPORTANT ANDROID FIX:
+      Do NOT depend on navigator.canShare({files}) here. Some Android Chrome
+      versions return false for the official XLSX MIME type even though
+      navigator.share() can successfully pass the File to WhatsApp.
 
-    if(canShareFiles){
+      We therefore try the native Web Share API first, using a share-only
+      File with application/octet-stream. The filename remains .xlsx, so
+      WhatsApp receives the actual Excel document as an attachment.
+    */
+    if(typeof navigator !== 'undefined' && typeof navigator.share === 'function'){
       try{
+        const shareFile = new File([result.blob], result.filename, {
+          type:'application/octet-stream',
+          lastModified:Date.now()
+        });
+
         await navigator.share({
           title:`SUTOM ${selected.machine} Excel Report`,
           text:shareText,
-          files:[result.file]
+          files:[shareFile]
         });
 
-        // User completed or closed the native share sheet.
+        // Native Android share completed. Nothing else is required.
         closeExcelReportSelector();
         return;
       }catch(shareErr){
-        // Closing/cancelling the Android share sheet is not an application error.
+        // User pressing Back/Close on the Android share sheet is not an error.
         if(shareErr && shareErr.name==='AbortError') return;
 
-        console.warn('Native file share failed:',shareErr);
+        console.warn('Native Android file share failed:',shareErr);
       }
     }
 
     /*
-      Fallback for browsers that cannot share files:
-      download the real .xlsx and open WhatsApp with a pre-filled message.
-      The user can attach the downloaded document from WhatsApp.
+      Last-resort fallback only for browsers which genuinely do not expose
+      file sharing. A normal web page cannot programmatically attach a local
+      file to WhatsApp; browser security prevents that.
     */
     const url=URL.createObjectURL(result.blob);
     const a=document.createElement('a');
@@ -1985,16 +1992,22 @@ window.shareSelectedExcelReport=async function(){
     a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),15000);
 
-    const waText=encodeURIComponent(
-      `${shareText}\n\nExcel file downloaded as: ${result.filename}\nWhatsApp मध्ये Attach → Document करून हा file select करा.`
-    );
+    // IMPORTANT: Never fall back to WhatsApp Web. If this browser cannot
+    // share files natively, try the installed regular WhatsApp app instead.
+    // Android/browser security does not allow a plain HTML page to inject
+    // a local Blob directly into whatsapp://send as an attachment.
+    const waText=encodeURIComponent(shareText);
+    const whatsappAppUrl=`whatsapp://send?text=${waText}`;
 
-    // Use WhatsApp app when possible, otherwise WhatsApp Web.
-    window.location.href=`https://wa.me/?text=${waText}`;
+    try{
+      window.location.href=whatsappAppUrl;
+    }catch(e){
+      alert('या device/browser मध्ये Regular WhatsApp उघडता आले नाही. Chrome मध्ये WhatsApp app installed आहे का ते तपासा.');
+    }
 
     setTimeout(()=>{
-      alert('तुमचा Excel file download झाला आहे. WhatsApp मध्ये Attach → Document करून तो .xlsx file निवडा.');
-    },800);
+      alert('Regular WhatsApp उघडला आहे. या browser मध्ये Excel file direct attach करण्याची सुविधा उपलब्ध नाही. Direct Excel attachment साठी Android native app/Web Share वापरणे आवश्यक आहे.');
+    },1200);
   }catch(err){
     console.error('SUTOM WhatsApp Excel share error:',err);
     alert('Excel report WhatsApp ला share करताना error आला. File download करून WhatsApp मध्ये Document म्हणून attach करा.');

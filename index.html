@@ -362,57 +362,6 @@ button,input,select{font-family:inherit}
 
 /* ================= EXCEL REPORT SELECTOR ================= */
 .excel-report-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px;z-index:120}
-
-.excel-report-card-wide{width:min(920px,100%);}
-.excel-report-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.excel-dept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;}
-.excel-dept-card{background:linear-gradient(145deg,#0b1726,#07101b);border:1px solid #2a3d55;border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.18);}
-.excel-dept-title{font-size:13px;font-weight:950;color:#f5f7fb;margin-top:8px;}
-.excel-dept-hod{font-size:9px;line-height:1.5;color:#93a4b8;margin-top:5px;min-height:58px;}
-.excel-dept-hod b{color:#dce7f4;}
-.excel-dept-hod span{color:#7ee7b7;font-family:monospace;}
-.excel-dept-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;}
-.excel-dept-icon.tool{background:#092d50;color:#38a5ff;}
-.excel-dept-icon.cmm{background:#1e1b4b;color:#818cf8;}
-.excel-dept-icon.setter{background:#32124f;color:#bb6cff;}
-.excel-dept-icon.quality{background:#083a2a;color:#1be08b;}
-.excel-dept-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:6px;margin-top:9px;}
-.excel-dept-actions button{border-radius:8px;padding:8px 6px;font-size:9px;font-weight:900;cursor:pointer;white-space:nowrap;}
-.excel-dept-download{background:#0b6b46;border:1px solid #19d889;color:#fff;}
-.excel-dept-send{background:#075e54;border:1px solid #20c997;color:#fff;}
-.excel-dept-actions button:hover{filter:brightness(1.15);transform:translateY(-1px);}
-@media(max-width:680px){
-  .excel-report-filter-grid,.excel-dept-grid{grid-template-columns:1fr;}
-  .excel-report-card-wide{width:100%;}
-}
-
-
-/* ================= SEND TO HOD / TO CHOOSER ================= */
-.hod-send-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:14px;z-index:180}
-.hod-send-card{width:min(470px,100%);background:#08111e;border:1px solid #29415c;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.65);overflow:hidden;color:#f5f7fb}
-.hod-send-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:#050b14;border-bottom:1px solid #203149}
-.hod-send-head h3{margin:0;font-size:16px;font-weight:950;color:#19d889}
-.hod-send-head p{margin:3px 0 0;font-size:10px;color:#91a0b5}
-.hod-send-close{width:34px;height:34px;border:0;border-radius:9px;background:#e11d2e;color:#fff;font-size:17px;font-weight:900;cursor:pointer}
-.hod-send-body{padding:15px}
-.hod-to-label{font-size:10px;font-weight:950;color:#aebbd0;text-transform:uppercase;margin-bottom:8px}
-.hod-choice-list{display:grid;gap:8px}
-.hod-choice{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border:1px solid #30455e;border-radius:11px;background:#07111d;color:#f5f7fb;cursor:pointer;text-align:left}
-.hod-choice:hover{border-color:#19d889;background:#0a1825}
-.hod-choice input{accent-color:#19d889;width:17px;height:17px;flex:0 0 auto}
-.hod-choice-main{display:flex;flex-direction:column;gap:2px;min-width:0}
-.hod-choice-name{font-size:12px;font-weight:900}
-.hod-choice-phone{font-size:10px;color:#7ee7b7;font-family:monospace}
-.hod-send-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:8px;margin-top:13px}
-.hod-send-actions button{border-radius:9px;padding:10px 12px;border:1px solid #33465f;background:#101a28;color:#dce6f4;font-size:11px;font-weight:900;cursor:pointer}
-.hod-send-actions .hod-confirm{background:#075e54;border-color:#20c997;color:#fff}
-.hod-send-note{margin-top:10px;padding:9px 10px;border-radius:8px;background:#071a14;border:1px solid #145c42;color:#8eeec2;font-size:9px;line-height:1.45}
-@media(max-width:520px){
-  .hod-send-card{border-radius:12px}
-  .hod-send-body{padding:13px}
-  .hod-send-actions{grid-template-columns:1fr}
-}
-
 .excel-report-card{width:min(520px,100%);background:#08111e;border:1px solid #29415c;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:hidden;color:#f5f7fb}
 .excel-report-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;background:#050b14;border-bottom:1px solid #203149}
 .excel-report-head h3{margin:0;font-size:17px;font-weight:950;color:#19d889}
@@ -522,7 +471,7 @@ button,input,select{font-family:inherit}
   <div class="setter-topbar">
     <div class="setter-title-mobile">Setter Dashboard</div>
     <div class="setter-action-row">
-      <button onclick="openExcelReportSelector()" class="compact-action green"><i class="fas fa-file-excel"></i> Department Reports</button>
+      <button onclick="openExcelReportSelector()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
       <button onclick="openSetterModule('register')" class="compact-action blue"><i class="fas fa-plus"></i> Register Setup</button>
     </div>
   </div>
@@ -713,144 +662,35 @@ button,input,select{font-family:inherit}
 
 
 
-<!-- ================= DEPARTMENT EXCEL REPORT SELECTOR ================= -->
+<!-- ================= EXCEL REPORT SELECTOR ================= -->
 <div id="excelReportModal" class="excel-report-overlay hidden">
-  <div class="excel-report-card excel-report-card-wide">
+  <div class="excel-report-card">
     <div class="excel-report-head">
       <div>
-        <h3><i class="fas fa-file-excel mr-2"></i>DEPARTMENT-WISE EXCEL REPORT</h3>
-        <p>Date + Machine निवडा. प्रत्येक Department साठी same complete workflow information report मध्ये येईल.</p>
+        <h3><i class="fas fa-file-excel mr-2"></i>WORKFLOW EXCEL REPORT</h3>
+        <p>Date निवडा → Machine निवडा → Styled Excel / Google Sheets file तयार करा</p>
       </div>
       <button class="excel-report-close" onclick="closeExcelReportSelector()">×</button>
     </div>
-
     <div class="excel-report-body">
-      <div class="excel-report-filter-grid">
-        <div class="excel-report-field">
-          <label for="excelReportDate">REPORT DATE</label>
-          <input type="date" id="excelReportDate" onchange="loadExcelReportMachines()">
-        </div>
-
-        <div class="excel-report-field">
-          <label for="excelReportMachine">MACHINE NAME</label>
-          <select id="excelReportMachine" onchange="updateExcelReportMachineInfo()">
-            <option value="">-- SELECT MACHINE --</option>
-          </select>
-        </div>
+      <div class="excel-report-field">
+        <label for="excelReportDate">REPORT DATE</label>
+        <input type="date" id="excelReportDate" onchange="loadExcelReportMachines()">
       </div>
-
-      <div id="excelReportMachineInfo" class="excel-report-machine-info">
-        Selected date आणि machine निवडा.
+      <div class="excel-report-field">
+        <label for="excelReportMachine">MACHINE NAME</label>
+        <select id="excelReportMachine" onchange="updateExcelReportMachineInfo()">
+          <option value="">-- SELECT MACHINE --</option>
+        </select>
       </div>
-
-      <div class="excel-dept-grid">
-
-        <div class="excel-dept-card" data-report-dept="toolroom">
-          <div class="excel-dept-icon tool"><i class="fas fa-tools"></i></div>
-          <div class="excel-dept-title">TOOL ROOM</div>
-          <div class="excel-dept-hod">HOD: <b>Datta Navale</b><br><span>8830646984</span></div>
-          <div class="excel-dept-actions">
-            <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('toolroom')">
-              <i class="fas fa-download"></i> EXCEL
-            </button>
-            <button class="excel-dept-send" onclick="openDepartmentHodChooser('toolroom')">
-              <i class="fab fa-whatsapp"></i> SEND TO HOD
-            </button>
-          </div>
-        </div>
-
-        <div class="excel-dept-card" data-report-dept="stdroom">
-          <div class="excel-dept-icon cmm"><i class="fas fa-microscope"></i></div>
-          <div class="excel-dept-title">CMM ROOM</div>
-          <div class="excel-dept-hod">HOD: <b>Ragesh Dhoore</b><br><span>9823099157</span></div>
-          <div class="excel-dept-actions">
-            <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('stdroom')">
-              <i class="fas fa-download"></i> EXCEL
-            </button>
-            <button class="excel-dept-send" onclick="openDepartmentHodChooser('stdroom')">
-              <i class="fab fa-whatsapp"></i> SEND TO HOD
-            </button>
-          </div>
-        </div>
-
-        <div class="excel-dept-card" data-report-dept="setter">
-          <div class="excel-dept-icon setter"><i class="fas fa-user-gear"></i></div>
-          <div class="excel-dept-title">SETTER</div>
-          <div class="excel-dept-hod">
-            HOD: <b>Mahesh Andhale</b><br><span>9881097236</span><br>
-            <b>Ganesh Shendge</b> <span>8605686621</span><br>
-            <b>Anand Rajapure</b> <span>9823884600</span>
-          </div>
-          <div class="excel-dept-actions">
-            <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('setter')">
-              <i class="fas fa-download"></i> EXCEL
-            </button>
-            <button class="excel-dept-send" onclick="openDepartmentHodChooser('setter')">
-              <i class="fab fa-whatsapp"></i> SEND TO HOD
-            </button>
-          </div>
-        </div>
-
-        <div class="excel-dept-card" data-report-dept="quality">
-          <div class="excel-dept-icon quality"><i class="fas fa-clipboard-check"></i></div>
-          <div class="excel-dept-title">QUALITY</div>
-          <div class="excel-dept-hod">HOD: <b>Sharan Nule</b><br><span>8446622274</span></div>
-          <div class="excel-dept-actions">
-            <button class="excel-dept-download" onclick="downloadDepartmentExcelReport('quality')">
-              <i class="fas fa-download"></i> EXCEL
-            </button>
-            <button class="excel-dept-send" onclick="openDepartmentHodChooser('quality')">
-              <i class="fab fa-whatsapp"></i> SEND TO HOD
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="excel-report-actions mt-3">
+      <div id="excelReportMachineInfo" class="excel-report-machine-info">Selected date वर उपलब्ध machine निवडा.</div>
+      <div class="excel-report-actions">
         <button onclick="closeExcelReportSelector()">CLOSE</button>
+        <button id="excelReportOpenBtn" class="open" onclick="openSelectedExcelReport()" disabled><i class="fas fa-file-excel mr-1"></i> OPEN SHEET</button>
       </div>
-
       <div class="excel-report-note">
-        <b>Report मध्ये same complete workflow information:</b>
-        SETTER → TOOL ROOM → CMM ROOM → QUALITY, प्रत्येक Sample चा START, END, TOTAL TIME आणि STATUS.
-        <br>
-        <b>LOGIN-BASED REPORT:</b> तुम्ही ज्या Department मध्ये login आहात, फक्त त्या Department चा EXCEL आणि SEND TO HOD card दिसेल.
-        Setter login → फक्त Setter HODs. Tool Room login → फक्त Tool Room HOD. CMM login → फक्त CMM HOD. Quality login → फक्त Quality HOD.
-        Excel मध्ये मात्र <b>सर्व Department ची same complete workflow information</b> राहील.
-        TO मधून त्या Department चा HOD निवडा → SEND TO SELECTED HOD. WhatsApp मध्ये Excel attach करून <b>Send</b> करायचा आहे.
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ================= SEND EXCEL TO HOD / TO CHOOSER ================= -->
-<div id="hodSendModal" class="hod-send-overlay hidden">
-  <div class="hod-send-card">
-    <div class="hod-send-head">
-      <div>
-        <h3><i class="fab fa-whatsapp mr-2"></i>SEND EXCEL TO HOD</h3>
-        <p id="hodSendSubtitle">Department HOD निवडा.</p>
-      </div>
-      <button class="hod-send-close" onclick="closeDepartmentHodChooser()">×</button>
-    </div>
-
-    <div class="hod-send-body">
-      <div class="hod-to-label">TO — HOD CONTACT</div>
-      <div id="hodChoiceList" class="hod-choice-list"></div>
-
-      <div class="hod-send-actions">
-        <button onclick="closeDepartmentHodChooser()">CANCEL</button>
-        <button class="hod-confirm" onclick="confirmDepartmentHodSend()">
-          <i class="fab fa-whatsapp"></i> SEND TO SELECTED HOD
-        </button>
-      </div>
-
-      <div class="hod-send-note">
-        <b>Note:</b> फक्त निवडलेल्या Department चे HOD contacts इथे दिसतील.
-        Excel file download होईल आणि निवडलेल्या HOD चा WhatsApp chat उघडेल.
-        WhatsApp मध्ये Excel attach करून <b>Send</b> करायचा आहे.
+        <b>Format:</b> SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS<br>
+        Google Sheets / Microsoft Excel मध्ये उघडण्यासाठी generated <b>.xlsx</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
       </div>
     </div>
   </div>
@@ -1170,7 +1010,6 @@ function loadDashboard(user){
   if(hd) hd.textContent = (user.dept||"").toUpperCase();
 
   showDepartmentTab(user.dept);
-  updateDepartmentReportVisibility();
 }
 
 function showLoginSection(){
@@ -1678,31 +1517,7 @@ window.setToolroomFilter = function(filter){ window.toolroomFilter = filter; ren
 window.setCmmFilter = function(filter){ window.cmmFilter = filter; renderSTDRoom(); };
 window.setQualityFilter = function(filter){ window.qualityFilter = filter; renderQuality(); };
 
-/* ================= DEPARTMENT-WISE STYLED XLSX REPORT ================= */
-
-const DEPARTMENT_REPORT_HODS = {
-  toolroom: {
-    label: "TOOL ROOM",
-    hods: [{name:"Datta Navale", phone:"8830646984"}]
-  },
-  stdroom: {
-    label: "CMM ROOM",
-    hods: [{name:"Ragesh Dhoore", phone:"9823099157"}]
-  },
-  setter: {
-    label: "SETTER",
-    hods: [
-      {name:"Mahesh Andhale", phone:"9881097236"},
-      {name:"Ganesh Shendge", phone:"8605686621"},
-      {name:"Anand Rajapure", phone:"9823884600"}
-    ]
-  },
-  quality: {
-    label: "QUALITY",
-    hods: [{name:"Sharan Nule", phone:"8446622274"}]
-  }
-};
-
+/* ================= STYLED XLSX / GOOGLE SHEETS REPORT ================= */
 function reportDateForSetup(s){
   if(s && s.setupDate) return String(s.setupDate);
   if(s && s.timestampRegistered){
@@ -1719,64 +1534,33 @@ function getReportSetupsForDate(dateValue){
 function loadExcelReportMachines(){
   const dateEl=document.getElementById('excelReportDate');
   const machineEl=document.getElementById('excelReportMachine');
+  const btn=document.getElementById('excelReportOpenBtn');
   const info=document.getElementById('excelReportMachineInfo');
   if(!dateEl||!machineEl) return;
-
   const date=dateEl.value;
   const list=getReportSetupsForDate(date);
-  const machines=[...new Set(list.map(s=>s.machineName).filter(Boolean))]
-    .sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
-
-  machineEl.innerHTML='<option value="">-- SELECT MACHINE --</option>'+
-    machines.map(m=>`<option value="${String(m).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${m}</option>`).join('');
-
-  if(info){
-    info.textContent=machines.length
-      ? `${machines.length} machine(s) available for ${date}.`
-      : `या date साठी कोणताही setup report उपलब्ध नाही.`;
-  }
+  const machines=[...new Set(list.map(s=>s.machineName).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
+  machineEl.innerHTML='<option value="">-- SELECT MACHINE --</option>'+machines.map(m=>`<option value="${String(m).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${m}</option>`).join('');
+  if(btn) btn.disabled=true;
+  if(info) info.textContent=machines.length ? `${machines.length} machine(s) available for ${date}.` : `या date साठी कोणताही setup report उपलब्ध नाही.`;
 }
 
 function updateExcelReportMachineInfo(){
   const date=document.getElementById('excelReportDate')?.value||'';
   const machine=document.getElementById('excelReportMachine')?.value||'';
+  const btn=document.getElementById('excelReportOpenBtn');
   const info=document.getElementById('excelReportMachineInfo');
-  const matches=machine ? getReportSetupsForDate(date).filter(s=>s.machineName===machine) : [];
-
-  if(info){
-    info.textContent=matches.length
-      ? `${machine} • ${matches.length} setup record(s) found for ${date}. प्रत्येक Department report मध्ये same workflow information असेल.`
-      : 'Selected date आणि machine निवडा.';
-  }
-}
-
-
-function updateDepartmentReportVisibility(){
-  const loggedDept = window.currentUser?.dept || "";
-  const isSupervisor = loggedDept === "supervisor";
-
-  document.querySelectorAll("[data-report-dept]").forEach(card=>{
-    const cardDept = card.getAttribute("data-report-dept");
-    const show = isSupervisor || cardDept === loggedDept;
-    card.style.display = show ? "" : "none";
-  });
-
-  const grid=document.querySelector(".excel-dept-grid");
-  if(grid){
-    const visible=[...grid.querySelectorAll("[data-report-dept]")].filter(el=>el.style.display!=="none");
-    grid.style.gridTemplateColumns = visible.length===1 ? "minmax(0,520px)" : "";
-    grid.style.justifyContent = visible.length===1 ? "center" : "";
-  }
+  const matches=machine?getReportSetupsForDate(date).filter(s=>s.machineName===machine):[];
+  if(btn) btn.disabled=!matches.length;
+  if(info) info.textContent=matches.length ? `${machine} • ${matches.length} setup record(s) found for ${date}.` : 'Selected date आणि machine निवडा.';
 }
 
 window.openExcelReportSelector=function(){
   const modal=document.getElementById('excelReportModal');
   const dateEl=document.getElementById('excelReportDate');
   if(!modal||!dateEl) return;
-
   dateEl.value=new Date().toISOString().split('T')[0];
   modal.classList.remove('hidden');
-  updateDepartmentReportVisibility();
   loadExcelReportMachines();
   document.getElementById('excelReportMachine')?.focus();
 };
@@ -1788,56 +1572,19 @@ window.closeExcelReportSelector=function(){
 function buildExcelWorkflowRows(s){
   const rows=[];
   let sr=1;
-
-  rows.push({
-    type:'normal',
-    sr:sr++,
-    dept:'SETTER\nSetup Registration',
-    start:s.timeRegistered||'-',
-    end:s.setupType==='Short'?'N/A':(s.toolStart||'-'),
-    total:s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered,s.toolStart),
-    status:'REGISTERED'
-  });
-
+  rows.push({type:'normal',sr:sr++,dept:'SETTER\nSetup Registration',start:s.timeRegistered||'-',end:s.setupType==='Short'?'N/A':(s.toolStart||'-'),total:s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered,s.toolStart),status:'REGISTERED'});
   if(s.setupType!=='Short'){
-    rows.push({
-      type:'normal',
-      sr:sr++,
-      dept:'TOOL ROOM\nTooling & Fixture Ready',
-      start:s.toolStart||'-',
-      end:s.toolEnd||'-',
-      total:durationMinutes(s.toolStart,s.toolEnd),
-      status:s.toolEnd?'READY':'PENDING'
-    });
+    rows.push({type:'normal',sr:sr++,dept:'TOOL ROOM\nTooling & Fixture Ready',start:s.toolStart||'-',end:s.toolEnd||'-',total:durationMinutes(s.toolStart,s.toolEnd),status:s.toolEnd?'READY':'PENDING'});
   }
-
   for(let n=1;n<=4;n++){
     const x=getSample(s,n);
-    if(!x.setterStart && !x.setterEnd && !x.cmmStart && !x.cmmEnd &&
-       !x.qualityStart && !x.qualityEnd && !x.result && n>(s.sampleCount||1)) continue;
-
+    if(!x.setterStart && !x.setterEnd && !x.cmmStart && !x.cmmEnd && !x.qualityStart && !x.qualityEnd && !x.result && n>(s.sampleCount||1)) continue;
     const setStatus=x.cutTime?'DONE':(x.setterStart?'RUNNING':'PENDING');
     const cmmStatus=x.cmmEnd?'DONE':(x.cmmStart?'RUNNING':'PENDING');
-    const qStatus=x.result || (x.qualityStart?'RUNNING':'PENDING');
-
-    rows.push({
-      type:'sample',sample:n,sampleFirst:true,
-      dept:`SETTER\nSample #${n}`,
-      start:x.setterStart||'-',end:x.setterEnd||'-',
-      total:durationMinutes(x.setterStart,x.setterEnd),status:setStatus
-    });
-    rows.push({
-      type:'sample',sample:n,
-      dept:`CMM ROOM\nSample #${n}`,
-      start:x.cmmStart||'-',end:x.cmmEnd||'-',
-      total:durationMinutes(x.cmmStart,x.cmmEnd),status:cmmStatus
-    });
-    rows.push({
-      type:'sample',sample:n,
-      dept:`QUALITY\nSample #${n}`,
-      start:x.qualityStart||'-',end:x.qualityEnd||'-',
-      total:durationMinutes(x.qualityStart,x.qualityEnd),status:qStatus
-    });
+    const qStatus=x.result|| (x.qualityStart?'RUNNING':'PENDING');
+    rows.push({type:'sample',sample:n,sampleFirst:true,dept:`SETTER\nSample #${n}`,start:x.setterStart||'-',end:x.setterEnd||'-',total:durationMinutes(x.setterStart,x.setterEnd),status:setStatus});
+    rows.push({type:'sample',sample:n,dept:`CMM ROOM\nSample #${n}`,start:x.cmmStart||'-',end:x.cmmEnd||'-',total:durationMinutes(x.cmmStart,x.cmmEnd),status:cmmStatus});
+    rows.push({type:'sample',sample:n,dept:`QUALITY\nSample #${n}`,start:x.qualityStart||'-',end:x.qualityEnd||'-',total:durationMinutes(x.qualityStart,x.qualityEnd),status:qStatus});
   }
   return rows;
 }
@@ -1855,57 +1602,118 @@ function safeSheetName(name){
   return String(name||'SUTOM').replace(/[\\\/?*\[\]:]/g,'').slice(0,31)||'SUTOM';
 }
 
-function buildDepartmentWorkbook(setups, machine, date, deptKey){
-  if(!window.XLSX || !XLSX.utils || !XLSX.write){
-    throw new Error("Excel library load झाली नाही.");
+window.openSelectedExcelReport=function(){
+  const date=document.getElementById('excelReportDate')?.value||'';
+  const machine=document.getElementById('excelReportMachine')?.value||'';
+  if(!date||!machine){ alert('कृपया Date आणि Machine दोन्ही निवडा.'); return; }
+
+  const setups=(window.allSetups||[]).filter(s=>reportDateForSetup(s)===date && s.machineName===machine);
+  if(!setups.length){ alert('या Date आणि Machine साठी report उपलब्ध नाही.'); return; }
+
+  const btn=document.getElementById('excelReportOpenBtn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i> CREATING SHEET...';}
+
+  try{
+    /*
+      IMPORTANT:
+      Do not use ExcelJS here. On some Android/GitHub Pages browsers the
+      ExcelJS CDN/library throws while building the workbook. Instead we
+      generate an Excel-compatible SpreadsheetML/HTML .xls directly.
+      Google Sheets and Microsoft Excel can open this format reliably.
+    */
+    downloadStyledExcelFallback(setups,machine,date);
+  }catch(err){
+    console.error('SUTOM Excel report error:',err);
+    alert('Excel report तयार करताना error आला. पुन्हा प्रयत्न करा.');
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-file-excel mr-1"></i> OPEN SHEET';}
+  }
+};
+
+function escapeExcelHtml(v){
+  return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function downloadStyledExcelFallback(setups, machine, date){
+  if(!window.XLSX || !XLSX.utils || !XLSX.writeFile){
+    alert('Excel library load झाली नाही. कृपया internet ON करून पुन्हा OPEN SHEET करा.');
+    return;
   }
 
-  const dept=DEPARTMENT_REPORT_HODS[deptKey];
   const rows=buildExcelRowsForSetups(setups);
-
-  const aoa=[
-    ["SUTOM - SETUP TIME MONITOR"],
-    [`DEPARTMENT REPORT: ${dept.label}`],
-    [`MACHINE: ${machine}`, `DATE: ${date}`],
-    [`HOD: ${dept.hods.map(h=>h.name).join(" / ")}`],
-    [],
-    ["SR.","DEPARTMENT","START TIME","END TIME","TOTAL TIME","STATUS"]
-  ];
-
-  const merges=[
-    {s:{r:0,c:0},e:{r:0,c:5}},
-    {s:{r:1,c:0},e:{r:1,c:5}},
-    {s:{r:3,c:0},e:{r:3,c:5}}
-  ];
-
+  const aoa=[["SR.","DEPARTMENT","START TIME","END TIME","TOTAL TIME","STATUS"]];
+  const merges=[];
   const rowStyles=[];
 
-  // Title rows
-  rowStyles.push("title","deptTitle","meta","hod","blank","header");
+  const border={
+    top:{style:'thin',color:{rgb:'94A3B8'}},
+    bottom:{style:'thin',color:{rgb:'94A3B8'}},
+    left:{style:'thin',color:{rgb:'94A3B8'}},
+    right:{style:'thin',color:{rgb:'94A3B8'}}
+  };
+  const headerStyle={
+    fill:{fgColor:{rgb:'0F172A'}},
+    font:{bold:true,color:{rgb:'FFFFFF'},sz:12},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const normalStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{color:{rgb:'111827'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const deptStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{bold:true,color:{rgb:'111827'},sz:11},
+    alignment:{horizontal:'left',vertical:'center',wrapText:true},
+    border:border
+  };
+  const startStyle={
+    fill:{fgColor:{rgb:'DBEAFE'}},
+    font:{bold:true,color:{rgb:'1D4ED8'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const endStyle={
+    fill:{fgColor:{rgb:'DCFCE7'}},
+    font:{bold:true,color:{rgb:'15803D'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const totalStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{bold:true,color:{rgb:'2563EB'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
+  const statusStyle={
+    fill:{fgColor:{rgb:'FFFFFF'}},
+    font:{bold:true,color:{rgb:'059669'},sz:11},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+    border:border
+  };
 
   for(const r of rows){
     if(r.type==='separator'){
       aoa.push(["","","","","",""]);
-      rowStyles.push("blank");
+      rowStyles.push(null);
       continue;
     }
 
     if(r.type==='sample' && r.sampleFirst){
-      const idx=rows.indexOf(r);
-      const sampleRows=rows.slice(idx,idx+3);
       const baseRow=aoa.length;
-
-      aoa.push([`S${r.sample}`,sampleRows[0].dept,sampleRows[0].start,sampleRows[0].end,sampleRows[0].total,sampleRows[0].status]);
-      aoa.push(["",sampleRows[1].dept,sampleRows[1].start,sampleRows[1].end,sampleRows[1].total,sampleRows[1].status]);
-      aoa.push(["",sampleRows[2].dept,sampleRows[2].start,sampleRows[2].end,sampleRows[2].total,sampleRows[2].status]);
-
+      const sampleRows=rows.slice(rows.indexOf(r), rows.indexOf(r)+3);
+      aoa.push([`S${r.sample}`, sampleRows[0].dept, sampleRows[0].start, sampleRows[0].end, sampleRows[0].total, sampleRows[0].status]);
+      aoa.push(["", sampleRows[1].dept, sampleRows[1].start, sampleRows[1].end, sampleRows[1].total, sampleRows[1].status]);
+      aoa.push(["", sampleRows[2].dept, sampleRows[2].start, sampleRows[2].end, sampleRows[2].total, sampleRows[2].status]);
       merges.push({s:{r:baseRow,c:0},e:{r:baseRow+2,c:0}});
-      rowStyles.push("sample","sample","sample");
+      rowStyles.push({sample:true}); rowStyles.push({sample:true}); rowStyles.push({sample:true});
       continue;
     }
 
     aoa.push([r.sr,r.dept,r.start,r.end,r.total,r.status]);
-    rowStyles.push("normal");
+    rowStyles.push({normal:true});
   }
 
   const ws=XLSX.utils.aoa_to_sheet(aoa);
@@ -1918,253 +1726,32 @@ function buildDepartmentWorkbook(setups, machine, date, deptKey){
     {wch:15},
     {wch:22}
   ];
-  ws['!rows']=aoa.map((_,i)=>({
-    hpt: i===0?30 : (i===1?24 : (i===5?28:42))
-  }));
-  ws['!freeze']={xSplit:0,ySplit:6,topLeftCell:'A7',activePane:'bottomRight'};
-  ws['!autofilter']={ref:`A6:F${aoa.length}`};
+  ws['!rows']=aoa.map((_,i)=>({hpt:i===0?28:42}));
+  ws['!autofilter']={ref:`A1:F${aoa.length}`};
+  ws['!freeze']={xSplit:0,ySplit:1,topLeftCell:'A2',activePane:'bottomRight'};
 
-  const border={
-    top:{style:'thin',color:{rgb:'94A3B8'}},
-    bottom:{style:'thin',color:{rgb:'94A3B8'}},
-    left:{style:'thin',color:{rgb:'94A3B8'}},
-    right:{style:'thin',color:{rgb:'94A3B8'}}
-  };
-
-  const styles={
-    title:{
-      fill:{fgColor:{rgb:'0B1220'}},
-      font:{bold:true,color:{rgb:'FFFFFF'},sz:16},
-      alignment:{horizontal:'center',vertical:'center'},
-      border:border
-    },
-    deptTitle:{
-      fill:{fgColor:{rgb:'064E3B'}},
-      font:{bold:true,color:{rgb:'FFFFFF'},sz:13},
-      alignment:{horizontal:'center',vertical:'center'},
-      border:border
-    },
-    meta:{
-      fill:{fgColor:{rgb:'E2E8F0'}},
-      font:{bold:true,color:{rgb:'0F172A'},sz:11},
-      alignment:{horizontal:'left',vertical:'center',wrapText:true},
-      border:border
-    },
-    hod:{
-      fill:{fgColor:{rgb:'DCFCE7'}},
-      font:{bold:true,color:{rgb:'166534'},sz:11},
-      alignment:{horizontal:'left',vertical:'center',wrapText:true},
-      border:border
-    },
-    header:{
-      fill:{fgColor:{rgb:'0F172A'}},
-      font:{bold:true,color:{rgb:'FFFFFF'},sz:12},
-      alignment:{horizontal:'center',vertical:'center',wrapText:true},
-      border:border
-    },
-    normal:{
-      fill:{fgColor:{rgb:'FFFFFF'}},
-      font:{color:{rgb:'111827'},sz:11},
-      alignment:{horizontal:'center',vertical:'center',wrapText:true},
-      border:border
-    },
-    sample:{
-      fill:{fgColor:{rgb:'FFFFFF'}},
-      font:{color:{rgb:'111827'},sz:11},
-      alignment:{horizontal:'center',vertical:'center',wrapText:true},
-      border:border
-    }
-  };
-
-  for(let r=0;r<aoa.length;r++){
-    const styleName=rowStyles[r]||"normal";
-    const row=aoa[r];
-    if(!row) continue;
-
-    for(let c=0;c<6;c++){
-      const addr=XLSX.utils.encode_cell({r,c});
-      if(!ws[addr]) ws[addr]={t:'s',v:''};
-      ws[addr].s=styles[styleName]||styles.normal;
-    }
+  for(let c=0;c<6;c++){
+    const addr=XLSX.utils.encode_cell({r:0,c});
+    if(ws[addr]) ws[addr].s=headerStyle;
   }
 
-  // Different styles for the actual workflow columns
-  for(let r=6;r<aoa.length;r++){
+  for(let r=1;r<aoa.length;r++){
     const row=aoa[r];
-    if(!row || row.every(v=>v==="")) continue;
-
-    const startAddr=XLSX.utils.encode_cell({r,c:2});
-    const endAddr=XLSX.utils.encode_cell({r,c:3});
-    const totalAddr=XLSX.utils.encode_cell({r,c:4});
-    const statusAddr=XLSX.utils.encode_cell({r,c:5});
-
-    if(ws[startAddr]) ws[startAddr].s={
-      fill:{fgColor:{rgb:'DBEAFE'}},
-      font:{bold:true,color:{rgb:'1D4ED8'},sz:11},
-      alignment:{horizontal:'center',vertical:'center',wrapText:true},
-      border:border
-    };
-    if(ws[endAddr]) ws[endAddr].s={
-      fill:{fgColor:{rgb:'DCFCE7'}},
-      font:{bold:true,color:{rgb:'15803D'},sz:11},
-      alignment:{horizontal:'center',vertical:'center',wrapText:true},
-      border:border
-    };
-    if(ws[totalAddr]) ws[totalAddr].s={
-      fill:{fgColor:{rgb:'FFFFFF'}},
-      font:{bold:true,color:{rgb:'2563EB'},sz:11},
-      alignment:{horizontal:'center',vertical:'center',wrapText:true},
-      border:border
-    };
-    if(ws[statusAddr]) ws[statusAddr].s={
-      fill:{fgColor:{rgb:'FFFFFF'}},
-      font:{bold:true,color:{rgb:'059669'},sz:11},
-      alignment:{horizontal:'center',vertical:'center',wrapText:true},
-      border:border
-    };
+    if(!row || row.every(v=>v==='')) continue;
+    const isSample=String(row[0]).startsWith('S');
+    const styles=[isSample?normalStyle:normalStyle,deptStyle,startStyle,endStyle,totalStyle,statusStyle];
+    for(let c=0;c<6;c++){
+      const addr=XLSX.utils.encode_cell({r,c});
+      if(ws[addr]) ws[addr].s=styles[c];
+    }
   }
 
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,safeSheetName(`${dept.label}_${machine}`));
-
-  const safeMachine=String(machine).replace(/[^a-zA-Z0-9_-]/g,'_');
-  const filename=`SUTOM_${dept.label.replace(/[^a-zA-Z0-9_-]/g,'_')}_${safeMachine}_${date}.xlsx`;
-
-  return {wb,filename};
-}
-
-function getSelectedReportContext(deptKey){
-  const date=document.getElementById('excelReportDate')?.value||'';
-  const machine=document.getElementById('excelReportMachine')?.value||'';
-
-  if(!date||!machine){
-    alert('कृपया Report Date आणि Machine दोन्ही निवडा.');
-    return null;
-  }
-
-  const setups=getReportSetupsForDate(date).filter(s=>s.machineName===machine);
-  if(!setups.length){
-    alert('या Date आणि Machine साठी report उपलब्ध नाही.');
-    return null;
-  }
-
-  if(!DEPARTMENT_REPORT_HODS[deptKey]){
-    alert('Department report configuration सापडली नाही.');
-    return null;
-  }
-
-  const loggedDept = window.currentUser?.dept || "";
-  if(loggedDept !== "supervisor" && loggedDept !== deptKey){
-    alert(`तुम्ही ${String(loggedDept || "या").toUpperCase()} department मध्ये login आहात. फक्त त्याच department चा Excel report पाठवू शकता.`);
-    return null;
-  }
-
-  return {date,machine,setups};
-}
-
-function downloadWorkbookFile(wb,filename){
+  XLSX.utils.book_append_sheet(wb,ws,safeSheetName(machine));
+  const filename=`SUTOM_${String(machine).replace(/[^a-zA-Z0-9_-]/g,'_')}_${date}.xlsx`;
   XLSX.writeFile(wb,filename,{bookType:'xlsx',cellStyles:true});
+  closeExcelReportSelector();
 }
-
-window.downloadDepartmentExcelReport=function(deptKey){
-  const ctx=getSelectedReportContext(deptKey);
-  if(!ctx) return;
-
-  try{
-    const result=buildDepartmentWorkbook(ctx.setups,ctx.machine,ctx.date,deptKey);
-    downloadWorkbookFile(result.wb,result.filename);
-  }catch(err){
-    console.error("Department Excel report error:",err);
-    alert("Excel report तयार करताना error आला. Internet ON करून पुन्हा प्रयत्न करा.");
-  }
-};
-
-function buildWhatsAppReportMessage(deptKey,date,machine){
-  const dept=DEPARTMENT_REPORT_HODS[deptKey];
-  return `SUTOM Excel Report\nDepartment: ${dept.label}\nMachine: ${machine}\nDate: ${date}\n\nComplete workflow timing report attached/shared.\nSETTER → TOOL ROOM → CMM ROOM → QUALITY\n\nPlease check the attached Excel report.`;
-}
-
-
-let selectedDepartmentForHodSend = "";
-let selectedHodIndexForSend = 0;
-
-window.openDepartmentHodChooser=function(deptKey){
-  const ctx=getSelectedReportContext(deptKey);
-  if(!ctx) return;
-
-  const dept=DEPARTMENT_REPORT_HODS[deptKey];
-  selectedDepartmentForHodSend=deptKey;
-  selectedHodIndexForSend=0;
-
-  const subtitle=document.getElementById("hodSendSubtitle");
-  const list=document.getElementById("hodChoiceList");
-  if(!subtitle || !list) return;
-
-  subtitle.textContent=`${dept.label} — TO साठी HOD निवडा`;
-  list.innerHTML=dept.hods.map((hod,index)=>`
-    <label class="hod-choice">
-      <input type="radio" name="selectedHodForSend" value="${index}" ${index===0?"checked":""}>
-      <span class="hod-choice-main">
-        <span class="hod-choice-name">${hod.name}</span>
-        <span class="hod-choice-phone">+91 ${hod.phone}</span>
-      </span>
-    </label>
-  `).join("");
-
-  document.querySelectorAll('input[name="selectedHodForSend"]').forEach(r=>{
-    r.addEventListener("change",()=>{
-      selectedHodIndexForSend=Number(r.value);
-    });
-  });
-
-  const modal=document.getElementById("hodSendModal");
-  if(modal) modal.classList.remove("hidden");
-};
-
-window.closeDepartmentHodChooser=function(){
-  const modal=document.getElementById("hodSendModal");
-  if(modal) modal.classList.add("hidden");
-  selectedDepartmentForHodSend="";
-  selectedHodIndexForSend=0;
-};
-
-window.confirmDepartmentHodSend=async function(){
-  const deptKey=selectedDepartmentForHodSend;
-  if(!deptKey || !DEPARTMENT_REPORT_HODS[deptKey]){
-    alert("Department निवडलेले नाही.");
-    return;
-  }
-
-  const selected=document.querySelector('input[name="selectedHodForSend"]:checked');
-  if(selected) selectedHodIndexForSend=Number(selected.value);
-
-  const ctx=getSelectedReportContext(deptKey);
-  if(!ctx) return;
-
-  const dept=DEPARTMENT_REPORT_HODS[deptKey];
-  const hod=dept.hods[selectedHodIndexForSend] || dept.hods[0];
-
-  try{
-    const result=buildDepartmentWorkbook(ctx.setups,ctx.machine,ctx.date,deptKey);
-
-    // Download a real XLSX first so it can be attached in WhatsApp.
-    downloadWorkbookFile(result.wb,result.filename);
-
-    const message=buildWhatsAppReportMessage(deptKey,ctx.date,ctx.machine) +
-      `\n\nTO: ${hod.name}\nContact: +91 ${hod.phone}\n\nExcel file downloaded from SUTOM. Please attach this file and send.`;
-
-    const waUrl=`https://wa.me/91${hod.phone}?text=${encodeURIComponent(message)}`;
-    window.open(waUrl,"_blank");
-
-    closeDepartmentHodChooser();
-
-    alert(`Excel report तयार आहे.\n\nTO: ${hod.name} (+91 ${hod.phone})\n\nWhatsApp chat उघडला आहे. Download झालेली Excel file attach करून Send करा.`);
-  }catch(err){
-    console.error("Department Excel send error:",err);
-    alert("Excel report तयार करताना error आला. Internet ON करून पुन्हा प्रयत्न करा.");
-  }
-};
-
 
 window.renderSetterExcelTable = function(filterKey){
   const container = document.getElementById("setterExcelTableBody");
@@ -2591,4 +2178,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+                                                                                                                  </html>

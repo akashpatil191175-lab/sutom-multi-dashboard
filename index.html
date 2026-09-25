@@ -264,18 +264,6 @@ button,input,select{font-family:inherit}
 .compact-action.red{background:#c81e31;border-color:#ec3144;color:white}
 .compact-action.blue{background:#1467b7;border-color:#238cff;color:white}
 .compact-action.green{background:#086f45;border-color:#16c784;color:white}
-.dept-report-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:-8px}
-.dept-report-actions .compact-action{min-width:150px;justify-content:center}
-.compact-action.whatsapp{background:#075e54;border-color:#20c997;color:#fff}
-.hod-choice-list{display:grid;gap:9px}
-.hod-choice{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:1px solid #30455e;border-radius:11px;background:#07111d;color:#f5f7fb;cursor:pointer;text-align:left}
-.hod-choice:hover{border-color:#19d889;background:#0a1825}
-.hod-choice input{accent-color:#19d889;width:18px;height:18px;flex:0 0 auto}
-.hod-choice-main{display:flex;flex-direction:column;gap:2px}
-.hod-choice-name{font-size:12px;font-weight:900}
-.hod-choice-phone{font-size:10px;color:#7ee7b7;font-family:monospace}
-@media(max-width:680px){.dept-report-actions{display:grid;grid-template-columns:1fr 1fr}.dept-report-actions .compact-action{min-width:0;width:100%}}
-
 
 .setter-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:12px 0}
 .metric-card{background:linear-gradient(145deg,#0a1421,#07101b);border:1px solid #263950;border-radius:11px;padding:10px 12px;min-height:76px;position:relative;overflow:hidden;cursor:pointer}
@@ -388,6 +376,7 @@ button,input,select{font-family:inherit}
 .excel-report-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .excel-report-actions button{border-radius:9px;padding:10px 14px;border:1px solid #33465f;background:#101a28;color:#dce6f4;font-size:11px;font-weight:900;cursor:pointer}
 .excel-report-actions .open{background:#087a4c;border-color:#19d889;color:#fff;flex:1}
+.excel-report-actions .open + .open{background:#075e3a;border-color:#14b87a}
 .excel-report-actions button:disabled{opacity:.45;cursor:not-allowed}
 .excel-report-note{margin-top:12px;padding:9px 10px;border-radius:8px;background:#071a14;border:1px solid #145c42;color:#8eeec2;font-size:9px;line-height:1.45}
 @media(max-width:520px){.excel-report-card{border-radius:12px}.excel-report-body{padding:13px}.excel-report-head h3{font-size:14px}.excel-report-actions{flex-direction:column}.excel-report-actions button{width:100%}}
@@ -484,7 +473,7 @@ button,input,select{font-family:inherit}
     <div class="setter-title-mobile">Setter Dashboard</div>
     <div class="setter-action-row">
       <button onclick="openExcelReportSelector()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
-      <button onclick="openDepartmentSendReport('setter')" class="compact-action whatsapp"><i class="fab fa-whatsapp"></i> Send to Excel Report</button>
+      <button onclick="openExcelReportShareSelector()" class="compact-action green"><i class="fab fa-whatsapp"></i> Send to Excel Report</button>
       <button onclick="openSetterModule('register')" class="compact-action blue"><i class="fas fa-plus"></i> Register Setup</button>
     </div>
   </div>
@@ -539,10 +528,6 @@ button,input,select{font-family:inherit}
 
 <!-- ================= TOOL ROOM ========================== -->
 <div id="tab-toolroom" class="tab-content hidden space-y-6">
-  <div class="dept-report-actions">
-    <button onclick="openDepartmentExcelReport('toolroom')" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
-    <button onclick="openDepartmentSendReport('toolroom')" class="compact-action whatsapp"><i class="fab fa-whatsapp"></i> Send to Excel Report</button>
-  </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div onclick="setToolroomFilter('ready')" class="dept-card ready-box">
       <div class="icon-box"><i class="fas fa-check-double"></i></div>
@@ -584,10 +569,6 @@ button,input,select{font-family:inherit}
 
 <!-- ================= CMM ROOM ============================ -->
 <div id="tab-stdroom" class="tab-content hidden space-y-6">
-  <div class="dept-report-actions">
-    <button onclick="openDepartmentExcelReport('stdroom')" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
-    <button onclick="openDepartmentSendReport('stdroom')" class="compact-action whatsapp"><i class="fab fa-whatsapp"></i> Send to Excel Report</button>
-  </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div onclick="setCmmFilter('registered')" class="dept-card info-box">
       <div class="icon-box"><i class="fas fa-clipboard-list"></i></div>
@@ -628,10 +609,6 @@ button,input,select{font-family:inherit}
 
 <!-- ================= QUALITY ============================== -->
 <div id="tab-quality" class="tab-content hidden space-y-6">
-  <div class="dept-report-actions">
-    <button onclick="openDepartmentExcelReport('quality')" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
-    <button onclick="openDepartmentSendReport('quality')" class="compact-action whatsapp"><i class="fab fa-whatsapp"></i> Send to Excel Report</button>
-  </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div onclick="setQualityFilter('approve')" class="dept-card approve-box">
       <div class="icon-box"><i class="fas fa-file-signature"></i></div>
@@ -658,10 +635,6 @@ button,input,select{font-family:inherit}
 
 <!-- ================= SUPERVISOR ================= -->
 <div id="tab-supervisor" class="tab-content hidden space-y-6">
-  <div class="dept-report-actions">
-    <button onclick="openExcelReportSelector()" class="compact-action green"><i class="fas fa-file-excel"></i> Excel Report</button>
-    <button onclick="openDepartmentSendReport('all')" class="compact-action whatsapp"><i class="fab fa-whatsapp"></i> Send to Excel Report</button>
-  </div>
   <div class="dept-table-container">
     <h2 class="text-lg font-bold mb-4 border-b border-slate-800 pb-2 text-white">
       <i class="fas fa-chart-line text-emerald-500 mr-2"></i>Supervisor / HOD - Complete Workflow Summary
@@ -715,66 +688,12 @@ button,input,select{font-family:inherit}
       <div id="excelReportMachineInfo" class="excel-report-machine-info">Selected date वर उपलब्ध machine निवडा.</div>
       <div class="excel-report-actions">
         <button onclick="closeExcelReportSelector()">CLOSE</button>
-        <button id="excelReportOpenBtn" class="open" onclick="openSelectedExcelReport()" disabled><i class="fas fa-file-excel mr-1"></i> OPEN SHEET</button>
+        <button id="excelReportDownloadBtn" class="open" onclick="openSelectedExcelReport()" disabled><i class="fas fa-file-excel mr-1"></i> DOWNLOAD EXCEL</button>
+        <button id="excelReportShareBtn" class="open" onclick="shareSelectedExcelReport()" disabled><i class="fab fa-whatsapp mr-1"></i> SEND TO WHATSAPP</button>
       </div>
       <div class="excel-report-note">
         <b>Format:</b> SR. | DEPARTMENT | START TIME | END TIME | TOTAL TIME | STATUS<br>
         Google Sheets / Microsoft Excel मध्ये उघडण्यासाठी generated <b>.xlsx</b> file वापरली जाते. Cell width, row height, colours, borders आणि alignment report मध्ये set केलेले आहेत.
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= DEPARTMENT EXCEL SEND MODAL ================= -->
-<div id="departmentSendModal" class="excel-report-overlay hidden">
-  <div class="excel-report-card">
-    <div class="excel-report-head">
-      <div>
-        <h3><i class="fab fa-whatsapp mr-2"></i>SEND EXCEL REPORT</h3>
-        <p id="departmentSendSubtitle">Date आणि Machine निवडा → HOD ला Excel report share करा.</p>
-      </div>
-      <button class="excel-report-close" onclick="closeDepartmentSendReport()">×</button>
-    </div>
-    <div class="excel-report-body">
-      <div class="excel-report-field">
-        <label for="sendReportDate">REPORT DATE</label>
-        <input type="date" id="sendReportDate" onchange="loadDepartmentSendMachines()">
-      </div>
-      <div class="excel-report-field">
-        <label for="sendReportMachine">MACHINE NAME</label>
-        <select id="sendReportMachine" onchange="updateDepartmentSendMachineInfo()">
-          <option value="">-- SELECT MACHINE --</option>
-        </select>
-      </div>
-      <div id="sendReportMachineInfo" class="excel-report-machine-info">Selected date वर उपलब्ध machine निवडा.</div>
-      <div class="excel-report-actions">
-        <button onclick="closeDepartmentSendReport()">CLOSE</button>
-        <button id="sendExcelReportBtn" class="open" onclick="continueDepartmentExcelSend()" disabled><i class="fab fa-whatsapp mr-1"></i> SEND TO EXCEL REPORT</button>
-      </div>
-      <div class="excel-report-note">
-        <b>Setter:</b> Mahesh / Ganesh / Anand यापैकी HOD निवडता येईल.<br>
-        <b>Tool Room / CMM Room / Quality:</b> त्या Department चा एकच HOD असल्यामुळे report थेट त्याच contact साठी share होईल.<br>
-        Mobile browser मध्ये WhatsApp उपलब्ध असल्यास file share sheet मधून WhatsApp निवडता येईल. Fallback मध्ये Excel download होईल आणि WhatsApp chat उघडेल.
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= HOD CHOOSER ================= -->
-<div id="departmentHodModal" class="excel-report-overlay hidden">
-  <div class="excel-report-card" style="max-width:470px">
-    <div class="excel-report-head">
-      <div>
-        <h3><i class="fas fa-user-tie mr-2"></i>SELECT HOD</h3>
-        <p id="departmentHodSubtitle">Setter HOD निवडा.</p>
-      </div>
-      <button class="excel-report-close" onclick="closeDepartmentHodChooser()">×</button>
-    </div>
-    <div class="excel-report-body">
-      <div id="departmentHodChoices" class="hod-choice-list"></div>
-      <div class="excel-report-actions" style="margin-top:12px">
-        <button onclick="closeDepartmentHodChooser()">CANCEL</button>
-        <button class="open" onclick="sendSelectedDepartmentExcel()"><i class="fab fa-whatsapp mr-1"></i> SHARE EXCEL TO WHATSAPP</button>
       </div>
     </div>
   </div>
@@ -1601,153 +1520,6 @@ window.setToolroomFilter = function(filter){ window.toolroomFilter = filter; ren
 window.setCmmFilter = function(filter){ window.cmmFilter = filter; renderSTDRoom(); };
 window.setQualityFilter = function(filter){ window.qualityFilter = filter; renderQuality(); };
 
-/* ================= DEPARTMENT HOD CONTACTS ================= */
-const DEPARTMENT_REPORT_HODS = {
-  setter: [
-    {name:"MAHESH ANDHALE", phone:"9881097236"},
-    {name:"GANESH SHENDGE", phone:"8605686621"},
-    {name:"ANAND RAJAPURE", phone:"9823884600"}
-  ],
-  toolroom: [
-    {name:"DATTA NAVALE", phone:"8830646984"}
-  ],
-  stdroom: [
-    {name:"RAGESH DHOORE", phone:"9823099157"}
-  ],
-  quality: [
-    {name:"SHARAN NULE", phone:"8446622274"}
-  ]
-};
-
-let departmentSendTarget = "";
-let selectedDepartmentHodIndex = 0;
-let pendingDepartmentExcel = null;
-
-function reportDepartmentLabel(key){
-  return ({setter:"SETTER",toolroom:"TOOL ROOM",stdroom:"CMM ROOM",quality:"QUALITY"}[key] || key || "DEPARTMENT");
-}
-
-window.openDepartmentExcelReport=function(deptKey){
-  window.openExcelReportSelector();
-  const title=document.querySelector('#excelReportModal .excel-report-head p');
-  if(title) title.textContent=`${reportDepartmentLabel(deptKey)} • Date निवडा → Machine निवडा → Excel report तयार करा.`;
-};
-
-window.openDepartmentSendReport=function(deptKey){
-  departmentSendTarget=deptKey || window.currentUser?.dept || "";
-  const modal=document.getElementById('departmentSendModal');
-  const dateEl=document.getElementById('sendReportDate');
-  if(!modal||!dateEl) return;
-  dateEl.value=new Date().toISOString().split('T')[0];
-  const sub=document.getElementById('departmentSendSubtitle');
-  sub.textContent = departmentSendTarget==='all'
-    ? 'Department निवडा → Date/Machine निवडा → संबंधित HOD ला Excel report share करा.'
-    : `${reportDepartmentLabel(departmentSendTarget)} • Date/Machine निवडा → HOD ला Excel report share करा.`;
-  modal.classList.remove('hidden');
-  loadDepartmentSendMachines();
-};
-
-window.closeDepartmentSendReport=function(){
-  document.getElementById('departmentSendModal')?.classList.add('hidden');
-  departmentSendTarget="";
-  pendingDepartmentExcel=null;
-};
-
-function loadDepartmentSendMachines(){
-  const date=document.getElementById('sendReportDate')?.value||'';
-  const sel=document.getElementById('sendReportMachine');
-  const btn=document.getElementById('sendExcelReportBtn');
-  const info=document.getElementById('sendReportMachineInfo');
-  if(!sel) return;
-  const list=getReportSetupsForDate(date);
-  const machines=[...new Set(list.map(s=>s.machineName).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
-  sel.innerHTML='<option value="">-- SELECT MACHINE --</option>'+machines.map(m=>`<option value="${String(m).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${m}</option>`).join('');
-  if(btn) btn.disabled=true;
-  if(info) info.textContent=machines.length?`${machines.length} machine(s) available for ${date}.`:`या date साठी कोणताही setup report उपलब्ध नाही.`;
-}
-
-window.updateDepartmentSendMachineInfo=function(){
-  const date=document.getElementById('sendReportDate')?.value||'';
-  const machine=document.getElementById('sendReportMachine')?.value||'';
-  const btn=document.getElementById('sendExcelReportBtn');
-  const info=document.getElementById('sendReportMachineInfo');
-  const matches=machine?getReportSetupsForDate(date).filter(s=>s.machineName===machine):[];
-  if(btn) btn.disabled=!matches.length;
-  if(info) info.textContent=matches.length?`${machine} • ${matches.length} setup record(s) found for ${date}.`:'Selected date आणि machine निवडा.';
-};
-
-window.continueDepartmentExcelSend=function(){
-  const date=document.getElementById('sendReportDate')?.value||'';
-  const machine=document.getElementById('sendReportMachine')?.value||'';
-  if(!date||!machine){alert('कृपया Date आणि Machine दोन्ही निवडा.');return;}
-  const setups=getReportSetupsForDate(date).filter(s=>s.machineName===machine);
-  if(!setups.length){alert('या Date आणि Machine साठी report उपलब्ध नाही.');return;}
-  pendingDepartmentExcel={setups,machine,date};
-  const target=departmentSendTarget==='all' ? '' : departmentSendTarget;
-  if(!target){
-    const choice=prompt('Department निवडा:\n1 = Setter\n2 = Tool Room\n3 = CMM Room\n4 = Quality');
-    const map={"1":"setter","2":"toolroom","3":"stdroom","4":"quality"};
-    departmentSendTarget=map[String(choice||'')];
-    if(!departmentSendTarget){alert('योग्य Department निवडा.');return;}
-  }
-  if(departmentSendTarget==='setter'){
-    openDepartmentHodChooser('setter');
-  }else{
-    sendDepartmentExcelDirect(departmentSendTarget,0);
-  }
-};
-
-function openDepartmentHodChooser(deptKey){
-  const list=DEPARTMENT_REPORT_HODS[deptKey]||[];
-  const wrap=document.getElementById('departmentHodChoices');
-  const modal=document.getElementById('departmentHodModal');
-  const sub=document.getElementById('departmentHodSubtitle');
-  if(!wrap||!modal) return;
-  selectedDepartmentHodIndex=0;
-  if(sub) sub.textContent=`${reportDepartmentLabel(deptKey)} HOD निवडा.`;
-  wrap.innerHTML=list.map((h,i)=>`<label class="hod-choice"><input type="radio" name="departmentHodChoice" value="${i}" ${i===0?'checked':''}><span class="hod-choice-main"><span class="hod-choice-name">${h.name}</span><span class="hod-choice-phone">+91 ${h.phone}</span></span></label>`).join('');
-  wrap.querySelectorAll('input[name="departmentHodChoice"]').forEach(r=>r.addEventListener('change',()=>selectedDepartmentHodIndex=Number(r.value)));
-  modal.classList.remove('hidden');
-}
-
-window.closeDepartmentHodChooser=function(){document.getElementById('departmentHodModal')?.classList.add('hidden');};
-
-window.sendSelectedDepartmentExcel=function(){
-  const checked=document.querySelector('input[name="departmentHodChoice"]:checked');
-  if(checked) selectedDepartmentHodIndex=Number(checked.value);
-  sendDepartmentExcelDirect('setter',selectedDepartmentHodIndex);
-};
-
-async function sendDepartmentExcelDirect(deptKey,hodIndex){
-  if(!pendingDepartmentExcel) return;
-  const dept=DEPARTMENT_REPORT_HODS[deptKey];
-  const hod=dept?.[hodIndex] || dept?.[0];
-  if(!hod){alert('या Department साठी HOD contact उपलब्ध नाही.');return;}
-  try{
-    const result=downloadStyledExcelFallback(pendingDepartmentExcel.setups,pendingDepartmentExcel.machine,pendingDepartmentExcel.date,false);
-    if(!result?.blob) throw new Error('Excel file तयार झाला नाही');
-    const file=new File([result.blob],result.filename,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const message=`SUTOM Excel Report\nDepartment: ${reportDepartmentLabel(deptKey)}\nMachine: ${pendingDepartmentExcel.machine}\nReport Date: ${pendingDepartmentExcel.date}\nHOD: ${hod.name}\n\nPlease find the Excel workflow report.`;
-    closeDepartmentHodChooser();
-    closeDepartmentSendReport();
-    if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
-      await navigator.share({title:`SUTOM ${reportDepartmentLabel(deptKey)} Excel Report`,text:message,files:[file]});
-      return;
-    }
-    const url=URL.createObjectURL(result.blob);
-    const a=document.createElement('a'); a.href=url; a.download=result.filename; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-    window.open(`https://wa.me/91${hod.phone}?text=${encodeURIComponent(message+'\n\nExcel file downloaded. Please attach it in this WhatsApp chat and Send.')}`,'_blank');
-    alert(`Excel report download झाला आहे.\n\nTO: ${hod.name} (+91 ${hod.phone})\nWhatsApp chat उघडला आहे. File attach करून Send करा.`);
-  }catch(err){
-    if(err?.name==='AbortError') return;
-    console.error('Department Excel share error:',err);
-    alert('Excel report WhatsApp ला share करताना error आला. पुन्हा प्रयत्न करा.');
-  }finally{
-    pendingDepartmentExcel=null;
-  }
-}
-
 /* ================= STYLED XLSX / GOOGLE SHEETS REPORT ================= */
 function reportDateForSetup(s){
   if(s && s.setupDate) return String(s.setupDate);
@@ -1765,57 +1537,138 @@ function getReportSetupsForDate(dateValue){
 function loadExcelReportMachines(){
   const dateEl=document.getElementById('excelReportDate');
   const machineEl=document.getElementById('excelReportMachine');
-  const btn=document.getElementById('excelReportOpenBtn');
+  const downloadBtn=document.getElementById('excelReportDownloadBtn');
+  const shareBtn=document.getElementById('excelReportShareBtn');
   const info=document.getElementById('excelReportMachineInfo');
   if(!dateEl||!machineEl) return;
+
   const date=dateEl.value;
   const list=getReportSetupsForDate(date);
-  const machines=[...new Set(list.map(s=>s.machineName).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
-  machineEl.innerHTML='<option value="">-- SELECT MACHINE --</option>'+machines.map(m=>`<option value="${String(m).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${m}</option>`).join('');
-  if(btn) btn.disabled=true;
-  if(info) info.textContent=machines.length ? `${machines.length} machine(s) available for ${date}.` : `या date साठी कोणताही setup report उपलब्ध नाही.`;
+  const machines=[...new Set(list.map(s=>s.machineName).filter(Boolean))]
+    .sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
+
+  machineEl.innerHTML='<option value="">-- SELECT MACHINE --</option>'+
+    machines.map(m=>`<option value="${String(m).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${m}</option>`).join('');
+
+  if(downloadBtn) downloadBtn.disabled=true;
+  if(shareBtn) shareBtn.disabled=true;
+
+  if(info){
+    info.textContent=machines.length
+      ? `${machines.length} machine(s) available for ${date}.`
+      : `या date साठी कोणताही setup report उपलब्ध नाही.`;
+  }
 }
 
 function updateExcelReportMachineInfo(){
   const date=document.getElementById('excelReportDate')?.value||'';
   const machine=document.getElementById('excelReportMachine')?.value||'';
-  const btn=document.getElementById('excelReportOpenBtn');
+  const downloadBtn=document.getElementById('excelReportDownloadBtn');
+  const shareBtn=document.getElementById('excelReportShareBtn');
   const info=document.getElementById('excelReportMachineInfo');
-  const matches=machine?getReportSetupsForDate(date).filter(s=>s.machineName===machine):[];
-  if(btn) btn.disabled=!matches.length;
-  if(info) info.textContent=matches.length ? `${machine} • ${matches.length} setup record(s) found for ${date}.` : 'Selected date आणि machine निवडा.';
+
+  const matches=machine
+    ? getReportSetupsForDate(date).filter(s=>s.machineName===machine)
+    : [];
+
+  if(downloadBtn) downloadBtn.disabled=!matches.length;
+  if(shareBtn) shareBtn.disabled=!matches.length;
+
+  if(info){
+    info.textContent=matches.length
+      ? `${machine} • ${matches.length} setup record(s) found for ${date}.`
+      : 'Selected date आणि machine निवडा.';
+  }
 }
 
 window.openExcelReportSelector=function(){
   const modal=document.getElementById('excelReportModal');
   const dateEl=document.getElementById('excelReportDate');
   if(!modal||!dateEl) return;
-  dateEl.value=new Date().toISOString().split('T')[0];
+  dateEl.value=getLocalDateInputValue();
+  modal.classList.remove('hidden');
+  loadExcelReportMachines();
+  document.getElementById('excelReportMachine')?.focus();
+};
+
+window.openExcelReportShareSelector=function(){
+  window.excelReportShareMode=true;
+  const modal=document.getElementById('excelReportModal');
+  const dateEl=document.getElementById('excelReportDate');
+  if(!modal||!dateEl) return;
+  dateEl.value=getLocalDateInputValue();
   modal.classList.remove('hidden');
   loadExcelReportMachines();
   document.getElementById('excelReportMachine')?.focus();
 };
 
 window.closeExcelReportSelector=function(){
+  window.excelReportShareMode=false;
   document.getElementById('excelReportModal')?.classList.add('hidden');
 };
+
+function getLocalDateInputValue(){
+  const now=new Date();
+  const y=now.getFullYear();
+  const m=String(now.getMonth()+1).padStart(2,'0');
+  const d=String(now.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
 
 function buildExcelWorkflowRows(s){
   const rows=[];
   let sr=1;
-  rows.push({type:'normal',sr:sr++,dept:'SETTER\nSetup Registration',start:s.timeRegistered||'-',end:s.setupType==='Short'?'N/A':(s.toolStart||'-'),total:s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered,s.toolStart),status:'REGISTERED'});
+  rows.push({
+    type:'normal',
+    sr:sr++,
+    dept:'SETTER\nSetup Registration',
+    start:s.timeRegistered||'-',
+    end:s.setupType==='Short'?'N/A':(s.toolStart||'-'),
+    total:s.setupType==='Short'?'0 min':durationMinutes(s.timeRegistered,s.toolStart),
+    status:'REGISTERED'
+  });
   if(s.setupType!=='Short'){
-    rows.push({type:'normal',sr:sr++,dept:'TOOL ROOM\nTooling & Fixture Ready',start:s.toolStart||'-',end:s.toolEnd||'-',total:durationMinutes(s.toolStart,s.toolEnd),status:s.toolEnd?'READY':'PENDING'});
+    rows.push({
+      type:'normal',
+      sr:sr++,
+      dept:'TOOL ROOM\nTooling & Fixture Ready',
+      start:s.toolStart||'-',
+      end:s.toolEnd||'-',
+      total:durationMinutes(s.toolStart,s.toolEnd),
+      status:s.toolEnd?'READY':'PENDING'
+    });
   }
   for(let n=1;n<=4;n++){
     const x=getSample(s,n);
     if(!x.setterStart && !x.setterEnd && !x.cmmStart && !x.cmmEnd && !x.qualityStart && !x.qualityEnd && !x.result && n>(s.sampleCount||1)) continue;
     const setStatus=x.cutTime?'DONE':(x.setterStart?'RUNNING':'PENDING');
     const cmmStatus=x.cmmEnd?'DONE':(x.cmmStart?'RUNNING':'PENDING');
-    const qStatus=x.result|| (x.qualityStart?'RUNNING':'PENDING');
-    rows.push({type:'sample',sample:n,sampleFirst:true,dept:`SETTER\nSample #${n}`,start:x.setterStart||'-',end:x.setterEnd||'-',total:durationMinutes(x.setterStart,x.setterEnd),status:setStatus});
-    rows.push({type:'sample',sample:n,dept:`CMM ROOM\nSample #${n}`,start:x.cmmStart||'-',end:x.cmmEnd||'-',total:durationMinutes(x.cmmStart,x.cmmEnd),status:cmmStatus});
-    rows.push({type:'sample',sample:n,dept:`QUALITY\nSample #${n}`,start:x.qualityStart||'-',end:x.qualityEnd||'-',total:durationMinutes(x.qualityStart,x.qualityEnd),status:qStatus});
+    const qStatus=x.result || (x.qualityStart?'RUNNING':'PENDING');
+
+    rows.push({
+      type:'sample',sample:n,sampleFirst:true,
+      dept:`SETTER\nSample #${n}`,
+      start:x.setterStart||'-',
+      end:x.setterEnd||'-',
+      total:durationMinutes(x.setterStart,x.setterEnd),
+      status:setStatus
+    });
+    rows.push({
+      type:'sample',sample:n,
+      dept:`CMM ROOM\nSample #${n}`,
+      start:x.cmmStart||'-',
+      end:x.cmmEnd||'-',
+      total:durationMinutes(x.cmmStart,x.cmmEnd),
+      status:cmmStatus
+    });
+    rows.push({
+      type:'sample',sample:n,
+      dept:`QUALITY\nSample #${n}`,
+      start:x.qualityStart||'-',
+      end:x.qualityEnd||'-',
+      total:durationMinutes(x.qualityStart,x.qualityEnd),
+      status:qStatus
+    });
   }
   return rows;
 }
@@ -1833,48 +1686,18 @@ function safeSheetName(name){
   return String(name||'SUTOM').replace(/[\\\/?*\[\]:]/g,'').slice(0,31)||'SUTOM';
 }
 
-window.openSelectedExcelReport=function(){
-  const date=document.getElementById('excelReportDate')?.value||'';
-  const machine=document.getElementById('excelReportMachine')?.value||'';
-  if(!date||!machine){ alert('कृपया Date आणि Machine दोन्ही निवडा.'); return; }
-
-  const setups=(window.allSetups||[]).filter(s=>reportDateForSetup(s)===date && s.machineName===machine);
-  if(!setups.length){ alert('या Date आणि Machine साठी report उपलब्ध नाही.'); return; }
-
-  const btn=document.getElementById('excelReportOpenBtn');
-  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i> CREATING SHEET...';}
-
-  try{
-    /*
-      IMPORTANT:
-      Do not use ExcelJS here. On some Android/GitHub Pages browsers the
-      ExcelJS CDN/library throws while building the workbook. Instead we
-      generate an Excel-compatible SpreadsheetML/HTML .xls directly.
-      Google Sheets and Microsoft Excel can open this format reliably.
-    */
-    downloadStyledExcelFallback(setups,machine,date);
-  }catch(err){
-    console.error('SUTOM Excel report error:',err);
-    alert('Excel report तयार करताना error आला. पुन्हा प्रयत्न करा.');
-  }finally{
-    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-file-excel mr-1"></i> OPEN SHEET';}
-  }
-};
-
-function escapeExcelHtml(v){
-  return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function downloadStyledExcelFallback(setups, machine, date, download=true){
-  if(!window.XLSX || !XLSX.utils || !XLSX.writeFile){
-    alert('Excel library load झाली नाही. कृपया internet ON करून पुन्हा OPEN SHEET करा.');
-    return;
+/* Create the XLSX in memory.
+   This is the important fix for Android/WhatsApp sharing:
+   XLSX.writeFile() only downloads the file and does not give us a File object.
+   WhatsApp/native Android sharing needs a real File/Blob. */
+function createStyledExcelWorkbook(setups, machine, date){
+  if(!window.XLSX || !XLSX.utils || !XLSX.write){
+    throw new Error('Excel library load झाली नाही.');
   }
 
   const rows=buildExcelRowsForSetups(setups);
   const aoa=[["SR.","DEPARTMENT","START TIME","END TIME","TOTAL TIME","STATUS"]];
   const merges=[];
-  const rowStyles=[];
 
   const border={
     top:{style:'thin',color:{rgb:'94A3B8'}},
@@ -1882,6 +1705,7 @@ function downloadStyledExcelFallback(setups, machine, date, download=true){
     left:{style:'thin',color:{rgb:'94A3B8'}},
     right:{style:'thin',color:{rgb:'94A3B8'}}
   };
+
   const headerStyle={
     fill:{fgColor:{rgb:'0F172A'}},
     font:{bold:true,color:{rgb:'FFFFFF'},sz:12},
@@ -1925,37 +1749,57 @@ function downloadStyledExcelFallback(setups, machine, date, download=true){
     border:border
   };
 
-  for(const r of rows){
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i];
+
     if(r.type==='separator'){
       aoa.push(["","","","","",""]);
-      rowStyles.push(null);
       continue;
     }
 
     if(r.type==='sample' && r.sampleFirst){
       const baseRow=aoa.length;
-      const sampleRows=rows.slice(rows.indexOf(r), rows.indexOf(r)+3);
-      aoa.push([`S${r.sample}`, sampleRows[0].dept, sampleRows[0].start, sampleRows[0].end, sampleRows[0].total, sampleRows[0].status]);
-      aoa.push(["", sampleRows[1].dept, sampleRows[1].start, sampleRows[1].end, sampleRows[1].total, sampleRows[1].status]);
-      aoa.push(["", sampleRows[2].dept, sampleRows[2].start, sampleRows[2].end, sampleRows[2].total, sampleRows[2].status]);
+
+      // A sample always has exactly 3 workflow rows: Setter, CMM, Quality.
+      const sampleRows=rows.slice(i,i+3);
+
+      aoa.push([
+        `S${r.sample}`,
+        sampleRows[0]?.dept||'',
+        sampleRows[0]?.start||'-',
+        sampleRows[0]?.end||'-',
+        sampleRows[0]?.total||'-',
+        sampleRows[0]?.status||'-'
+      ]);
+      aoa.push([
+        "",
+        sampleRows[1]?.dept||'',
+        sampleRows[1]?.start||'-',
+        sampleRows[1]?.end||'-',
+        sampleRows[1]?.total||'-',
+        sampleRows[1]?.status||'-'
+      ]);
+      aoa.push([
+        "",
+        sampleRows[2]?.dept||'',
+        sampleRows[2]?.start||'-',
+        sampleRows[2]?.end||'-',
+        sampleRows[2]?.total||'-',
+        sampleRows[2]?.status||'-'
+      ]);
+
       merges.push({s:{r:baseRow,c:0},e:{r:baseRow+2,c:0}});
-      rowStyles.push({sample:true}); rowStyles.push({sample:true}); rowStyles.push({sample:true});
+      i+=2;
       continue;
     }
 
     aoa.push([r.sr,r.dept,r.start,r.end,r.total,r.status]);
-    rowStyles.push({normal:true});
   }
 
   const ws=XLSX.utils.aoa_to_sheet(aoa);
   ws['!merges']=merges;
   ws['!cols']=[
-    {wch:8},
-    {wch:34},
-    {wch:18},
-    {wch:18},
-    {wch:15},
-    {wch:22}
+    {wch:8},{wch:34},{wch:18},{wch:18},{wch:15},{wch:22}
   ];
   ws['!rows']=aoa.map((_,i)=>({hpt:i===0?28:42}));
   ws['!autofilter']={ref:`A1:F${aoa.length}`};
@@ -1969,8 +1813,7 @@ function downloadStyledExcelFallback(setups, machine, date, download=true){
   for(let r=1;r<aoa.length;r++){
     const row=aoa[r];
     if(!row || row.every(v=>v==='')) continue;
-    const isSample=String(row[0]).startsWith('S');
-    const styles=[isSample?normalStyle:normalStyle,deptStyle,startStyle,endStyle,totalStyle,statusStyle];
+    const styles=[normalStyle,deptStyle,startStyle,endStyle,totalStyle,statusStyle];
     for(let c=0;c<6;c++){
       const addr=XLSX.utils.encode_cell({r,c});
       if(ws[addr]) ws[addr].s=styles[c];
@@ -1979,16 +1822,207 @@ function downloadStyledExcelFallback(setups, machine, date, download=true){
 
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,safeSheetName(machine));
+
   const filename=`SUTOM_${String(machine).replace(/[^a-zA-Z0-9_-]/g,'_')}_${date}.xlsx`;
-  const bytes=XLSX.write(wb,{bookType:'xlsx',type:'array',cellStyles:true});
-  const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  if(download!==false){
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-    closeExcelReportSelector();
+
+  const arrayBuffer=XLSX.write(wb,{
+    bookType:'xlsx',
+    type:'array',
+    cellStyles:true
+  });
+
+  const blob=new Blob([arrayBuffer],{
+    type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  });
+
+  const file=new File([blob],filename,{
+    type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    lastModified:Date.now()
+  });
+
+  return {wb,blob,file,filename};
+}
+
+function setExcelReportButtonsBusy(isBusy,mode){
+  const downloadBtn=document.getElementById('excelReportDownloadBtn');
+  const shareBtn=document.getElementById('excelReportShareBtn');
+
+  if(isBusy){
+    if(mode==='share' && shareBtn){
+      shareBtn.disabled=true;
+      shareBtn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i> PREPARING...';
+    }else if(downloadBtn){
+      downloadBtn.disabled=true;
+      downloadBtn.innerHTML='<i class="fas fa-spinner fa-spin mr-1"></i> CREATING...';
+    }
+  }else{
+    if(downloadBtn){
+      downloadBtn.disabled=false;
+      downloadBtn.innerHTML='<i class="fas fa-file-excel mr-1"></i> DOWNLOAD EXCEL';
+    }
+    if(shareBtn){
+      shareBtn.disabled=false;
+      shareBtn.innerHTML='<i class="fab fa-whatsapp mr-1"></i> SEND TO WHATSAPP';
+    }
   }
-  return {blob,filename};
+}
+
+function getSelectedExcelReportSetups(){
+  const date=document.getElementById('excelReportDate')?.value||'';
+  const machine=document.getElementById('excelReportMachine')?.value||'';
+
+  if(!date || !machine){
+    alert('कृपया Date आणि Machine दोन्ही निवडा.');
+    return null;
+  }
+
+  const setups=(window.allSetups||[]).filter(
+    s=>reportDateForSetup(s)===date && s.machineName===machine
+  );
+
+  if(!setups.length){
+    alert('या Date आणि Machine साठी report उपलब्ध नाही.');
+    return null;
+  }
+
+  return {date,machine,setups};
+}
+
+window.openSelectedExcelReport=function(){
+  const selected=getSelectedExcelReportSetups();
+  if(!selected) return;
+
+  setExcelReportButtonsBusy(true,'download');
+
+  try{
+    const result=createStyledExcelWorkbook(
+      selected.setups,
+      selected.machine,
+      selected.date
+    );
+
+    // Browser download; this keeps the existing Excel Report behaviour.
+    const url=URL.createObjectURL(result.blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=result.filename;
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(()=>URL.revokeObjectURL(url),15000);
+    closeExcelReportSelector();
+  }catch(err){
+    console.error('SUTOM Excel download error:',err);
+    alert('Excel report तयार करताना error आला. Internet ON आहे का ते तपासा आणि पुन्हा प्रयत्न करा.');
+  }finally{
+    setExcelReportButtonsBusy(false);
+  }
+};
+
+window.shareSelectedExcelReport=async function(){
+  const selected=getSelectedExcelReportSetups();
+  if(!selected) return;
+
+  setExcelReportButtonsBusy(true,'share');
+
+  try{
+    const result=createStyledExcelWorkbook(
+      selected.setups,
+      selected.machine,
+      selected.date
+    );
+
+    const shareText=
+      `SUTOM Excel Report\nMachine: ${selected.machine}\nDate: ${selected.date}`;
+
+    /*
+      IMPORTANT:
+      navigator.share({files:[File]}) is the supported browser way to pass
+      the actual .xlsx file to Android's native share sheet.
+      From there the user can select WhatsApp and send the file.
+    */
+    const canShareFiles =
+      typeof navigator !== 'undefined' &&
+      typeof navigator.share === 'function' &&
+      (
+        typeof navigator.canShare !== 'function' ||
+        navigator.canShare({files:[result.file]})
+      );
+
+    if(canShareFiles){
+      try{
+        await navigator.share({
+          title:`SUTOM ${selected.machine} Excel Report`,
+          text:shareText,
+          files:[result.file]
+        });
+
+        // User completed or closed the native share sheet.
+        closeExcelReportSelector();
+        return;
+      }catch(shareErr){
+        // Closing/cancelling the Android share sheet is not an application error.
+        if(shareErr && shareErr.name==='AbortError') return;
+
+        console.warn('Native file share failed:',shareErr);
+      }
+    }
+
+    /*
+      Fallback for browsers that cannot share files:
+      download the real .xlsx and open WhatsApp with a pre-filled message.
+      The user can attach the downloaded document from WhatsApp.
+    */
+    const url=URL.createObjectURL(result.blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=result.filename;
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),15000);
+
+    const waText=encodeURIComponent(
+      `${shareText}\n\nExcel file downloaded as: ${result.filename}\nWhatsApp मध्ये Attach → Document करून हा file select करा.`
+    );
+
+    // Use WhatsApp app when possible, otherwise WhatsApp Web.
+    window.location.href=`https://wa.me/?text=${waText}`;
+
+    setTimeout(()=>{
+      alert('तुमचा Excel file download झाला आहे. WhatsApp मध्ये Attach → Document करून तो .xlsx file निवडा.');
+    },800);
+  }catch(err){
+    console.error('SUTOM WhatsApp Excel share error:',err);
+    alert('Excel report WhatsApp ला share करताना error आला. File download करून WhatsApp मध्ये Document म्हणून attach करा.');
+  }finally{
+    setExcelReportButtonsBusy(false);
+  }
+};
+
+function escapeExcelHtml(v){
+  return String(v==null?'':v)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function downloadStyledExcelFallback(setups,machine,date){
+  // Compatibility wrapper for any older code that still calls this function.
+  const result=createStyledExcelWorkbook(setups,machine,date);
+  const url=URL.createObjectURL(result.blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=result.filename;
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),15000);
 }
 
 window.renderSetterExcelTable = function(filterKey){

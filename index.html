@@ -42,6 +42,7 @@
     }
   });
 </script>
+<!-- SECURITY NOTE: Never put the OneSignal REST API key/secret in this HTML. -->
 <!-- ================= END ONESIGNAL WEB PUSH ================= -->
 
 
@@ -752,6 +753,7 @@ button,input,select{font-family:inherit}
     <p id="alertMessage" class="text-sm my-4 font-bold text-slate-300">Details</p>
     <div id="whatsappContactButtons" class="hidden text-left mb-3 max-h-72 overflow-y-auto"></div>
     <p id="whatsappHelpText" class="hidden text-xs text-green-300 mb-3">WhatsApp उघडेल आणि message pre-filled असेल. Send तुम्ही स्वतः करायचा आहे.</p>
+    <p class="text-[10px] text-slate-400 mb-3">Selected contact = targeted OneSignal push recipient. बाकी employeesना push जाणार नाही.</p>
     <button onclick="acknowledgeAlert()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg">OK</button>
   </div>
 </div>
@@ -818,6 +820,19 @@ window.syncSUTOMOneSignalUser = function(){
           updatedAt: Date.now()
         }).catch(()=>{});
       }
+
+      // Store a direct employee registry entry as well. This is useful for
+      // auditing which OneSignal subscription belongs to which SUTOM employee.
+      firebase.database().ref("onesignal_employees/" + externalId).update({
+        externalId,
+        employeeId: String(user.id),
+        employeeName: String(user.name || ""),
+        department: String(user.dept),
+        pushSubscriptionId: pushId || "",
+        optedIn: optedIn === true,
+        updatedAt: Date.now()
+      }).catch(()=>{});
+
     } catch(err) {
       console.error("SUTOM OneSignal user sync failed:", err);
     }
@@ -839,35 +854,92 @@ window.syncSUTOMOneSignalUser = function(){
 */
 const DEPARTMENT_WHATSAPP = {
   setter: [
-    { name:"Pranjay Bhalerao", phone:"9370357998", shift:"C" },
-    { name:"Sagar Shinde", phone:"9767663294", shift:"C" },
-    { name:"Nana More", phone:"9370192643", shift:"B" },
-    { name:"Gawade", phone:"9922562836", shift:"B" },
-    { name:"Siddhu Gauddar", phone:"7758903348", shift:"A" },
-    { name:"Abhijeet Pawale", phone:"8605152175", shift:"A" }
+    { name:"Pranjay Bhalerao", phone:"9370357998", shift:"C", employeeId:"3216" },
+    { name:"Sagar Shinde", phone:"9767663294", shift:"C", employeeId:"5707" },
+    { name:"Nana More", phone:"9370192643", shift:"B", employeeId:"199" },
+    { name:"Gawade", phone:"9922562836", shift:"B", employeeId:"524" },
+    { name:"Siddhu Gauddar", phone:"7758903348", shift:"A", employeeId:"1170" },
+    { name:"Abhijeet Pawale", phone:"8605152175", shift:"A", employeeId:"4631" }
   ],
   toolroom: [
-    { name:"Prashant Tarate", phone:"7350090376", shift:"C" },
-    { name:"Chetan Garde", phone:"7350112265", shift:"C" },
-    { name:"Nitesh Kanase", phone:"9665265086", shift:"B" },
-    { name:"Pankaj Wankhede", phone:"9370074789", shift:"B" },
-    { name:"Anil Jadhav", phone:"9689515103", shift:"A" },
-    { name:"Suraj Aher", phone:"8263095317", shift:"A" }
+    { name:"Prashant Tarate", phone:"7350090376", shift:"C", employeeId:"5833" },
+    { name:"Chetan Garde", phone:"7350112265", shift:"C", employeeId:"903140" },
+    { name:"Nitesh Kanase", phone:"9665265086", shift:"B", employeeId:"5817" },
+    { name:"Pankaj Wankhede", phone:"9370074789", shift:"B", employeeId:"6021" },
+    { name:"Anil Jadhav", phone:"9689515103", shift:"A", employeeId:"5787" },
+    { name:"Suraj Aher", phone:"8263095317", shift:"A", employeeId:"6080" }
   ],
   stdroom: [
-    { name:"Shuvam Manna", phone:"9593130536", shift:"B" },
-    { name:"Prathmesh", phone:"9146610277", shift:"C" },
-    { name:"Omkar Joshi", phone:"9130267902", shift:"A" }
+    { name:"Shuvam Manna", phone:"9593130536", shift:"B", employeeId:"6158" },
+    { name:"Prathmesh", phone:"9146610277", shift:"C", employeeId:"905496" },
+    { name:"Omkar Joshi", phone:"9130267902", shift:"A", employeeId:"6085" }
   ],
   quality: [
-    { name:"Ramdas Rode", phone:"7020136782", shift:"C" },
-    { name:"Santosh Shippurkar", phone:"9921862590", shift:"C" },
-    { name:"Satyam Tripathi", phone:"9028098447", shift:"A" },
-    { name:"Ravi Sharb dire", phone:"7219589727", shift:"A" },
-    { name:"Aniket Mete", phone:"9271707158", shift:"B" },
-    { name:"Vithal Zambhre", phone:"7972221029", shift:"B" }
+    { name:"Ramdas Rode", phone:"7020136782", shift:"C", employeeId:"5874" },
+    { name:"Santosh Shippurkar", phone:"9921862590", shift:"C", employeeId:"5821" },
+    { name:"Satyam Tripathi", phone:"9028098447", shift:"A", employeeId:"5890" },
+    { name:"Ravi Sharb dire", phone:"7219589727", shift:"A", employeeId:"650" },
+    { name:"Aniket Mete", phone:"9271707158", shift:"B", employeeId:"5889" },
+    { name:"Vithal Zambhre", phone:"7972221029", shift:"B", employeeId:"905533" }
   ]
 };
+
+
+/* ================= TARGETED ONESIGNAL QUEUE =================
+   IMPORTANT:
+   The browser NEVER contains the OneSignal REST API key.
+   When the sender selects one employee, this function writes a
+   notification request to Firebase. A Firebase Cloud Function /
+   secure backend must watch "onesignal_notification_queue" and
+   call OneSignal's REST API using the selected employeeId.
+*/
+async function queueTargetedOneSignalNotification(dept, contact, title, message, setup){
+  if(!contact || !contact.employeeId){
+    console.warn("No employeeId found for selected notification recipient.");
+    return;
+  }
+
+  const current = window.currentUser || {};
+  const firebaseKey = setup?.firebaseKey || "";
+  const queueId = dbRef.push().key;
+
+  const payload = {
+    queueId,
+    targetExternalId: `sutom_${dept}_${String(contact.employeeId).trim()}`,
+    employeeId: String(contact.employeeId),
+    employeeName: String(contact.name || ""),
+    department: String(dept || ""),
+    title: String(title || "SUTOM Notification"),
+    message: String(message || ""),
+    setupFirebaseKey: firebaseKey,
+    machineName: String(setup?.machineName || ""),
+    partNo: String(setup?.partNo || ""),
+    partName: String(setup?.partName || ""),
+    priority: String(setup?.priority || ""),
+    senderEmployeeId: String(current.id || ""),
+    senderName: String(current.name || ""),
+    createdAt: firebase.database.ServerValue.TIMESTAMP,
+    status: "PENDING"
+  };
+
+  try{
+    await firebase.database().ref("onesignal_notification_queue/" + queueId).set(payload);
+    console.log("Targeted OneSignal notification queued:", payload);
+    return true;
+  }catch(err){
+    console.error("Targeted OneSignal queue failed:", err);
+    return false;
+  }
+}
+
+async function selectWorkflowRecipient(dept, contact, title, message, setup){
+  // 1) Queue the push ONLY for the selected employee.
+  await queueTargetedOneSignalNotification(dept, contact, title, message, setup);
+
+  // 2) Preserve existing WhatsApp behaviour: open only the selected contact
+  //    with the message pre-filled; the user still presses Send manually.
+  openWhatsAppContact(contact.phone, message);
+}
 
 /* ================= WHATSAPP CLICK-TO-CHAT =================
    IMPORTANT: This does NOT send automatically and does NOT use WhatsApp API.
@@ -899,7 +971,7 @@ function getCurrentShift(){
 }
 
 function showWhatsAppButtons(dept, title, message){
-  pendingWhatsApp = { dept, title, message };
+  pendingWhatsApp = { dept, title, message, setup };
   const box = document.getElementById("whatsappContactButtons");
   if(!box) return;
 
@@ -934,7 +1006,7 @@ function showWhatsAppButtons(dept, title, message){
     const isCurrent = c.shift === currentShift;
     btn.className = `w-full ${isCurrent ? "bg-green-600 hover:bg-green-700" : "bg-slate-700 hover:bg-slate-600"} text-white font-bold px-4 py-3 rounded-lg shadow-lg text-left mb-2`;
     btn.innerHTML = `<i class="fab fa-whatsapp text-lg mr-2"></i>${c.name} <span class="text-xs opacity-80">(Shift ${c.shift}${isCurrent ? " • CURRENT" : ""})</span>`;
-    btn.onclick = ()=>openWhatsAppContact(c.phone, message);
+    btn.onclick = ()=>selectWorkflowRecipient(dept, c, title, message, pendingWhatsApp?.setup || null);
     box.appendChild(btn);
   });
 }
@@ -2245,4 +2317,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+</html>

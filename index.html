@@ -15,6 +15,36 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
+<!-- ================= ONESIGNAL WEB PUSH ================= -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+  OneSignalDeferred.push(async function(OneSignal) {
+    try {
+      await OneSignal.init({
+        appId: "1597e66d-e728-4207-92b5-c56f5a136fa5",
+        safari_web_id: "web.onesignal.auto.54cd441e-7f12-4aed-9845-f98eb5c10ecb",
+        notifyButton: {
+          enable: true
+        }
+      });
+
+      window.sutomOneSignalReady = true;
+      console.log("SUTOM OneSignal initialized.");
+
+      // Keep the currently logged-in employee linked to this device.
+      if (window.currentUser && typeof window.syncSUTOMOneSignalUser === "function") {
+        window.syncSUTOMOneSignalUser();
+      }
+    } catch (err) {
+      console.error("SUTOM OneSignal initialization failed:", err);
+    }
+  });
+</script>
+<!-- ================= END ONESIGNAL WEB PUSH ================= -->
+
+
 <style>
 *{
   box-sizing:border-box;
@@ -745,6 +775,63 @@ const dbRef = firebase.database().ref("setups");
 const messaging = firebase.messaging();
 const VAPID_KEY = "BB7GLqS9RfXRulA0XP1YcDlVDyzceQhaYyJLTRzx8naS2yhbbgXi6ZfOKBAOMCGMmwKZYtQttVre0vRE8MgHyik";
 
+/* ================= SUTOM ONESIGNAL DEVICE LINK =================
+   OneSignal identifies the browser/device subscription.
+   The employee ID is used as the stable external user ID so that
+   later we can send a push only to the selected employee.
+*/
+window.syncSUTOMOneSignalUser = function(){
+  const user = window.currentUser;
+  if(!user || !user.id || !user.dept) return;
+
+  const externalId = `sutom_${String(user.dept).trim()}_${String(user.id).trim()}`;
+
+  const sync = async function(OneSignal){
+    try {
+      await OneSignal.login(externalId);
+
+      // Helpful attributes for targeted SUTOM notifications.
+      await OneSignal.User.addTags({
+        sutom_name: String(user.name || ""),
+        sutom_department: String(user.dept || ""),
+        sutom_employee_id: String(user.id || "")
+      });
+
+      const pushId = OneSignal.User.PushSubscription.id;
+      const optedIn = OneSignal.User.PushSubscription.optedIn;
+
+      console.log("SUTOM OneSignal linked:", {
+        externalId,
+        pushSubscriptionId: pushId || null,
+        optedIn: optedIn === true
+      });
+
+      // Save the subscription reference for troubleshooting/audit.
+      if(pushId){
+        firebase.database().ref("onesignal_subscriptions/" + externalId).set({
+          externalId,
+          pushSubscriptionId: pushId,
+          employeeId: String(user.id),
+          employeeName: String(user.name || ""),
+          department: String(user.dept),
+          optedIn: optedIn === true,
+          updatedAt: Date.now()
+        }).catch(()=>{});
+      }
+    } catch(err) {
+      console.error("SUTOM OneSignal user sync failed:", err);
+    }
+  };
+
+  if(window.sutomOneSignalReady && window.OneSignal){
+    sync(window.OneSignal);
+  } else {
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(sync);
+  }
+};
+
+
 /* ================= DEPARTMENT WHATSAPP CONTACTS =================
    Contacts from the supplied SUTOM department-wise list.
    WhatsApp numbers are stored without +91 so they can be used
@@ -864,33 +951,16 @@ function queueWorkflowWhatsApp(dept, title, message, setup){
 
 
 function initializeFCM() {
-  Notification.requestPermission().then((permission) => {
-    if (permission === 'granted') {
-      console.log('Notification permission granted.');
-      messaging.getToken({ vapidKey: VAPID_KEY }).then((currentToken) => {
-        if (currentToken) {
-          console.log('FCM Token:', currentToken);
-          // Token database मध्ये किंवा localstorage मध्ये सेव्ह करू शकता
-          firebase.database().ref('fcm_tokens').push({
-            token: currentToken,
-            timestamp: Date.now()
-          });
-        } else {
-          console.log('No registration token available. Request permission to generate one.');
-        }
-      }).catch((err) => {
-        console.log('An error occurred while retrieving token. ', err);
-      });
-    } else {
-      console.log('Unable to get permission to notify.');
-    }
-  });
+  // OneSignal manages browser permission for Web Push.
+  // Firebase is retained for the existing SUTOM foreground workflow.
+  if (!("Notification" in window)) {
+    console.log("Browser notifications are not supported.");
+  }
 
-  // Listen for foreground incoming messages
   messaging.onMessage((payload) => {
-    console.log('Message received. ', payload);
-    const title = payload.notification.title || "SUTOM Alert";
-    const body = payload.notification.body || "New update in system.";
+    console.log("Firebase message received.", payload);
+    const title = payload?.notification?.title || "SUTOM Alert";
+    const body = payload?.notification?.body || "New update in system.";
     triggerAlert(title, body);
   });
 }
@@ -943,22 +1013,14 @@ window.addEventListener("DOMContentLoaded",()=>{
   loadPriority();
   initializeFCM(); // FCM Initialize call
 
-  // Service Worker Registration for PWA Background support
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./firebase-messaging-sw.js')
-      .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      })
-      .catch((err) => {
-        console.log('Service Worker registration failed:', err);
-      });
-  }
-
   const u = localStorage.getItem("sutom_user");
   if(u){
     try{
       window.currentUser = JSON.parse(u);
       loadDashboard(window.currentUser);
+      if(typeof window.syncSUTOMOneSignalUser === "function"){
+        window.syncSUTOMOneSignalUser();
+      }
     }catch{
       localStorage.removeItem("sutom_user");
       showLoginSection();
@@ -993,6 +1055,11 @@ function handleLogin(e){
   };
   localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
   loadDashboard(window.currentUser);
+
+  // Link this browser/device to the logged-in SUTOM employee.
+  if(typeof window.syncSUTOMOneSignalUser === "function"){
+    window.syncSUTOMOneSignalUser();
+  }
 }
 
 function loadDashboard(user){

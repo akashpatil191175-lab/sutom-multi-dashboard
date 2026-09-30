@@ -247,6 +247,10 @@ button,input,select{font-family:inherit}
 .sutom-head-actions{display:flex;align-items:center;gap:7px}.compact-header-btn{border:1px solid #33465f;background:#0b1625;color:#dce6f4;border-radius:8px;padding:7px 9px;font-size:9px;font-weight:900;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}.compact-header-btn:hover{filter:brightness(1.15)}.compact-header-btn.reset{border-color:#9b1c2d;color:#ff9aa5;background:#210b11}.compact-header-btn.logout{border-color:#5b6b80;color:#f2f5f8;background:#101a28}.sutom-pill{border:1px solid #26364d;background:#0b1524;color:#e9eef6;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;display:flex;align-items:center;gap:6px;white-space:nowrap}.sutom-pill.live{border-color:#00b96b;color:#54f0a9;background:#061b13}.sutom-pill.live i{font-size:7px}.sutom-user{display:flex;align-items:center;gap:7px;padding-left:5px}.sutom-user-avatar{width:36px;height:36px;border-radius:50%;background:#f5f7fb;color:#111827;display:flex;align-items:center;justify-content:center;font-size:19px}.sutom-user-name{font-size:11px;font-weight:800}.sutom-user-dept{font-size:9px;color:#8d9bb0;margin-top:2px}
 
 /* --- Authentication & Dashboard Visibility Fix --- */
+#sutomHeader{display:none;}
+body.dashboard-mode #sutomHeader{display:flex;}
+body.login-mode #sutomHeader{display:none;}
+
 #dashboardSection{display:none !important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
 #dashboardSection.active-flex{display:flex!important;}
 .hidden-section{display:none !important;}
@@ -389,13 +393,24 @@ button,input,select{font-family:inherit}
 .excel-report-note{margin-top:12px;padding:9px 10px;border-radius:8px;background:#071a14;border:1px solid #145c42;color:#8eeec2;font-size:9px;line-height:1.45}
 @media(max-width:520px){.excel-report-card{border-radius:12px}.excel-report-body{padding:13px}.excel-report-head h3{font-size:14px}.excel-report-actions{flex-direction:column}.excel-report-actions button{width:100%}}
 
+
+.login-sutom-logo{
+  width:72px;
+  height:72px;
+  border-width:4px;
+  margin-bottom:14px;
+  box-shadow:0 0 25px rgba(255,36,56,.28);
+}
+.login-sutom-logo:before{width:36px;height:36px;border-width:4px}
+.login-sutom-logo:after{font-size:30px;top:13px;left:25px}
+
 </style>
 </head>
 
-<body class="font-sans min-h-screen">
+<body class="font-sans min-h-screen login-mode">
 
 <!-- ================= COMPACT PREMIUM HEADER ================= -->
-<header class="sutom-header">
+<header id="sutomHeader" class="sutom-header">
   <div class="sutom-brand">
     <div class="sutom-logo" aria-hidden="true"></div>
     <div>
@@ -411,8 +426,6 @@ button,input,select{font-family:inherit}
 
   <div class="sutom-head-actions">
     <div class="sutom-pill live"><i class="fas fa-circle"></i><span>FIREBASE LIVE</span></div>
-    <button class="compact-header-btn reset" onclick="handleResetAllData()" title="Reset All Data"><i class="fas fa-trash-rotate"></i><span>Reset All Data</span></button>
-    <button class="compact-header-btn logout" onclick="handleLogout()" title="Logout"><i class="fas fa-right-from-bracket"></i><span>Logout</span></button>
     <div class="sutom-user">
       <div class="sutom-user-avatar"><i class="fas fa-user"></i></div>
       <div><div id="headerUserName" class="sutom-user-name">User</div><div id="headerUserDept" class="sutom-user-dept">Department</div></div>
@@ -425,9 +438,7 @@ button,input,select{font-family:inherit}
 <div id="authSection" class="min-h-[calc(100vh-78px)] flex justify-center items-center py-10 px-4">
   <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
     <div class="flex flex-col items-center mb-6">
-      <div class="w-16 h-16 bg-gradient-to-tr from-red-600 to-rose-500 text-white font-black text-3xl rounded-2xl flex items-center justify-center shadow-lg mb-3 border-2 border-red-400">
-        S
-      </div>
+      <div class="sutom-logo login-sutom-logo" aria-label="SUTOM Logo"></div>
       <h2 class="text-2xl font-bold text-white">Department Login</h2>
       <p class="text-xs text-slate-400 mt-1">SUTOM Workflow System</p>
     </div>
@@ -463,12 +474,13 @@ button,input,select{font-family:inherit}
 <!-- ================= DASHBOARD ================= -->
 <div id="dashboardSection">
 
-  <aside class="sutom-sidebar">
-    <button class="sutom-nav-btn active" onclick="showDepartmentTab(window.currentUser?.dept||'setter')"><i class="fas fa-home"></i> Dashboard</button>
-    <button class="sutom-nav-btn" onclick="openSetterModule('register')"><i class="fas fa-plus-square"></i> Register Setup</button>
-    <button class="sutom-nav-btn" onclick="document.querySelector('.setter-list-panel')?.scrollIntoView({behavior:'smooth'})"><i class="fas fa-diagram-project"></i> Workflow</button>
-    <button class="sutom-nav-btn" onclick="openExcelReportSelector()"><i class="fas fa-chart-column"></i> Reports</button>
-    <button class="sutom-nav-btn" onclick="if(confirm('सर्व setup data reset करायचा आहे का?')) handleResetAllData()"><i class="fas fa-gear"></i> Settings</button>
+  <aside class="sutom-sidebar" id="departmentSidebar">
+    <button class="sutom-nav-btn active" data-nav="dashboard" onclick="showDepartmentTab(window.currentUser?.dept||'setter')"><i class="fas fa-home"></i> Dashboard</button>
+    <button class="sutom-nav-btn" data-nav="register" onclick="openSetterModule('register')"><i class="fas fa-plus-square"></i> Register Setup</button>
+    <button class="sutom-nav-btn" data-nav="workflow" onclick="document.querySelector('.setter-list-panel')?.scrollIntoView({behavior:'smooth'})"><i class="fas fa-diagram-project"></i> Workflow</button>
+    <button class="sutom-nav-btn" data-nav="reports" onclick="openExcelReportSelector()"><i class="fas fa-file-excel"></i> Excel Report</button>
+    <button class="sutom-nav-btn" data-nav="settings" onclick="if(confirm('सर्व setup data reset करायचा आहे का?')) handleResetAllData()"><i class="fas fa-gear"></i> Settings</button>
+    <button class="sutom-nav-btn" data-nav="logout" onclick="handleLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
     <div class="sutom-side-bottom">SUTOM<br><b>Setup Time Online Monitor</b><br><br>Precision &nbsp; | &nbsp; Efficiency</div>
   </aside>
 
@@ -1014,6 +1026,8 @@ function handleLogin(e){
 }
 
 function loadDashboard(user){
+  document.body.classList.remove("login-mode");
+  document.body.classList.add("dashboard-mode");
   document.getElementById("authSection").classList.add("hidden-section");
   const dashSec = document.getElementById("dashboardSection");
   dashSec.classList.remove("hidden-section");
@@ -1031,6 +1045,8 @@ function loadDashboard(user){
 }
 
 function showLoginSection(){
+  document.body.classList.remove("dashboard-mode");
+  document.body.classList.add("login-mode");
   document.getElementById("authSection").classList.remove("hidden-section");
   const dashSec = document.getElementById("dashboardSection");
   dashSec.classList.remove("active-flex");
@@ -1049,7 +1065,59 @@ function handleLogout(){
   if(hd) hd.textContent = "Department";
 }
 
+
+function updateDepartmentNavigation(dept){
+  const sidebar = document.getElementById("departmentSidebar");
+  if(!sidebar) return;
+
+  const nav = (key) => sidebar.querySelector(`[data-nav="${key}"]`);
+  const setNav = (key, label, icon, onclick){
+    const btn = nav(key);
+    if(!btn) return;
+    btn.innerHTML = `<i class="${icon}"></i> ${label}`;
+    btn.onclick = onclick;
+  };
+
+  // Common buttons
+  setNav("dashboard","Dashboard","fas fa-home",()=>showDepartmentTab(window.currentUser?.dept||dept));
+  setNav("reports","Excel Report","fas fa-file-excel",()=>openExcelReportSelector());
+  setNav("logout","Logout","fas fa-right-from-bracket",()=>handleLogout());
+
+  if(dept === "setter"){
+    setNav("register","Register Setup","fas fa-plus-square",()=>openSetterModule("register"));
+    setNav("workflow","Workflow","fas fa-diagram-project",()=>document.querySelector(".setter-list-panel")?.scrollIntoView({behavior:"smooth"}));
+    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
+      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
+    });
+  }else if(dept === "toolroom"){
+    setNav("register","Tooling & Fixture","fas fa-tools",()=>showDepartmentTab("toolroom"));
+    setNav("workflow","Tool Room Workflow","fas fa-diagram-project",()=>showDepartmentTab("toolroom"));
+    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
+      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
+    });
+  }else if(dept === "stdroom"){
+    setNav("register","CMM Setup","fas fa-microscope",()=>showDepartmentTab("stdroom"));
+    setNav("workflow","CMM Workflow","fas fa-diagram-project",()=>showDepartmentTab("stdroom"));
+    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
+      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
+    });
+  }else if(dept === "quality"){
+    setNav("register","SOP Inspection","fas fa-clipboard-check",()=>showDepartmentTab("quality"));
+    setNav("workflow","Quality Workflow","fas fa-diagram-project",()=>showDepartmentTab("quality"));
+    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
+      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
+    });
+  }else if(dept === "supervisor"){
+    setNav("register","Workflow Summary","fas fa-chart-line",()=>showDepartmentTab("supervisor"));
+    setNav("workflow","Complete Workflow","fas fa-diagram-project",()=>showDepartmentTab("supervisor"));
+    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
+      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
+    });
+  }
+}
+
 function showDepartmentTab(deptId){
+  updateDepartmentNavigation(deptId);
   document.querySelectorAll(".tab-content").forEach(el=>el.classList.add("hidden"));
   const tab = document.getElementById("tab-"+deptId);
   if(tab){
@@ -2196,4 +2264,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-  </html>
+</html>

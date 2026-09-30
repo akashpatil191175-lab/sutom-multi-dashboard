@@ -1,11 +1,15 @@
 {
-  "short_name": "SUTOM",
-  "name": "SUTOM - Setup Time Monitor",
   "id": "./",
-  "start_url": "./index.html",
+  "name": "SUTOM - Setup Time Monitor",
+  "short_name": "SUTOM",
+  "description": "SUTOM Setup Time Monitor",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0f172a",
+  "display_override": ["standalone", "window-controls-overlay"],
+  "background_color": "#050b14",
   "theme_color": "#2563eb",
+  "orientation": "any",
   "icons": [
     {
       "src": "./icon-192.png",
@@ -19,7 +23,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "scope": "./",
-  "orientation": "any"
+  ]
 }

@@ -250,6 +250,9 @@ button,input,select{font-family:inherit}
 #sutomHeader{display:none;}
 body.dashboard-mode #sutomHeader{display:flex;}
 body.login-mode #sutomHeader{display:none;}
+#headerResetBtn{display:none;}
+body.dashboard-mode #headerLogoutBtn{display:inline-flex;}
+body.dashboard-mode #headerResetBtn.department-reset-visible{display:inline-flex;}
 
 #dashboardSection{display:none !important;flex-direction:row!important;min-height:calc(100vh - 78px)!important;background:transparent}
 #dashboardSection.active-flex{display:flex!important;}
@@ -426,6 +429,12 @@ body.login-mode #sutomHeader{display:none;}
 
   <div class="sutom-head-actions">
     <div class="sutom-pill live"><i class="fas fa-circle"></i><span>FIREBASE LIVE</span></div>
+    <button id="headerResetBtn" class="compact-header-btn reset" onclick="handleResetAllData()" title="Reset All Data">
+      <i class="fas fa-trash-rotate"></i><span>Reset Data</span>
+    </button>
+    <button id="headerLogoutBtn" class="compact-header-btn logout" onclick="handleLogout()" title="Logout">
+      <i class="fas fa-right-from-bracket"></i><span>Logout</span>
+    </button>
     <div class="sutom-user">
       <div class="sutom-user-avatar"><i class="fas fa-user"></i></div>
       <div><div id="headerUserName" class="sutom-user-name">User</div><div id="headerUserDept" class="sutom-user-dept">Department</div></div>
@@ -479,7 +488,7 @@ body.login-mode #sutomHeader{display:none;}
     <button class="sutom-nav-btn" data-nav="register" onclick="openSetterModule('register')"><i class="fas fa-plus-square"></i> Register Setup</button>
     <button class="sutom-nav-btn" data-nav="workflow" onclick="document.querySelector('.setter-list-panel')?.scrollIntoView({behavior:'smooth'})"><i class="fas fa-diagram-project"></i> Workflow</button>
     <button class="sutom-nav-btn" data-nav="reports" onclick="openExcelReportSelector()"><i class="fas fa-file-excel"></i> Excel Report</button>
-    <button class="sutom-nav-btn" data-nav="settings" onclick="if(confirm('सर्व setup data reset करायचा आहे का?')) handleResetAllData()"><i class="fas fa-gear"></i> Settings</button>
+    <button class="sutom-nav-btn" data-nav="settings"><i class="fas fa-gear"></i> Settings</button>
     <button class="sutom-nav-btn" data-nav="logout" onclick="handleLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
     <div class="sutom-side-bottom">SUTOM<br><b>Setup Time Online Monitor</b><br><br>Precision &nbsp; | &nbsp; Efficiency</div>
   </aside>
@@ -1055,6 +1064,8 @@ function showLoginSection(){
 }
 
 function handleLogout(){
+  const headerReset = document.getElementById("headerResetBtn");
+  if(headerReset) headerReset.classList.remove("department-reset-visible");
   localStorage.removeItem("sutom_user");
   window.currentUser = null;
   showLoginSection();
@@ -1078,41 +1089,46 @@ function updateDepartmentNavigation(dept){
     btn.onclick = onclick;
   };
 
-  // Common buttons
+  // Common buttons — every logged-in department gets Logout.
   setNav("dashboard","Dashboard","fas fa-home",()=>showDepartmentTab(window.currentUser?.dept||dept));
   setNav("reports","Excel Report","fas fa-file-excel",()=>openExcelReportSelector());
   setNav("logout","Logout","fas fa-right-from-bracket",()=>handleLogout());
 
+  // Reset Data is intentionally available only to Setter and Supervisor/HOD.
+  const settingsBtn = nav("settings");
+  if(settingsBtn){
+    if(dept === "setter" || dept === "supervisor"){
+      settingsBtn.style.display = "flex";
+      setNav("settings","Reset Data","fas fa-trash-rotate",()=>{
+        if(confirm("सर्व SUTOM setup data reset करायचा आहे का?")) handleResetAllData();
+      });
+    }else{
+      settingsBtn.style.display = "none";
+    }
+  }
+
+  // Header controls follow the same department rule.
+  const headerReset = document.getElementById("headerResetBtn");
+  if(headerReset){
+    headerReset.classList.toggle("department-reset-visible",
+      dept === "setter" || dept === "supervisor");
+  }
+
   if(dept === "setter"){
     setNav("register","Register Setup","fas fa-plus-square",()=>openSetterModule("register"));
     setNav("workflow","Workflow","fas fa-diagram-project",()=>document.querySelector(".setter-list-panel")?.scrollIntoView({behavior:"smooth"}));
-    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
-      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
-    });
   }else if(dept === "toolroom"){
     setNav("register","Tooling & Fixture","fas fa-tools",()=>showDepartmentTab("toolroom"));
     setNav("workflow","Tool Room Workflow","fas fa-diagram-project",()=>showDepartmentTab("toolroom"));
-    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
-      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
-    });
   }else if(dept === "stdroom"){
     setNav("register","CMM Setup","fas fa-microscope",()=>showDepartmentTab("stdroom"));
     setNav("workflow","CMM Workflow","fas fa-diagram-project",()=>showDepartmentTab("stdroom"));
-    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
-      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
-    });
   }else if(dept === "quality"){
     setNav("register","SOP Inspection","fas fa-clipboard-check",()=>showDepartmentTab("quality"));
     setNav("workflow","Quality Workflow","fas fa-diagram-project",()=>showDepartmentTab("quality"));
-    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
-      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
-    });
   }else if(dept === "supervisor"){
     setNav("register","Workflow Summary","fas fa-chart-line",()=>showDepartmentTab("supervisor"));
     setNav("workflow","Complete Workflow","fas fa-diagram-project",()=>showDepartmentTab("supervisor"));
-    setNav("settings","Reset All Data","fas fa-trash-rotate",()=>{
-      if(confirm("सर्व setup data reset करायचा आहे का?")) handleResetAllData();
-    });
   }
 }
 
@@ -2264,4 +2280,4 @@ function acknowledgeAlert(){
 </script>
 
 </body>
-</html>
+  </html>

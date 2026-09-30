@@ -6,6 +6,15 @@
 
 <title>SUTOM - Setup Time Monitor</title>
 
+<!-- SUTOM PWA: required for Chrome Install -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SUTOM">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
@@ -867,19 +876,27 @@ function initializeFCM() {
   Notification.requestPermission().then((permission) => {
     if (permission === 'granted') {
       console.log('Notification permission granted.');
-      messaging.getToken({ vapidKey: VAPID_KEY }).then((currentToken) => {
-        if (currentToken) {
-          console.log('FCM Token:', currentToken);
-          // Token database मध्ये किंवा localstorage मध्ये सेव्ह करू शकता
-          firebase.database().ref('fcm_tokens').push({
-            token: currentToken,
-            timestamp: Date.now()
-          });
-        } else {
-          console.log('No registration token available. Request permission to generate one.');
-        }
+
+      navigator.serviceWorker.ready.then((registration) => {
+        messaging.getToken({
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: registration
+        }).then((currentToken) => {
+          if (currentToken) {
+            console.log('FCM Token:', currentToken);
+            // Token database मध्ये किंवा localstorage मध्ये सेव्ह करू शकता
+            firebase.database().ref('fcm_tokens').push({
+              token: currentToken,
+              timestamp: Date.now()
+            });
+          } else {
+            console.log('No registration token available. Request permission to generate one.');
+          }
+        }).catch((err) => {
+          console.log('An error occurred while retrieving token. ', err);
+        });
       }).catch((err) => {
-        console.log('An error occurred while retrieving token. ', err);
+        console.log('Service Worker is not ready for FCM. ', err);
       });
     } else {
       console.log('Unable to get permission to notify.');
@@ -889,8 +906,8 @@ function initializeFCM() {
   // Listen for foreground incoming messages
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
-    const title = payload.notification.title || "SUTOM Alert";
-    const body = payload.notification.body || "New update in system.";
+    const title = payload.notification?.title || "SUTOM Alert";
+    const body = payload.notification?.body || "New update in system.";
     triggerAlert(title, body);
   });
 }
@@ -943,14 +960,15 @@ window.addEventListener("DOMContentLoaded",()=>{
   loadPriority();
   initializeFCM(); // FCM Initialize call
 
-  // Service Worker Registration for PWA Background support
+  // SUTOM shared Service Worker Registration
+  // One service worker handles both PWA caching and Firebase background notifications.
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./firebase-messaging-sw.js')
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
       .then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
+        console.log('SUTOM Service Worker registered:', registration.scope);
       })
       .catch((err) => {
-        console.log('Service Worker registration failed:', err);
+        console.error('SUTOM Service Worker registration failed:', err);
       });
   }
 

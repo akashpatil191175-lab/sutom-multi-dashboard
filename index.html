@@ -1071,7 +1071,7 @@ function updateDepartmentNavigation(dept){
   if(!sidebar) return;
 
   const nav = (key) => sidebar.querySelector(`[data-nav="${key}"]`);
-  const setNav = (key, label, icon, onclick){
+  const setNav = (key, label, icon, onclick)=>{
     const btn = nav(key);
     if(!btn) return;
     btn.innerHTML = `<i class="${icon}"></i> ${label}`;

@@ -273,6 +273,7 @@ button,input,select{font-family:inherit}
 .compact-action.red{background:#c81e31;border-color:#ec3144;color:white}
 .compact-action.blue{background:#1467b7;border-color:#238cff;color:white}
 .compact-action.green{background:#086f45;border-color:#16c784;color:white}
+.mc-delete-action{width:100%;margin-top:5px;border:1px solid #ef3349;background:#2a0d13;color:#ff9aa5;border-radius:7px;padding:5px;font-size:9px;font-weight:900;cursor:pointer}.mc-delete-action:hover{background:#c81e31;color:#fff;border-color:#ff5263}
 
 .setter-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:12px 0}
 .metric-card{background:linear-gradient(145deg,#0a1421,#07101b);border:1px solid #263950;border-radius:11px;padding:10px 12px;min-height:76px;position:relative;overflow:hidden;cursor:pointer}
@@ -451,6 +452,10 @@ button,input,select{font-family:inherit}
           <option value="quality">4. QUALITY</option>
           <option value="supervisor">5. SUPERVISOR / HOD</option>
         </select>
+      </div>
+      <div>
+        <label class="block text-xs font-bold mb-1 text-slate-300">Department Password</label>
+        <input type="password" id="loginPassword" required autocomplete="current-password" class="w-full p-2.5 bg-slate-950 border border-slate-800 text-white rounded-lg text-sm focus:border-red-500 focus:outline-none" placeholder="Enter department password">
       </div>
       <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold py-3 rounded-lg shadow-md transition">
         Access Dashboard
@@ -1004,11 +1009,33 @@ window.addEventListener("DOMContentLoaded",()=>{
 
 function handleLogin(e){
   e.preventDefault();
-  window.currentUser = {
-    name: document.getElementById("loginName").value.trim(),
-    id: document.getElementById("loginId").value.trim(),
-    dept: document.getElementById("loginDept").value
+
+  const name = document.getElementById("loginName").value.trim();
+  const id = document.getElementById("loginId").value.trim();
+  const dept = document.getElementById("loginDept").value;
+  const password = document.getElementById("loginPassword").value;
+
+  const DEPARTMENT_PASSWORDS = {
+    setter: "PB3216",
+    toolroom: "Brembo@123",
+    stdroom: "STDRABCD1234",
+    quality: "Santosh@2026",
+    supervisor: "PRP@2028"
   };
+
+  if(!dept){
+    alert("Please select department.");
+    return;
+  }
+
+  if(DEPARTMENT_PASSWORDS[dept] !== password){
+    alert("❌ Incorrect department password.");
+    document.getElementById("loginPassword").focus();
+    return;
+  }
+
+  window.currentUser = { name, id, dept };
+
   localStorage.setItem("sutom_user", JSON.stringify(window.currentUser));
   loadDashboard(window.currentUser);
 }
@@ -1047,6 +1074,8 @@ function handleLogout(){
   const hd = document.getElementById("headerUserDept");
   if(hu) hu.textContent = "User";
   if(hd) hd.textContent = "Department";
+  const lp = document.getElementById("loginPassword");
+  if(lp) lp.value = "";
 }
 
 function showDepartmentTab(deptId){
@@ -1771,6 +1800,35 @@ function downloadStyledExcelFallback(setups, machine, date){
   closeExcelReportSelector();
 }
 
+window.deleteSetterSetup = function(firebaseKey, setupId){
+  if(!window.currentUser || window.currentUser.dept !== "setter"){
+    alert("फक्त Setter Department मधून setup delete करता येईल.");
+    return;
+  }
+
+  const setup = (window.allSetups||[]).find(x=>x.firebaseKey===firebaseKey);
+  if(!setup) {
+    alert("Setup सापडला नाही.");
+    return;
+  }
+
+  const ok = confirm(
+    `Setup ${setupId || setup.id || ""} delete करायचा आहे का?\\n\\n` +
+    `Machine: ${setup.machineName || "-"}\\n` +
+    `Part: ${setup.partName || "-"}\\n\\n` +
+    `ही action Firebase मधून setup कायमचा delete करेल.`
+  );
+  if(!ok) return;
+
+  dbRef.child(firebaseKey).remove()
+    .then(()=>{
+      alert(`Setup ${setup.id || setupId || ""} successfully deleted.`);
+    })
+    .catch(err=>{
+      alert("Delete Error: " + err.message);
+    });
+};
+
 window.renderSetterExcelTable = function(filterKey){
   const container = document.getElementById("setterExcelTableBody");
   const rowCount = document.getElementById("excelRowCount");
@@ -1824,6 +1882,9 @@ window.renderSetterExcelTable = function(filterKey){
       <div class="progress">${dots}</div><div class="stage-text">${s.setupStarted?`Sample ${n} → Running`:(s.qualityStatus||'Registered')}</div>
       ${fixture}
       <div style="margin-top:5px">${action}</div>
+      <button type="button" onclick="deleteSetterSetup('${s.firebaseKey}','${s.id||''}');event.stopPropagation();" class="mc-delete-action">
+        <i class="fas fa-trash mr-1"></i> DELETE SETUP
+      </button>
     </article>`;
   }).join("");
 };
